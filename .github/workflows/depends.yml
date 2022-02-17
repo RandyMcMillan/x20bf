@@ -1,0 +1,75 @@
+name: depends.yml
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+
+    branches:       #[ master ]
+      - '*'         # matches every branch that doesn't contain a '/'
+      - '*/*'       # matches every branch containing a single '/'
+      - '**'        # matches every branch
+      - 'master'    # includes master
+      - 'main'      # includes main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+
+  depends:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ['ubuntu-latest','macos-latest']
+        python-version: ['3.8','3.9','3.10']
+        exclude:
+          - os: ubuntu-latest
+            python-version: ['2.7','3.6','3.7']
+          - os: macos-latest
+            python-version: ['2.7','3.6','3.7']
+
+    steps:
+      - uses: styfle/cancel-workflow-action@0.8.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Checkout
+        uses: actions/checkout@v2.4.0
+
+      - name: cache depends
+        id: cache-depends
+        uses: actions/cache@v2
+        with:
+          path: depends
+          key: ${{ runner.os }}-depends
+
+      - name: Setup Matrix
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+
+      - name: automate matrix
+        run: |
+          printenv
+          export HOMEBREW_NO_ENV_HINTS=0
+          echo $GITHUB_WORKSPACE
+          cd $GITHUB_WORKSPACE
+          python3 -c "import sys; print(sys.version)"
+          make
+      - name: make depends
+        if: steps.cache-depends.outputs.cache-hit != 'true'
+        run: |
+          make initialize
+          make gogs
+          make install-p2p
+          make install-gnupg
+          make gnupg-test
+          make install-fastapi
+          make depends
+      - name: make gnupg-test
+        if: steps.cache-depends.outputs.cache-hit != 'true'
+        run: |
+            make gnupg-test
+

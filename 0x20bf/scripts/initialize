@@ -1,0 +1,202 @@
+#!/usr/bin/env bash
+python3 -m venv venv
+source venv/bin/activate
+#ENV VARS
+OS=$(uname)
+OS_VERSION=$(uname -r)
+UNAME_M=$(uname -m)
+ARCH=$(uname -m)
+export OS
+export OS_VERSION
+export UNAME_M
+export ARCH
+
+function initialize-report(){
+echo OS:
+echo "$OS" | awk '{print tolower($0)}'
+echo OS_VERSION:
+echo "$OS_VERSION" | awk '{print tolower($0)}'
+echo UNAME_M:
+echo "$UNAME_M" | awk '{print tolower($0)}'
+echo ARCH:
+echo "$ARCH" | awk '{print tolower($0)}'
+echo OSTYPE:
+echo "$OSTYPE" | awk '{print tolower($0)}'
+}
+
+function initialize-add-python-paths(){
+# support python 3.8 - 3.10
+PATH=$PATH:/usr/local/opt/python@3.8/Frameworks/Python.framework/Versions/3.8/bin
+PATH=$PATH:/usr/local/opt/python@3.9/Frameworks/Python.framework/Versions/3.9/bin
+PATH=$PATH:/usr/local/opt/python@3.10/Frameworks/Python.framework/Versions/3.10/bin
+}
+
+function initialize-use-apk(){
+
+echo "more apk support needed"
+
+}
+
+function initialize-use-apt(){
+
+if hash apt-get 2>/dev/null; then
+    sudo apt-get update
+    sudo apt-get install -y \
+        python3 python3-pip mkdocs jq \
+        gnupg build-essential libboost-all-dev libssl-dev
+    if ! hash docker 2>/dev/null; then
+        sudo apt-get install docker.io
+    fi
+    if ! hash docker-compose 2>/dev/null; then
+        sudo apt-get install docker-compose
+    fi
+    if ! hash pip3 2>/dev/null; then
+        sudo apt-get install python3-pip
+    else
+        "$(PYTHON3)" -m "$(PIP)" install "$(DASH_U)" omegaconf glom
+    fi
+    if ! hash flake8 2>/dev/null; then
+        sudo apt-get install flake8
+    fi
+    if ! hash isort 2>/dev/null; then
+        sudo apt-get install isort
+    fi
+    if ! hash black 2>/dev/null; then
+        sudo apt-get install black
+    fi
+fi
+
+}
+
+function initialize-checkbrew(){
+
+if [ "${UNAME_M}" = "x86_64" ]; then
+    if [ "$(sysctl -in sysctl.proc_translated)" = "1" ]; then
+        echo "Running on Rosetta 2"
+    else
+        echo "Running on native Intel"
+    fi
+elif [ "${UNAME_M}" = "arm64" ]; then
+    echo "Running on arm64"
+elif [ "${UNAME_M}" = "aarch64" ]; then
+    echo "Running on aarch64"
+else
+    echo "Unknown architecture: ${UNAME_M}"
+fi
+
+if hash brew 2>/dev/null; then
+    export HOMEBREW_NO_ENV_HINTS=0
+
+    brew install --quiet python@3.8
+    brew install --quiet python@3.9
+    brew install --quiet python@3.10
+
+if groups | grep "\<sudo\>" &> /dev/null; then
+    echo yes
+else
+    echo no
+fi
+
+    [ -f "/usr/local/opt/python@3.9/bin/python3" ] &&
+        this_python3=/usr/local/opt/python@3.9/bin/python3
+    [ -f "/opt/homebrew/opt/python@3.9/bin/python3" ] &&
+        this_python3=/opt/homebrew/opt/python@3.9/bin/python3
+    [ -f "/usr/local/opt/python@3.10/bin/python3" ] &&
+        this_python3=/usr/local/opt/python@3.10/bin/python3
+    [ -f "/opt/homebrew/opt/python@3.10/bin/python3" ] &&
+        this_python3=/opt/homebrew/opt/python@3.10/bin/python3
+    export this_python3
+
+    # curl -O https://bootstrap.pypa.io/get-pip.py
+    $this_python3 -m pip install "$DASH_U" --upgrade pip
+    $this_python3 -m pip install "$DASH_U" -r requirements.txt
+
+    brew install gawk
+    brew install boost boost-build flake8 black rust
+    brew install -f isort poetry
+    # brew link --overwrite isort
+
+else
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    checkbrew
+fi
+}
+function initialize-checkraspi(){
+
+    echo 'Checking Raspi'
+    if [ -e /etc/rpi-issue ]; then
+    echo "- Original Installation"
+    cat /etc/rpi-issue
+    fi
+    if [ -e /usr/bin/lsb_release ]; then
+    echo "- Current OS"
+    lsb_release -irdc
+    fi
+    echo "- Kernel"
+    uname -r
+    echo "- Model"
+    cat /proc/device-tree/model && echo
+    echo "- hostname"
+    hostname
+    echo "- Firmware"
+    /opt/vc/bin/vcgencmd version
+}
+initialize-add-python-paths
+if [[ "$OSTYPE" == "linux"* ]]; then
+    #CHECK APT
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        if hash apt 2>/dev/null; then
+            sudo apt install gawk
+            sudo apt update
+            sudo apt install software-properties-common
+            sudo apt-get -y gnupg build-essential libboost-all-dev libssl-dev
+            sudo apt install python3
+            sudo apt-get install python3-pip
+            sudo apt install containerd docker.io docker-compose
+
+            initialize-report
+            initialize-use-apt
+            echo 'Using apt...'
+        fi
+    fi
+    if [[ "$OSTYPE" == "linux-musl" ]]; then
+        if hash apk 2>/dev/null; then
+            apk add awk
+            report
+            initialize-report
+            initialize-use-apk
+            echo 'Using apk...'
+
+        fi
+    fi
+    if [[ "$OSTYPE" == "linux-arm"* ]]; then
+        checkraspi
+        if hash apt 2>/dev/null; then
+            apt install awk
+            report
+            initialize-report
+            # likely a raspi
+            # more detect raspi needed
+            initialize-use-apt
+            echo 'Using apt...'
+
+        fi
+    fi
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    initialize-report
+    initialize-checkbrew
+elif [[ "$OSTYPE" == "cygwin" ]]; then
+    echo TODO add support for $OSTYPE
+elif [[ "$OSTYPE" == "msys" ]]; then
+    echo TODO add support for $OSTYPE
+elif [[ "$OSTYPE" == "win32" ]]; then
+    echo TODO add support for $OSTYPE
+elif [[ "$OSTYPE" == "freebsd"* ]]; then
+    echo TODO add support for $OSTYPE
+else
+    echo TODO add support for $OSTYPE
+fi
+# catch all for poetry
+if ! hash poetry 2>/dev/null; then
+    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+fi

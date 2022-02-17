@@ -1,0 +1,99 @@
+name: python.yml
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+
+    branches:       #[ master ]
+      - '*'         # matches every branch that doesn't contain a '/'
+      - '*/*'       # matches every branch containing a single '/'
+      - '**'        # matches every branch
+      - 'master'    # includes master
+      - 'main'      # includes main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+
+  python:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ['ubuntu-latest','macos-latest']
+        python-version: ['3.8','3.9','3.10']
+        include:
+        - os: ubuntu-latest
+          path: ~/.cache/pip
+        - os: macos-latest
+          path: ~/Library/Caches/pip
+        exclude:
+          - os: ubuntu-latest
+            python-version: ['2.7','3.6','3.7']
+          - os: macos-latest
+            python-version: ['2.7','3.6','3.7']
+
+    steps:
+      - uses: styfle/cancel-workflow-action@0.8.0
+        with:
+          access_token: ${{ github.token }}
+      - name: Checkout
+        uses: actions/checkout@v2.4.0
+      - name: Setup Matrix
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+      - uses: actions/cache@v2
+        with:
+          path: ${{ matrix.path }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+           ${{ runner.os }}-pip-
+      - name: automate matrix
+        run: |
+          echo ${{matrix.TARGET}}
+          printenv
+          export HOMEBREW_NO_ENV_HINTS=0
+          echo $GITHUB_WORKSPACE
+          cd $GITHUB_WORKSPACE
+          python3 -c "import sys; print(sys.version)"
+          make
+      - name: make requirements install
+        run: |
+          make requirements
+          make install
+          rm -rf rokeys/.gitignore
+      - name: 0x20bf.py
+        run: |
+          pushd 0x20bf && python3 0x20bf.py
+          # TODO: add more config/argparse tests here
+          # TODO: better pydoc compliance - enable pydoc in virtualenv.yml
+      - name: hex_message_digest.py
+        run: |
+          pushd 0x20bf && python3 hex_message_digest.py
+      - name: imports.py
+        run: |
+          pushd 0x20bf && python3 imports.py
+      - name: logger.py
+        run: |
+          pushd 0x20bf && python3 logger.py
+      - name: mempool_height.py
+        run: |
+          pushd 0x20bf && python3 mempool_height.py
+      - name: message_header.py
+        run: |
+          pushd 0x20bf && python3 message_header.py
+      - name: time_functions.py
+        run: |
+          pushd 0x20bf && python3 time_functions.py
+      - name: touch_block_time.py
+        run: |
+          pushd 0x20bf && python3 touch_block_time.py
+          # TODO: use repos secrets to config twitter.ini
+          # and allow more twitterAPI tests
+          #- name: tweet_block_time.py
+          #  run: |
+          #    ./0x20bf/tweet_block_time.py
+

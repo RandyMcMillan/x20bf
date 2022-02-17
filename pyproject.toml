@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "0x20bf"
+version = "0.0.1"
+description = "0x20bf: This document proposes an Internet standards track protocol for transporting, broadcasting and syndication of messages over common internet communications channels. The distribution of all documents related to this proposal are unlimited and unencumbered by any LICENSE, but some are included anyway."
+authors = ["randymcmillan <randy.lee.mcmillan@gmail.com>", "bitkarrot <me@bitkarrot.co>"]
+license = "Apache License 2.0"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pre_commit = "^2.1.0"
+aiohttp = "3.7.4.post0"
+PyYAML = "5.4.1"
+gnupg = "^2.3.1"
+
+[tool.poetry.dev-dependencies]
+pre_commit = "^2.1.0"
+black = "^21.7b0"
+pytest = "^6.2.5"
+
+[build-system]
+requires = ["poetry>=0.12", "setuptools>=30.3.0,<50"]
+build-backend = "poetry.masonry.api"
+
+
+[tool.isort]
+src_paths = ["0x20bf", "tests"]
+skip = ["depends/fastapi","venv", "build"]
+
+[tool.black]
+line-length = 88
+target-version = ['py36', 'py37', 'py38']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # The following are specific to Black, you probably don't want those.
+  | depends/fastapi/scripts/docs.py
+  | tests/data
+)/
+'''

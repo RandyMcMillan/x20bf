@@ -1,0 +1,60 @@
+name: virtualenv
+
+on: [push]
+
+jobs:
+  create-virtualenv:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v2
+    - uses: syphar/restore-virtualenv@v1
+      id: cache-virtualenv
+
+    - uses: syphar/restore-pip-download-cache@v1
+      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
+
+    - run: pip install -r requirements.txt
+      if: steps.cache-virtualenv.outputs.cache-hit != 'true'
+
+    - run: make init
+
+  linter:
+    needs: create-virtualenv
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v2
+    - uses: syphar/restore-virtualenv@v1
+      id: cache-virtualenv
+    - run: make init
+    - run: flake8
+      #- run: pydocstyle
+    - run: isort .
+    - run: black .
+
+  make-init-venv-test-venv:
+    needs: create-virtualenv
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v2
+    - uses: syphar/restore-virtualenv@v1
+      id: cache-virtualenv
+    - run: make init venv test-venv
+
+  make-initialize-depends:
+    needs: create-virtualenv
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v2
+    - uses: syphar/restore-virtualenv@v1
+      id: cache-virtualenv
+    - run: make initialize
+      #- run: make legit
+      #- run: make gogs
+      #- run: make seeder
+    - run: make install-gnupg
+    - run: make install-p2p
+    - run: make install-fastapi
