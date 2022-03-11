@@ -1,0 +1,9 @@
+*~
+*.pyc
+venv/
+.idea/
+
+/dist
+/p2pnetwork*.egg-info
+/build
+/.eggs
