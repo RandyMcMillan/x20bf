@@ -1,0 +1,10 @@
+[run]
+branch = True
+omit =
+    /home/travis/virtualenv/*
+    /opt/python/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    raise NotImplementedError
