@@ -64,6 +64,7 @@ jobs:
           make initialize
           make install-p2p
           make install-gnupg
+          make install-fastapi
           make gnupg-test
       - name: make gnupg-test
         if: steps.cache-depends.outputs.cache-hit != 'true'
