@@ -62,12 +62,9 @@ jobs:
         if: steps.cache-depends.outputs.cache-hit != 'true'
         run: |
           make initialize
-          make gogs
           make install-p2p
           make install-gnupg
           make gnupg-test
-          make install-fastapi
-          make depends
       - name: make gnupg-test
         if: steps.cache-depends.outputs.cache-hit != 'true'
         run: |
