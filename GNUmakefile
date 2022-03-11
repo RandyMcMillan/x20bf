@@ -311,7 +311,7 @@ install-fastapi:
 
 .PHONY: depends
 ##	:depends             build depends
-depends: seeder gogs legit install-gnupg install-fastapi
+depends: install-gnupg install-fastapi install-p2p
 
 .PHONY: git-add
 

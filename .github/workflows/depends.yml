@@ -58,7 +58,7 @@ jobs:
           cd $GITHUB_WORKSPACE
           python3 -c "import sys; print(sys.version)"
           make
-      - name: make depends
+      - name: make initialize install-p2p install-gnupg install-fastapi gnupg-test
         if: steps.cache-depends.outputs.cache-hit != 'true'
         run: |
           make initialize
