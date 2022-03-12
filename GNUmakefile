@@ -183,6 +183,7 @@ test-venv:
        python3 tests/test.py; \
        python3 tests/test_import.py; \
 	);
+##	:test-venv-p2p       p2p test battery
 test-venv-p2p:
 	# insert test commands here
 	test -d venv || virtualenv venv --always-download
@@ -191,15 +192,23 @@ test-venv-p2p:
        python3 0x20bf/depends/p2p/setup.py build; \
        python3 0x20bf/depends/p2p/setup.py install; \
        python3 tests/test_node_ping.py; \
+       python3 tests/test_node_btc_time.py; \
+       python3 tests/MyOwnPeer2PeerNode.py; \
+       python3 tests/my_own_p2p_application.py; \
+       python3 tests/my_own_p2p_application_callback.py; \
+       python3 tests/my_own_p2p_application_using_dict.py; \
 	);
-##	:tests-depends       test-gnupg test-p2p test-fastapi
+
+##	:test-depends        test-gnupg test-p2p test-fastapi
 test-depends: test-gnupg test-p2p test-fastapi
 ##	:test-gnupg          python3 ./tests/depends/gnupg/test_gnupg.py
 ##	:test-p2p            python3 ./tests/depends/p2p/setup.py
 ##	:test-fastapi        TODO:
-##	:test-clean-venv     rm -rf venv
-test-clean-venv:
+##	:venv-clean          rm -rf venv rokeys test_gnupg.log
+venv-clean:
 	rm -rf venv
+	rm -rf rokeys
+	rm -rf test_gnupg.log
 test-gnupg: venv
 	. venv/bin/activate;
 	$(PYTHON3) ./tests/depends/gnupg/setup.py install;
@@ -211,10 +220,7 @@ test-fastapi: venv
 	. venv/bin/activate;
 	pushd tests/depends/p2p && python3 setup.py install && python3 examples/my_own_p2p_application.py && popd
 ##	:
-
-
-clean-venv:
-	rm -rf venv
+clean-venv: venv-clean
 
 .PHONY: build install
 ##	:build               python3 setup.py build
@@ -341,10 +347,12 @@ docs:
 	git add --ignore-errors *.html
 	#git ls-files -co --exclude-standard | grep '\.md/$\' | xargs git
 
-.PHONY: clean
-
+.PHONY: clean clean-venv
+##	:clean               rm -rf build
 clean:
 	bash -c "rm -rf $(BUILDDIR)"
+clean-venv: venv-clean
+
 
 .PHONY: serve
 
