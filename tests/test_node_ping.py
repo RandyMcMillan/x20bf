@@ -12,6 +12,9 @@ import time
 sys.path.insert(0, '..')  # Import the files where the modules are located
 
 from p2pnetwork.node import Node
+import ping as p
+from time_functions import btc_time
+
 
 # The big callback method that gets all the events that happen inside the p2p network.
 # Implement here your own application logic. The event holds the event that occurred within
@@ -20,11 +23,12 @@ from p2pnetwork.node import Node
 # it is represented by the data variable.
 def node_callback(event, main_node, connected_node, data):
     try:
-        if event != 'node_request_to_stop': # node_request_to_stop does not have any connected_node, while it is the main_node that is stopping!
+        if event != 'node_request_to_stop':  # node_request_to_stop does not have any connected_node, while it is the main_node that is stopping!
             print('Event: {} from main node {}: connected node {}: {}'.format(event, main_node.id, connected_node.id, data))
 
     except Exception as e:
         print(e)
+
 
 # Just for test we spin off multiple nodes, however it is more likely that these nodes are running
 # on computers on the Internet! Otherwise we do not have any peer2peer application.
@@ -32,10 +36,12 @@ node_1 = Node("127.0.0.1", 8001, callback=node_callback)
 node_2 = Node("127.0.0.1", 8002, callback=node_callback)
 node_3 = Node("127.0.0.1", 8003, callback=node_callback)
 
+
+print(btc_time())
 time.sleep(1)
-#node_1.debug = True
-#node_2.debug = True
-#node_3.debug = True
+# node_1.debug = True
+# node_2.debug = True
+# node_3.debug = True
 node_1.start()
 node_2.start()
 node_3.start()
@@ -48,6 +54,8 @@ node_3.connect_with_node('127.0.0.1', 8001)
 time.sleep(2)
 
 node_1.send_to_nodes("message: hoi from node 1")
+node_1.send_to_nodes(str(p.btc_time()))
+node_1.send_to_nodes(str(btc_time()))
 
 time.sleep(5)
 
