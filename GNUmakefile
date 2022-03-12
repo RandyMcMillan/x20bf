@@ -125,19 +125,8 @@ LIBS  := $(libs)
 endif
 export LIBS
 
-SPHINXOPTS            =
-SPHINXBUILD           = sphinx-build
-PAPER                 =
-BUILDDIR              = _build
-PRIVATE_BUILDDIR      = _private_build
+BUILDDIR              = build
 
-# Internal variables.
-PAPEROPT_a4           = -D latex_paper_size=a4
-PAPEROPT_letter       = -D latex_paper_size=letter
-ALLSPHINXOPTS         = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
-PRIVATE_ALLSPHINXOPTS = -d $(PRIVATE_BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
-# the i18n builder cannot share the environment and doctrees with the others
-I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) .
 
 ifneq ($(shell id -u),0)
 DASH_U:=-U
@@ -355,7 +344,7 @@ docs:
 .PHONY: clean
 
 clean:
-	#bash -c "rm -rf $(BUILDDIR)"
+	bash -c "rm -rf $(BUILDDIR)"
 
 .PHONY: serve
 

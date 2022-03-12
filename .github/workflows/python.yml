@@ -63,6 +63,7 @@ jobs:
       - name: make requirements install
         run: |
           make requirements
+          make build
           make install
           rm -rf rokeys/.gitignore
       - name: 0x20bf.py
