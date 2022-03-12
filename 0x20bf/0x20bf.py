@@ -12,7 +12,8 @@ import time_functions as tf
 from delimiter_stripper import delimiter_stripper
 from logger import logger
 from message_header import message_header
-import ping
+
+# import ping
 
 # import os
 
@@ -259,14 +260,15 @@ def main(args):
     # print(main_args.logger)
     # print(main_args.tweet)
     if main_args:
-        tweet = main_args.tweet
+        # tweet = main_args.tweet
         # logger.info(tweet)
-        text_message = main_args.text_message
+        # text_message = main_args.text_message
         # logger.info(text_message)
-        mempool_logger = main_args.mempool_logger
+        # mempool_logger = main_args.mempool_logger
         # logger.info(mempool_logger)
-        hex_logger = main_args.hex_logger
-        if hex_logger:
+        # hex_logger = main_args.hex_logger
+        # if hex_logger:
+        if main_args.hex_logger:
             # logger.info(HEX_MESSAGE_DIGEST(GPGR, MESSAGE, GPGS))
             HEX_MESSAGE_TREE(GPGR, GPGS)
             HEX_MESSAGE_DIGEST(GPGR, MESSAGE, GPGS)

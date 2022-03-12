@@ -9,9 +9,11 @@
 
 import sys
 import time
-sys.path.insert(0, '..')  # Import the files where the modules are located
+
+sys.path.insert(0, "..")  # Import the files where the modules are located
 
 from p2pnetwork.node import Node
+
 import ping as p
 from time_functions import btc_time
 
@@ -23,8 +25,14 @@ from time_functions import btc_time
 # it is represented by the data variable.
 def node_callback(event, main_node, connected_node, data):
     try:
-        if event != 'node_request_to_stop':  # node_request_to_stop does not have any connected_node, while it is the main_node that is stopping!
-            print('Event: {} from main node {}: connected node {}: {}'.format(event, main_node.id, connected_node.id, data))
+        if (
+            event != "node_request_to_stop"
+        ):  # node_request_to_stop does not have any connected_node, while it is the main_node that is stopping!
+            print(
+                "Event: {} from main node {}: connected node {}: {}".format(
+                    event, main_node.id, connected_node.id, data
+                )
+            )
 
     except Exception as e:
         print(e)
@@ -47,9 +55,9 @@ node_2.start()
 node_3.start()
 time.sleep(1)
 
-node_1.connect_with_node('127.0.0.1', 8002)
-node_2.connect_with_node('127.0.0.1', 8003)
-node_3.connect_with_node('127.0.0.1', 8001)
+node_1.connect_with_node("127.0.0.1", 8002)
+node_2.connect_with_node("127.0.0.1", 8003)
+node_3.connect_with_node("127.0.0.1", 8001)
 
 time.sleep(2)
 
@@ -63,4 +71,4 @@ node_1.stop()
 node_2.stop()
 node_3.stop()
 
-print('end')
+print("end")
