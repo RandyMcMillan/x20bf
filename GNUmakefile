@@ -148,19 +148,21 @@ export DASH_U
 
 
 .PHONY: - help report
+##	MAKE:[COMMAND]
+##	:
 ##	:help
 -: report help
 
 .PHONY: init initialize requirements
 ##	:init                initialize requirements
+##	:report              environment args
 init: report initialize requirements
 	# remove this artifact from gnupg tests
 	sudo rm -rf rokeys/.gitignore
 
 .PHONY: venv
-##	:venv                create python3 virtual environment
 ##	:
-##	:(venv) - activate
+##	make:venv                create python3 virtual environment
 ##	make:venv && . venv/bin/activate
 venv:
 	test -d venv || virtualenv venv
@@ -178,20 +180,25 @@ test-venv:
 	( \
 	   source venv/bin/activate; pip install -r requirements.txt; python3 tests/test.py \
 	);
-##	:test-gnupg          python3 ./tests/depends/gnupg/setup.py
-##	:                    python3 ./tests/depends/gnupg/test_gnupg.py
+##	:tests-depends       test-gnupg test-p2p test-fastapi
+test-depends: test-gnupg test-p2p test-fastapi
+##	:test-gnupg          python3 ./tests/depends/gnupg/test_gnupg.py
+##	:test-p2p            python3 ./tests/depends/p2p/setup.py
+##	:test-fastapi        TODO:
 ##	:test-clean-venv     rm -rf venv
 test-clean-venv:
 	rm -rf venv
 test-gnupg: venv
-    # TODO: use tox config
 	. venv/bin/activate;
 	$(PYTHON3) ./tests/depends/gnupg/setup.py install;
 	$(PYTHON3) ./tests/depends/gnupg/test_gnupg.py;
 test-p2p: venv
-    # TODO: use tox config
 	. venv/bin/activate;
 	pushd tests/depends/p2p && python3 setup.py install && python3 examples/my_own_p2p_application.py && popd
+test-fastapi: venv
+	. venv/bin/activate;
+	pushd tests/depends/p2p && python3 setup.py install && python3 examples/my_own_p2p_application.py && popd
+##	:
 
 
 clean-venv:
@@ -218,7 +225,6 @@ help:
 	@sed -n 's/^##//p' ${MAKEFILE_LIST} | column -t -s ':' |  sed -e 's/^/ /'
 
 .PHONY: report
-##	:report              environment args
 report:
 	@echo ''
 	@echo '	[ARGUMENTS]	'
@@ -259,44 +265,18 @@ requirements:
 	$(PYTHON3) -m $(PIP) install $(DASH_U) --upgrade pip
 	$(PYTHON3) -m $(PIP) install $(DASH_U) -r requirements.txt
 
-.PHONY: seeder
-.QUIET:
-
-##	:seeder              make -C 0x20bf/depends/seeder
-seeder:
-	make -C 0x20bf/depends/seeder
-
-.PHONY: legit
-
-##	:legit               make -C 0x20bf/depends/legit legit
-legit:
-	make -C 0x20bf/depends/legit legit
-
-.PHONY: gogs
-
-##	:gogs                make -C 0x20bf/depends/gogs
-gogs:
-	make -C 0x20bf/depends/gogs
-
 .PHONY: install-gnupg
-
 ##	:install-gnupg       install python gnupg on host
+gnupg: install-gnupg
 install-gnupg:
 	pushd $(DEPENDSPATH)/gnupg && $(PYTHON3) $(DEPENDSPATH)/gnupg/setup.py install && popd
-.PHONY: gnupg-test
-
-##	:gnupg-test          test depends/gnupg library
-gnupg-test:
-	pushd $(DEPENDSPATH)/gnupg && $(PYTHON3) $(DEPENDSPATH)/gnupg/test_gnupg.py
 .PHONY: install-p2p
-##	:install-p2p         install python p2p-network on host
-##	:p2p                 install python p2p-network
+##	:install-p2p         install python p2p-network
 p2p: install-p2p
 install-p2p:
 	pushd $(DEPENDSPATH)/p2p && $(PYTHON3) $(DEPENDSPATH)/p2p/setup.py install && popd
 
 .PHONY: install-fastapi fastapi
-##	:fastapi             install python fastapi
 ##	:install-fastapi     install python fastapi
 fastapi: install-fastapi
 install-fastapi:
