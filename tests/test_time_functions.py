@@ -3,12 +3,23 @@ import asyncio
 import getopt as G
 import sys as S
 
-from time_functions import (BTC_UNIX_TIME_SECONDS, NETWORK_MODULUS,
-                            NETWORK_WEEBLE, NETWORK_WEEBLE_WOBBLE,
-                            NETWORK_WOBBLE, UNIX_TIME_SECONDS,
-                            blockcypher_height, btc_time, btc_unix_time_millis,
-                            get_millis, get_seconds, mempool_height,
-                            move_block_time, touch_time, unix_time_millis)
+from time_functions import (
+    BTC_UNIX_TIME_SECONDS,
+    NETWORK_MODULUS,
+    NETWORK_WEEBLE,
+    NETWORK_WEEBLE_WOBBLE,
+    NETWORK_WOBBLE,
+    UNIX_TIME_SECONDS,
+    blockcypher_height,
+    btc_time,
+    btc_unix_time_millis,
+    get_millis,
+    get_seconds,
+    mempool_height,
+    move_block_time,
+    touch_time,
+    unix_time_millis,
+)
 
 loop = asyncio.new_event_loop()
 loop.run_until_complete(touch_time(btc_time()))
