@@ -147,23 +147,34 @@ endif
 export DASH_U
 
 
-.PHONY: - help report
-##	MAKE:[COMMAND]
+.PHONY: - help
+##	make:command
 ##	:
 ##	:help
--: report help
+-: help
 
 .PHONY: init initialize requirements
-##	:init                initialize requirements
 ##	:report              environment args
-init: report initialize requirements
+##	:init                initialize requirements
+init: initialize requirements
 	# remove this artifact from gnupg tests
 	sudo rm -rf rokeys/.gitignore
+.PHONY: initialize
+##	:initialize          run 0x020bf/scripts/initialize
+initialize:
+	bash -c "./0x20bf/scripts/initialize"
+.PHONY: requirements reqs
+
+reqs: requirements
+##	:requirements        pip install --user -r requirements.txt
+requirements:
+	$(PYTHON3) -m $(PIP) install $(DASH_U) --upgrade pip
+	$(PYTHON3) -m $(PIP) install $(DASH_U) -r requirements.txt
+
 
 .PHONY: venv
 ##	:
-##	make:venv                create python3 virtual environment
-##	make:venv && . venv/bin/activate
+##	:venv                create python3 virtual environment
 venv:
 	test -d venv || virtualenv venv
 	( \
@@ -250,20 +261,6 @@ report:
 	@echo '        - GIT_REPO_NAME=${GIT_REPO_NAME}'
 	@echo '        - GIT_REPO_PATH=${GIT_REPO_PATH}'
 	@echo ''
-
-.PHONY: initialize
-
-##	:initialize          run 0x020bf/scripts/initialize
-initialize:
-	bash -c "./0x20bf/scripts/initialize"
-
-.PHONY: requirements reqs
-
-reqs: requirements
-##	:requirements        pip install --user -r requirements.txt
-requirements:
-	$(PYTHON3) -m $(PIP) install $(DASH_U) --upgrade pip
-	$(PYTHON3) -m $(PIP) install $(DASH_U) -r requirements.txt
 
 .PHONY: install-gnupg
 ##	:install-gnupg       install python gnupg on host
@@ -359,3 +356,7 @@ failure:
 .PHONY: success
 success:
 	@-/bin/true && ([ $$? -eq 0 ] && echo "success!") || echo "failure!"
+
+
+##	:
+##	:make   venv && . venv/bin/activate
