@@ -21,3 +21,4 @@ mypy
 gnupg
 pytest
 configparser
+p2pnetwork

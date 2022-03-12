@@ -11,6 +11,8 @@ import psutil
 import time_functions as tf
 from delimiter_stripper import delimiter_stripper
 from logger import logger
+from message_header import message_header
+import ping
 
 # import os
 
@@ -100,16 +102,16 @@ def HEX_MESSAGE_TREE(recipient, sender):
     sender = delimiter_stripper(sender)
 
     n_256 = hashlib.sha256()
-    logger.info("n_256:")
-    logger.info(n_256.hexdigest())
+    # logger.info("n_256:")
+    # logger.info(n_256.hexdigest())
     # empty string reserved for protocol
     assert n_256.hexdigest() == test_hash_lib()
 
     # SHA256() + GPGR
     n_256.update(bytes(recipient, "utf-8"))
     # if (hex_logger): logger.info(n_256.digest())
-    logger.info("n_256 + recipient:")
-    logger.info(n_256.hexdigest())
+    # logger.info("n_256 + recipient:")
+    # logger.info(n_256.hexdigest())
     # if (hex_logger): logger.info(n_256.digest_size)
     # if (hex_logger): logger.info(n_256.block_size)
 
@@ -118,8 +120,8 @@ def HEX_MESSAGE_TREE(recipient, sender):
     # if (hex_logger): logger.info(n_256.digest())
     # if (hex_logger): logger.info(n_256.hexdigest())
     # if config.getboolean("DEFAULTS", "hex_logger"):
-    logger.info("n_256 + recipient+sender:")
-    logger.info(n_256.hexdigest())
+    # logger.info("n_256 + recipient+sender:")
+    # logger.info(n_256.hexdigest())
     # if (hex_logger): logger.info(n_256.digest_size)
     # if (hex_logger): logger.info(n_256.block_size)
 
@@ -141,56 +143,20 @@ def HEX_MESSAGE_DIGEST(recipient, message, sender):
 
     # SHA256() + GPGR
     n_256.update(bytes(recipient, "utf-8"))
-    logger.info(n_256.hexdigest())
+    # logger.info(n_256.hexdigest())
 
     # SHA256() + GPGR+MESSAGE
     n_256.update(bytes(message, "utf-8"))
-    logger.info(n_256.hexdigest())
+    # logger.info(n_256.hexdigest())
 
     # SHA256() + GPGR+MESSAGE+GPGS
     n_256.update(bytes(sender, "utf-8"))
-    logger.info(n_256.hexdigest())
+    # logger.info(n_256.hexdigest())
 
     # TODO: populate message tree
     logger.info(n_256.hexdigest())
 
     return n_256.hexdigest()
-
-
-def message_header():
-    # the HEADER is prepended with GPGR
-    # the HEADER is appended with GPGS
-    DIGEST = HEX_MESSAGE_DIGEST(GPGR, MESSAGE, GPGS)
-    LOC = (
-        "https://github.com/0x20bf-org/0x20bf/blob/main/"
-        + GPGR
-        + DIGEST
-        + str(tf.btc_time())
-        + str(tf.unix_time_millis())
-        + GPGS
-        + ".txt.gpg"
-    )
-    # LOC is appended on to DIGEST
-    HEADER = str(
-        ":"
-        + GPGR
-        + ":"
-        + DIGEST
-        + ":"
-        + str(tf.btc_time())
-        + ":"
-        + str(tf.unix_time_millis())
-        + ":"
-        + GPGS
-        + ":"
-        + LOC
-        + ":"
-    )
-
-    if logger:
-        logger.info(HEADER)
-    # HEADER_STRUCTURE = str(":GPGR:DIGEST:btc_time:unix_time_millis:GPGS:LOC:")
-    return HEADER
 
 
 def send_message(tweet, api):
@@ -214,9 +180,9 @@ def send_message(tweet, api):
 # logger.info(BTC_unix_time_millis())
 
 GPGR = "4DC9817F"  # bitkarrot
-logger.info(GPGR)
+# logger.info(GPGR)
 GPGS = "BB06757B"  # randymcmillan
-logger.info(GPGS)
+# logger.info(GPGS)
 MESSAGE = "text human readable message"
 
 
@@ -288,28 +254,28 @@ def main(args):
     main_parser.add_argument("-2", "--option2")
     main_parser.add_argument("-tm", "--text_message")
     main_args = main_parser.parse_args(args)
-    print(main_args.option1)
-    print(main_args.option2)
-    print(main_args.logger)
-    print(main_args.tweet)
+    # print(main_args.option1)
+    # print(main_args.option2)
+    # print(main_args.logger)
+    # print(main_args.tweet)
     if main_args:
         tweet = main_args.tweet
-        logger.info(tweet)
+        # logger.info(tweet)
         text_message = main_args.text_message
-        logger.info(text_message)
+        # logger.info(text_message)
         mempool_logger = main_args.mempool_logger
-        logger.info(mempool_logger)
+        # logger.info(mempool_logger)
         hex_logger = main_args.hex_logger
         if hex_logger:
-            logger.info(HEX_MESSAGE_DIGEST(GPGR, MESSAGE, GPGS))
+            # logger.info(HEX_MESSAGE_DIGEST(GPGR, MESSAGE, GPGS))
             HEX_MESSAGE_TREE(GPGR, GPGS)
             HEX_MESSAGE_DIGEST(GPGR, MESSAGE, GPGS)
 
 
 if __name__ == "__main__":
     GPGR = "4DC9817F"  # bitkarrot
-    logger.info(GPGR)
+    # logger.info(GPGR)
     GPGS = "BB06757B"  # randymcmillan
-    logger.info(GPGS)
+    # logger.info(GPGS)
     MESSAGE = "text human readable message"
     main(sys.argv[1:])

@@ -155,8 +155,9 @@ loop = asyncio.new_event_loop()
 # loop = asyncio.get_event_loop()
 loop.run_until_complete(mempool_height())
 loop.run_until_complete(touch_time(btc_time()))
-
-logger.info(":NETWORK_MODULUS:" + str(NETWORK_MODULUS()) + ":")
-logger.info(":NETWORK_WEEBLE:" + str(NETWORK_WEEBLE()) + ":")
-logger.info(":NETWORK_WOBBLE:" + str(NETWORK_WOBBLE()) + ":")
-logger.info(":NETWORK_WEEBLE_WOBBLE" + str(NETWORK_WEEBLE_WOBBLE()))
+TIME_LOGGER = False
+if TIME_LOGGER:
+    logger.info(":NETWORK_MODULUS:" + str(NETWORK_MODULUS()) + ":")
+    logger.info(":NETWORK_WEEBLE:" + str(NETWORK_WEEBLE()) + ":")
+    logger.info(":NETWORK_WOBBLE:" + str(NETWORK_WOBBLE()) + ":")
+    logger.info(":NETWORK_WEEBLE_WOBBLE" + str(NETWORK_WEEBLE_WOBBLE()))

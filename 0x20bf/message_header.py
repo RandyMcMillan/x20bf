@@ -54,4 +54,4 @@ def test_message_header():
     return message_header(GPGR, MESSAGE, GPGS, "test/location")
 
 
-logger.info(test_message_header())
+# logger.info(test_message_header())

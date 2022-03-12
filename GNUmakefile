@@ -187,9 +187,21 @@ venv:
 	@echo "make test-venv"
 ##	:test-venv           python3 ./tests/test.py
 test-venv:
+	# insert test commands here
 	test -d venv || virtualenv venv --always-download
 	( \
-	   source venv/bin/activate; pip install -r requirements.txt; python3 tests/test.py \
+	   source venv/bin/activate; pip install -r requirements.txt; \
+       python3 tests/test.py; \
+       python3 tests/test_import.py; \
+	);
+test-venv-p2p:
+	# insert test commands here
+	test -d venv || virtualenv venv --always-download
+	( \
+	   source venv/bin/activate; pip install -r requirements.txt; \
+       python3 0x20bf/depends/p2p/setup.py build; \
+       python3 0x20bf/depends/p2p/setup.py install; \
+       python3 tests/test_node_ping.py; \
 	);
 ##	:tests-depends       test-gnupg test-p2p test-fastapi
 test-depends: test-gnupg test-p2p test-fastapi

@@ -38,7 +38,7 @@ setup(
     license="Apache License 2.0",
     keywords="",
     url="http://packages.python.org/0x20bf",
-    packages=["0x20bf", "tests"],
+    packages=["0x20bf", "tests", "0x20bf/depends/p2p/build/lib/p2pnetwork"],
     long_description=read("README.md"),
     classifiers=[
         "Development Status :: 1 - Alpha",
