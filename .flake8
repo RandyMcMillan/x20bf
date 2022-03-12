@@ -1,6 +1,6 @@
 [flake8]
 max-line-length = 120
 max-complexity = 10
-ignore = E203, E266, E501, W503, E231
+ignore = E203, E266, E501, W503, E231, E402
 select = B,C,E,F,W,T4,B9
 exclude = .git, 0x20bf/depends/p2p, 0x20bf/depends/gnupg, 0x20bf/depends/fastapi, tests/depends/*, venv, build, dist, sources, tests/sources, get-pip.py
