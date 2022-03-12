@@ -192,7 +192,12 @@ test-venv-p2p:
        python3 0x20bf/depends/p2p/setup.py install; \
        python3 tests/test_node_ping.py; \
        python3 tests/test_node_btc_time.py; \
+       python3 tests/MyOwnPeer2PeerNode.py; \
+       python3 tests/my_own_p2p_application.py; \
+       python3 tests/my_own_p2p_application_callback.py; \
+       python3 tests/my_own_p2p_application_using_dict.py; \
 	);
+
 ##	:tests-depends       test-gnupg test-p2p test-fastapi
 test-depends: test-gnupg test-p2p test-fastapi
 ##	:test-gnupg          python3 ./tests/depends/gnupg/test_gnupg.py
