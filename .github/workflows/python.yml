@@ -60,11 +60,12 @@ jobs:
           cd $GITHUB_WORKSPACE
           python3 -c "import sys; print(sys.version)"
           make
-      - name: make requirements install
+      - name: make reqs build install dist
         run: |
-          make requirements
+          make reqs
           make build
           make install
+          make dist
           rm -rf rokeys/.gitignore
       - name: 0x20bf.py
         run: |
