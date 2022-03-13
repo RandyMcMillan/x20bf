@@ -137,7 +137,6 @@ export DASH_U
 
 
 .PHONY: - help
-##	make:command
 ##	:
 ##	:help
 -: help
@@ -223,14 +222,18 @@ test-fastapi: venv
 ##	:
 clean-venv: venv-clean
 
-.PHONY: build install
+.PHONY: build install dist
 ##	:build               python3 setup.py build
-build:
+build: depends
 	python3 setup.py build
-install:
 ##	:install             python3 -m pip install -e .
 install: build
+	rm -rf dist
 	$(PYTHON3) -m $(PIP) install -e .
+##	:dist                python3 setup.py bdist_egg sdist
+##	:
+dist: build
+	$(PYTHON3) setup.py bdist_egg sdist
 
 ifneq ($(shell id -u),0)
 # TODO: install          depends/p2p depends/gnupg
@@ -270,6 +273,7 @@ report:
 	@echo '        - GIT_REPO_PATH=${GIT_REPO_PATH}'
 	@echo ''
 
+
 .PHONY: install-gnupg
 ##	:install-gnupg       install python gnupg on host
 gnupg: install-gnupg
@@ -280,7 +284,6 @@ install-gnupg:
 p2p: install-p2p
 install-p2p:
 	pushd $(DEPENDSPATH)/p2p && $(PYTHON3) $(DEPENDSPATH)/p2p/setup.py install && popd
-
 .PHONY: install-fastapi fastapi
 ##	:install-fastapi     install python fastapi
 fastapi: install-fastapi
@@ -289,13 +292,8 @@ install-fastapi:
 	pushd $(DEPENDSPATH)/fastapi && $(PYTHON3) -m $(PIP) install . && popd
 
 
-
-
-.PHONY: twitter-api
-
-
 .PHONY: depends
-##	:depends             build depends
+##	:depends             build and install depends
 depends: install-gnupg install-fastapi install-p2p
 
 .PHONY: git-add
