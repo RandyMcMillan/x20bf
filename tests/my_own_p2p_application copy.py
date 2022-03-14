@@ -12,19 +12,11 @@ import time
 
 sys.path.insert(0, "..")  # Import the files where the modules are located
 
-# from node_interface import NodeInterface
-# import NodeInterface
+from MyOwnPeer2PeerNode import MyOwnPeer2PeerNode
 
-from x20bf import node_interface as node
-# node = node_interface
-# node = __import__("0x20bf", globals(), locals(), ['NodeInterface'], 0)
-# node = __import__("0x20bf", globals(), locals(), ['node_interface'], 0)
-# node = __import__("0x20bf", globals(), locals(), ['node_interface'], 0)
-
-# node_1 = node.node_interface.NodeInterface("127.0.0.1", 8001)
-node_1 = node.NodeInterface("127.0.0.1", 8001)
-node_2 = node.NodeInterface("127.0.0.1", 8002)
-node_3 = node.NodeInterface("127.0.0.1", 8003)
+node_1 = MyOwnPeer2PeerNode("127.0.0.1", 8001, 1)
+node_2 = MyOwnPeer2PeerNode("127.0.0.1", 8002, 2)
+node_3 = MyOwnPeer2PeerNode("127.0.0.1", 8003, 3)
 
 time.sleep(1)
 
@@ -40,7 +32,23 @@ node_3.connect_with_node("127.0.0.1", 8001)
 
 time.sleep(2)
 
-node_1.send_to_nodes({"name": "Maurice", "number": 11})
+node_1.send_to_nodes("message: Hi there!")
+
+time.sleep(2)
+
+print("node 1 is stopping..")
+node_1.stop()
+
+time.sleep(20)
+
+node_2.send_to_nodes("message: Hi there node 2!")
+node_2.send_to_nodes("message: Hi there node 2!")
+node_2.send_to_nodes("message: Hi there node 2!")
+node_3.send_to_nodes("message: Hi there node 2!")
+node_3.send_to_nodes("message: Hi there node 2!")
+node_3.send_to_nodes("message: Hi there node 2!")
+
+time.sleep(10)
 
 time.sleep(5)
 

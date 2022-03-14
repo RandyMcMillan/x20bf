@@ -215,7 +215,8 @@ test-gnupg: venv
 	$(PYTHON3) ./tests/depends/gnupg/test_gnupg.py;
 test-p2p: venv
 	. venv/bin/activate;
-	pushd tests/depends/p2p && python3 setup.py install && python3 examples/my_own_p2p_application.py && popd
+	# pushd tests/depends/p2p && python3 setup.py install && python3 examples/my_own_p2p_application.py && popd
+	pushd tests && python3 test_node_interface.py
 #test-fastapi: venv
 #	. venv/bin/activate;
 #	pushd tests/depends/fastapi/tests && python3 test_application.py

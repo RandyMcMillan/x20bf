@@ -1,5 +1,5 @@
-import logger as logger
-import time_functions as time_functions
+from logger import logger
+from time_functions import btc_time, unix_time_millis
 import version as version
 from p2pnetwork.node import Node
 
@@ -7,15 +7,15 @@ from p2pnetwork.node import Node
 class NodeInterface(Node):
 
     # Python class constructor
+
     def __init__(self, host, port, id=None, callback=None, max_connections=0):
         super(NodeInterface, self).__init__(
             host, port, id, callback, max_connections
         )
         self.version = version.version()
-        self.start_time = time_functions.btc_unix_time_millis()
-        logger.info("0x20bf v" + self.version)
-        logger.info("General Purpose Messaging Protocol")
-        logger.info("Start Time:" + str(self.btc_unix_time_millis()))
+        self.start_time = str(":" + str(btc_time()) + ":" + str(unix_time_millis()) + ":")
+        logger.info("x20bf v" + self.version + " General Purpose Messaging Protocol " + "https://0x20bf.org")
+        logger.info(":START_TIME" + self.start_time)
 
     # all the methods below are called when things happen in the network.
     # implement your network node behavior to create the required functionality.
