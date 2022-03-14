@@ -1,10 +1,11 @@
 import asyncio
-from time_functions import genesis_time, btc_time
-from time_functions import get_millis, get_seconds
-from time_functions import mempool_height, blockcypher_height
+
+from p2pnetwork.node import Node
+
 import logger as logger
 import version as version
-from p2pnetwork.node import Node
+from time_functions import (blockcypher_height, btc_time, genesis_time,
+                            get_millis, get_seconds, mempool_height)
 
 
 class NodeInterface(Node):
@@ -12,9 +13,7 @@ class NodeInterface(Node):
     # Python class constructor
 
     def __init__(self, host, port, id=None, callback=None, max_connections=0):
-        super(NodeInterface, self).__init__(
-            host, port, id, callback, max_connections
-        )
+        super(NodeInterface, self).__init__(host, port, id, callback, max_connections)
         loop = asyncio.new_event_loop()
         self.logger = logger.logger()
 
@@ -26,7 +25,12 @@ class NodeInterface(Node):
         self.blockcypher_height = loop.run_until_complete(blockcypher_height())
         self.version = version.version()
         self.start_time = str(":" + str(btc_time()) + ":" + str(get_millis()) + ":")
-        self.logger.info("x20bf v" + self.version + " General Purpose Messaging Protocol " + "https://0x20bf.org")
+        self.logger.info(
+            "x20bf v"
+            + self.version
+            + " General Purpose Messaging Protocol "
+            + "https://0x20bf.org"
+        )
         self.logger.info(":START_TIME" + self.start_time)
 
     # all the methods below are called when things happen in the network.
@@ -37,11 +41,27 @@ class NodeInterface(Node):
 
         # TODO: check time_functions - more sources needed
         # if delta > 0 - either service unavailable or lag
-        if ((abs(loop.run_until_complete(self.blockcypher_height()) - loop.run_until_complete(self.mempool_height()))) > 0):
-            return ((abs(loop.run_until_complete(self.blockcypher_height()) - loop.run_until_complete(self.mempool_height()))))
+        if (
+            abs(
+                loop.run_until_complete(self.blockcypher_height())
+                - loop.run_until_complete(self.mempool_height())
+            )
+        ) > 0:
+            return abs(
+                loop.run_until_complete(self.blockcypher_height())
+                - loop.run_until_complete(self.mempool_height())
+            )
 
-        if ((abs(loop.run_until_complete(self.mempool_height()) - loop.run_until_complete(self.blockcypher_height()))) > 0):
-            return ((abs(loop.run_until_complete(self.mempool_height()) - loop.run_until_complete(self.blockcypher_height()))))
+        if (
+            abs(
+                loop.run_until_complete(self.mempool_height())
+                - loop.run_until_complete(self.blockcypher_height())
+            )
+        ) > 0:
+            return abs(
+                loop.run_until_complete(self.mempool_height())
+                - loop.run_until_complete(self.blockcypher_height())
+            )
 
         return 0
 
