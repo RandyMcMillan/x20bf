@@ -15,6 +15,7 @@ sys.path.insert(0, "..")  # Import the files where the modules are located
 # from node_interface import NodeInterface
 # import NodeInterface
 import node_interface as node
+
 # node = node_interface
 # node = __import__("0x20bf", globals(), locals(), ['NodeInterface'], 0)
 # node = __import__("0x20bf", globals(), locals(), ['node_interface'], 0)

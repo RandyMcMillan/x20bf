@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-import sys as S
 import getopt as G
+import sys as S
+
 import x20bf.node_interface as ni
 
 

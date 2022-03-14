@@ -1,6 +1,8 @@
-import x20bf as b3b3
 # from x20bf import logger
 import logging
+
+import x20bf as b3b3
+
 # Setup logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s %(message)s", datefmt="%j.%Y %I:%M:%S %p"

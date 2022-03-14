@@ -1,7 +1,9 @@
 logging = __import__("logging", globals(), locals(), [], 0)
-b3b3 = __import__("x20bf", globals(), locals(), ['version'], 0)
-import x20bf as b3b3
+b3b3 = __import__("x20bf", globals(), locals(), ["version"], 0)
 import logging
+
+import x20bf as b3b3
+
 # from x20bf import logger
 # Setup logging
 logging.basicConfig(
