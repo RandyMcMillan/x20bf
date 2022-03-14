@@ -181,6 +181,7 @@ test-venv:
 	   source venv/bin/activate; pip install -r requirements.txt; \
        python3 tests/test.py; \
        python3 tests/test_import.py; \
+       python3 tests/test_0x20bf_version.py; \
 	);
 ##	:test-venv-p2p       p2p test battery
 test-venv-p2p:
