@@ -164,7 +164,6 @@ pip install -e .
  	  test-depends        test-gnupg test-p2p test-fastapi
  	  test-gnupg          python3 ./tests/depends/gnupg/test_gnupg.py
  	  test-p2p            python3 ./tests/depends/p2p/setup.py
- 	  test-fastapi        TODO
  	  venv-clean          rm -rf venv rokeys test_gnupg.log
  	
  	  build               python3 setup.py build

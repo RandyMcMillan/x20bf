@@ -201,10 +201,9 @@ test-venv-p2p:
 	);
 
 ##	:test-depends        test-gnupg test-p2p test-fastapi
-test-depends: test-gnupg test-p2p test-fastapi
+test-depends: test-gnupg test-p2p
 ##	:test-gnupg          python3 ./tests/depends/gnupg/test_gnupg.py
 ##	:test-p2p            python3 ./tests/depends/p2p/setup.py
-##	:test-fastapi        TODO:
 ##	:venv-clean          rm -rf venv rokeys test_gnupg.log
 venv-clean:
 	rm -rf venv
@@ -217,9 +216,9 @@ test-gnupg: venv
 test-p2p: venv
 	. venv/bin/activate;
 	pushd tests/depends/p2p && python3 setup.py install && python3 examples/my_own_p2p_application.py && popd
-test-fastapi: venv
-	. venv/bin/activate;
-	pushd tests/depends/p2p && python3 setup.py install && python3 examples/my_own_p2p_application.py && popd
+#test-fastapi: venv
+#	. venv/bin/activate;
+#	pushd tests/depends/fastapi/tests && python3 test_application.py
 ##	:
 clean-venv: venv-clean
 
