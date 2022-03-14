@@ -1,9 +1,9 @@
 import asyncio
-from logger import logger
-from time_functions import genesis_time, btc_time
-from time_functions import get_millis, get_seconds
-from time_functions import mempool_height, blockcypher_height
-import version as version
+from x20bf.logger import logger
+from x20bf.time_functions import genesis_time, btc_time
+from x20bf.time_functions import get_millis, get_seconds
+from x20bf.time_functions import mempool_height, blockcypher_height
+import x20bf.version as version
 from p2pnetwork.node import Node
 
 
@@ -16,6 +16,7 @@ class NodeInterface(Node):
             host, port, id, callback, max_connections
         )
         loop = asyncio.new_event_loop()
+        self.logger = logger()
 
         self.genesis_time = genesis_time
         self.btc_time = btc_time()
@@ -25,8 +26,8 @@ class NodeInterface(Node):
         self.blockcypher_height = loop.run_until_complete(blockcypher_height())
         self.version = version.version()
         self.start_time = str(":" + str(btc_time()) + ":" + str(get_millis()) + ":")
-        logger.info("x20bf v" + self.version + " General Purpose Messaging Protocol " + "https://0x20bf.org")
-        logger.info(":START_TIME" + self.start_time)
+        self.logger.info("x20bf v" + self.version + " General Purpose Messaging Protocol " + "https://0x20bf.org")
+        self.logger.info(":START_TIME" + self.start_time)
 
     # all the methods below are called when things happen in the network.
     # implement your network node behavior to create the required functionality.
