@@ -60,41 +60,42 @@ jobs:
           cd $GITHUB_WORKSPACE
           python3 -c "import sys; print(sys.version)"
           make
-      - name: make requirements install
+      - name: make reqs build install dist
         run: |
-          make requirements
+          make reqs
           make build
           make install
+          make dist
           rm -rf rokeys/.gitignore
-      - name: 0x20bf.py
+      - name: x20bf.py
         run: |
-          pushd 0x20bf && python3 0x20bf.py
+          pushd x20bf && python3 x20bf.py
           # TODO: add more config/argparse tests here
           # TODO: better pydoc compliance - enable pydoc in virtualenv.yml
       - name: hex_message_digest.py
         run: |
-          pushd 0x20bf && python3 hex_message_digest.py
+          pushd x20bf && python3 hex_message_digest.py
       - name: imports.py
         run: |
-          pushd 0x20bf && python3 imports.py
+          pushd x20bf && python3 imports.py
       - name: logger.py
         run: |
-          pushd 0x20bf && python3 logger.py
+          pushd x20bf && python3 logger.py
       - name: mempool_height.py
         run: |
-          pushd 0x20bf && python3 mempool_height.py
+          pushd x20bf && python3 mempool_height.py
       - name: message_header.py
         run: |
-          pushd 0x20bf && python3 message_header.py
+          pushd x20bf && python3 message_header.py
       - name: time_functions.py
         run: |
-          pushd 0x20bf && python3 time_functions.py
+          pushd x20bf && python3 time_functions.py
       - name: touch_block_time.py
         run: |
-          pushd 0x20bf && python3 touch_block_time.py
+          pushd x20bf && python3 touch_block_time.py
           # TODO: use repos secrets to config twitter.ini
           # and allow more twitterAPI tests
           #- name: tweet_block_time.py
           #  run: |
-          #    ./0x20bf/tweet_block_time.py
+          #    ./x20bf/tweet_block_time.py
 

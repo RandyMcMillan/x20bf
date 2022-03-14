@@ -41,7 +41,7 @@ jobs:
         id: cache-depends
         uses: actions/cache@v2
         with:
-          path: depends
+          path: x20bf/depends
           key: ${{ runner.os }}-depends
 
       - name: Setup Matrix

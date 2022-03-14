@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 S = __import__("sys")
 G = __import__("getopt")
-B = __import__("0x20bf", globals(), locals(), [], 0)
+B = __import__("x20bf", globals(), locals(), [], 0)
 
 
 def main(argv):

@@ -63,9 +63,9 @@ else
 PROJECT_NAME                            := $(project)
 endif
 export PROJECT_NAME
-PYTHONPATH=$(PWD)/0x20bf
+PYTHONPATH=$(PWD)/$(PROJECT_NAME)
 export PYTHONPATH
-DEPENDSPATH=$(PWD)/0x20bf/depends
+DEPENDSPATH=$(PWD)/$(PROJECT_NAME)/depends
 export DEPENDSPATH
 BUILDPATH=$(PWD)/build
 export BUILDPATH
@@ -137,7 +137,6 @@ export DASH_U
 
 
 .PHONY: - help
-##	make:command
 ##	:
 ##	:help
 -: help
@@ -151,7 +150,7 @@ init: initialize requirements
 .PHONY: initialize
 ##	:initialize          run 0x020bf/scripts/initialize
 initialize:
-	bash -c "./0x20bf/scripts/initialize"
+	bash -c "./$(PROJECT_NAME)/scripts/initialize"
 .PHONY: requirements reqs
 
 reqs: requirements
@@ -182,6 +181,7 @@ test-venv:
 	   source venv/bin/activate; pip install -r requirements.txt; \
        python3 tests/test.py; \
        python3 tests/test_import.py; \
+       python3 tests/test_$(PROJECT_NAME)_version.py; \
 	);
 ##	:test-venv-p2p       p2p test battery
 test-venv-p2p:
@@ -189,8 +189,8 @@ test-venv-p2p:
 	test -d venv || virtualenv venv --always-download
 	( \
 	   source venv/bin/activate; pip install -r requirements.txt; \
-       python3 0x20bf/depends/p2p/setup.py build; \
-       python3 0x20bf/depends/p2p/setup.py install; \
+       python3 $(PROJECT_NAME)/depends/p2p/setup.py build; \
+       python3 $(PROJECT_NAME)/depends/p2p/setup.py install; \
        python3 tests/test_time_functions.py; \
        python3 tests/test_node_ping.py; \
        python3 tests/test_node_btc_time.py; \
@@ -201,10 +201,9 @@ test-venv-p2p:
 	);
 
 ##	:test-depends        test-gnupg test-p2p test-fastapi
-test-depends: test-gnupg test-p2p test-fastapi
+test-depends: test-gnupg test-p2p
 ##	:test-gnupg          python3 ./tests/depends/gnupg/test_gnupg.py
 ##	:test-p2p            python3 ./tests/depends/p2p/setup.py
-##	:test-fastapi        TODO:
 ##	:venv-clean          rm -rf venv rokeys test_gnupg.log
 venv-clean:
 	rm -rf venv
@@ -217,20 +216,24 @@ test-gnupg: venv
 test-p2p: venv
 	. venv/bin/activate;
 	pushd tests/depends/p2p && python3 setup.py install && python3 examples/my_own_p2p_application.py && popd
-test-fastapi: venv
-	. venv/bin/activate;
-	pushd tests/depends/p2p && python3 setup.py install && python3 examples/my_own_p2p_application.py && popd
+#test-fastapi: venv
+#	. venv/bin/activate;
+#	pushd tests/depends/fastapi/tests && python3 test_application.py
 ##	:
 clean-venv: venv-clean
 
-.PHONY: build install
+.PHONY: build install dist
 ##	:build               python3 setup.py build
-build:
+build: depends
 	python3 setup.py build
-install:
 ##	:install             python3 -m pip install -e .
 install: build
+	rm -rf dist
 	$(PYTHON3) -m $(PIP) install -e .
+##	:dist                python3 setup.py bdist_egg sdist
+##	:
+dist: build
+	$(PYTHON3) setup.py bdist_egg sdist
 
 ifneq ($(shell id -u),0)
 # TODO: install          depends/p2p depends/gnupg
@@ -270,6 +273,7 @@ report:
 	@echo '        - GIT_REPO_PATH=${GIT_REPO_PATH}'
 	@echo ''
 
+
 .PHONY: install-gnupg
 ##	:install-gnupg       install python gnupg on host
 gnupg: install-gnupg
@@ -280,7 +284,6 @@ install-gnupg:
 p2p: install-p2p
 install-p2p:
 	pushd $(DEPENDSPATH)/p2p && $(PYTHON3) $(DEPENDSPATH)/p2p/setup.py install && popd
-
 .PHONY: install-fastapi fastapi
 ##	:install-fastapi     install python fastapi
 fastapi: install-fastapi
@@ -289,13 +292,8 @@ install-fastapi:
 	pushd $(DEPENDSPATH)/fastapi && $(PYTHON3) -m $(PIP) install . && popd
 
 
-
-
-.PHONY: twitter-api
-
-
 .PHONY: depends
-##	:depends             build depends
+##	:depends             build and install depends
 depends: install-gnupg install-fastapi install-p2p
 
 .PHONY: git-add
@@ -311,7 +309,7 @@ git-add: remove
 	git add --ignore-errors sources/*.md
 	#git add --ignore-errors TIME
 	#git add --ignore-errors GLOBAL
-	git add --ignore-errors 0x20bf/*.py
+	git add --ignore-errors $(PROJECT_NAME)/*.py
 	git add --ignore-errors index.html
 	git add --ignore-errors .gitignore
 	git add --ignore-errors .github
@@ -329,21 +327,21 @@ pre-commit:
 .PHONY: docs
 ##	:docs                build docs from sources/*.md
 docs:
-	@echo "##### [make](https://www.gnu.org/software/make/)" > $(PWD)/0x20bf/sources/MAKE.md
-	bash -c "make help >> $(PWD)/0x20bf/sources/MAKE.md"
-	bash -c 'cat $(PWD)/0x20bf/sources/HEADER.md                >  $(PWD)/README.md'
-	bash -c 'cat $(PWD)/0x20bf/sources/PROTOCOL.md              >> $(PWD)/README.md'
-	bash -c 'cat $(PWD)/0x20bf/sources/COMMANDS.md              >> $(PWD)/README.md'
-	bash -c 'cat $(PWD)/0x20bf/sources/GETTING_STARTED.md       >> $(PWD)/README.md'
-	bash -c 'cat $(PWD)/0x20bf/sources/MAKE.md                  >> $(PWD)/README.md'
-	bash -c 'cat $(PWD)/0x20bf/sources/CONTRIBUTING.md          >> $(PWD)/README.md'
-	bash -c 'cat $(PWD)/0x20bf/sources/FOOTER.md                >> $(PWD)/README.md'
+	@echo "##### [make](https://www.gnu.org/software/make/)" > $(PWD)/$(PROJECT_NAME)/sources/MAKE.md
+	bash -c "make help >> $(PWD)/$(PROJECT_NAME)/sources/MAKE.md"
+	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/HEADER.md                >  $(PWD)/README.md'
+	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/PROTOCOL.md              >> $(PWD)/README.md'
+	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/COMMANDS.md              >> $(PWD)/README.md'
+	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/GETTING_STARTED.md       >> $(PWD)/README.md'
+	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/MAKE.md                  >> $(PWD)/README.md'
+	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/CONTRIBUTING.md          >> $(PWD)/README.md'
+	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/FOOTER.md                >> $(PWD)/README.md'
 	#brew install pandoc
 	bash -c "if hash pandoc 2>/dev/null; then echo; fi || brew install pandoc"
 	bash -c 'pandoc -s README.md -o index.html  --metadata title="$(BASENAME)" '
 	# bash -c 'pandoc -s README.md -o index.html'
 	#bash -c "if hash open 2>/dev/null; then open README.md; fi || echo failed to open README.md"
-	git add --ignore-errors $(PWD)/0x20bf/sources/*.md
+	git add --ignore-errors $(PWD)/$(PROJECT_NAME)/sources/*.md
 	git add --ignore-errors *.md
 	git add --ignore-errors *.html
 	#git ls-files -co --exclude-standard | grep '\.md/$\' | xargs git

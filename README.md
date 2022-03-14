@@ -1,4 +1,4 @@
-[🐝](https://keys.openpgp.org/vks/v1/by-fingerprint/E616FA7221A1613E5B99206297966C06BB06757B) [🥕](https://keys.openpgp.org/vks/v1/by-fingerprint/57C5E8BB2F2746C3474B8A511421BF6C4DC9817F) [Github](http://github.com/0x20bf-org) [Twitter](https://twitter.com/0x20bf_org)<HR>
+[🐝](https://keys.openpgp.org/vks/v1/by-fingerprint/E616FA7221A1613E5B99206297966C06BB06757B) [🥕](https://keys.openpgp.org/vks/v1/by-fingerprint/57C5E8BB2F2746C3474B8A511421BF6C4DC9817F) [Github](http://github.com/x20bf-org) [Twitter](https://twitter.com/x20bf_org)<HR>
 
 <center><H4>0xbf20 - A general purpose messaging protocol</center>
 
@@ -8,7 +8,7 @@ This document proposes an Internet standards track protocol for transporting, br
 
 ## Abstract
 
-This document describes the ox20bf protocol message structure and related operations associated with message field ordering and data typing. 0x20bf is meant to be simple, enabling flexability of implementation. Gnupg is used for text message encryption. Git version control is used for archiving messages.
+This document describes the ox20bf protocol message structure and related operations associated with message field ordering and data typing. x20bf is meant to be simple, enabling flexability of implementation. Gnupg is used for text message encryption. Git version control is used for archiving messages.
 
 ## Protocol - Field definitions
 
@@ -127,7 +127,7 @@ TODO: LOC - location specifications for offline resources
 
 
 
-<br>[![python.yml](https://github.com/0x20bf-org/0x20bf/actions/workflows/python.yml/badge.svg)](https://github.com/0x20bf-org/0x20bf/actions/workflows/python.yml)
+<br>[![python.yml](https://github.com/x20bf-org/x20bf/actions/workflows/python.yml/badge.svg)](https://github.com/x20bf-org/x20bf/actions/workflows/python.yml)
 
 
 ## Getting Started
@@ -135,15 +135,15 @@ TODO: LOC - location specifications for offline resources
 ##### [git](https://git-scm.com/downloads)
 
 ```
-git clone https://github.com/0x20bf-org/0x20bf.git
-cd 0x20bf
+git clone https://github.com/x20bf-org/x20bf.git
+cd x20bf
 ```
 
 ##### [python@3.8+](https://www.python.org/downloads/)
 
 ```
-git clone https://github.com/0x20bf-org/0x20bf.git
-cd 0x20bf
+git clone https://github.com/x20bf-org/x20bf.git
+cd x20bf
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -151,34 +151,34 @@ pip install -e .
 ```
 
 ##### [make](https://www.gnu.org/software/make/)
- 	make  command
  	
- 	      help
- 	      report              environment args
- 	      init                initialize requirements
- 	      initialize          run 0x020bf/scripts/initialize
- 	      requirements        pip install --user -r requirements.txt
+ 	  help
+ 	  report              environment args
+ 	  init                initialize requirements
+ 	  initialize          run 0x020bf/scripts/initialize
+ 	  requirements        pip install --user -r requirements.txt
  	
- 	      venv                create python3 virtual environment
- 	      test-venv           python3 ./tests/test.py
- 	      test-venv-p2p       p2p test battery
- 	      test-depends        test-gnupg test-p2p test-fastapi
- 	      test-gnupg          python3 ./tests/depends/gnupg/test_gnupg.py
- 	      test-p2p            python3 ./tests/depends/p2p/setup.py
- 	      test-fastapi        TODO
- 	      venv-clean          rm -rf venv rokeys test_gnupg.log
+ 	  venv                create python3 virtual environment
+ 	  test-venv           python3 ./tests/test.py
+ 	  test-venv-p2p       p2p test battery
+ 	  test-depends        test-gnupg test-p2p test-fastapi
+ 	  test-gnupg          python3 ./tests/depends/gnupg/test_gnupg.py
+ 	  test-p2p            python3 ./tests/depends/p2p/setup.py
+ 	  venv-clean          rm -rf venv rokeys test_gnupg.log
  	
- 	      build               python3 setup.py build
- 	      install             python3 -m pip install -e .
- 	      install-gnupg       install python gnupg on host
- 	      install-p2p         install python p2p-network
- 	      install-fastapi     install python fastapi
- 	      depends             build depends
- 	      pre-commit          pre-commit run -a
- 	      docs                build docs from sources/*.md
- 	      clean               rm -rf build
+ 	  build               python3 setup.py build
+ 	  install             python3 -m pip install -e .
+ 	  dist                python3 setup.py bdist_egg sdist
  	
- 	      make   venv && . venv/bin/activate
+ 	  install-gnupg       install python gnupg on host
+ 	  install-p2p         install python p2p-network
+ 	  install-fastapi     install python fastapi
+ 	  depends             build and install depends
+ 	  pre-commit          pre-commit run -a
+ 	  docs                build docs from sources/*.md
+ 	  clean               rm -rf build
+ 	
+ 	  make   venv && . venv/bin/activate
 
 ## [Contributing](./sources/CONTRIBUTING.md)
 

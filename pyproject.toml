@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "0x20bf"
+name = "x20bf"
 version = "0.0.1"
-description = "0x20bf: This document proposes an Internet standards track protocol for transporting, broadcasting and syndication of messages over common internet communications channels. The distribution of all documents related to this proposal are unlimited and unencumbered by any LICENSE, but some are included anyway."
+description = "x20bf: This document proposes an Internet standards track protocol for transporting, broadcasting and syndication of messages over common internet communications channels. The distribution of all documents related to this proposal are unlimited and unencumbered by any LICENSE, but some are included anyway."
 authors = ["randymcmillan <randy.lee.mcmillan@gmail.com>", "bitkarrot <me@bitkarrot.co>"]
 license = "Apache License 2.0"
 
@@ -23,7 +23,7 @@ build-backend = "poetry.masonry.api"
 
 
 [tool.isort]
-src_paths = ["0x20bf", "tests"]
+src_paths = ["x20bf", "tests"]
 skip = ["depends/fastapi","venv", "build"]
 
 [tool.black]

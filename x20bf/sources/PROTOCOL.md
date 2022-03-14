@@ -8,7 +8,7 @@ This document proposes an Internet standards track protocol for transporting, br
 
 ## Abstract
 
-This document describes the ox20bf protocol message structure and related operations associated with message field ordering and data typing. 0x20bf is meant to be simple, enabling flexability of implementation. Gnupg is used for text message encryption. Git version control is used for archiving messages.
+This document describes the ox20bf protocol message structure and related operations associated with message field ordering and data typing. x20bf is meant to be simple, enabling flexability of implementation. Gnupg is used for text message encryption. Git version control is used for archiving messages.
 
 ## Protocol - Field definitions
 
