@@ -1,6 +1,9 @@
-[🐝](https://keys.openpgp.org/vks/v1/by-fingerprint/E616FA7221A1613E5B99206297966C06BB06757B) [🥕](https://keys.openpgp.org/vks/v1/by-fingerprint/57C5E8BB2F2746C3474B8A511421BF6C4DC9817F) [Github](http://github.com/x20bf-org) [Twitter](https://twitter.com/x20bf_org)<HR>
+[🐝](https://keys.openpgp.org/vks/v1/by-fingerprint/E616FA7221A1613E5B99206297966C06BB06757B) [🥕](https://keys.openpgp.org/vks/v1/by-fingerprint/57C5E8BB2F2746C3474B8A511421BF6C4DC9817F) [Github](http://github.com/0x20bf-org) [Twitter](https://twitter.com/0x20bf_org)
+<html>
+<link rel="shortcut icon" href="x20bf/sources/favicon.ico" />
+</html><HR>
 
-<center><H4>0xbf20 - A general purpose messaging protocol</center>
+<center><H4>x20bf - A general purpose messaging protocol</center>
 
 ## Status of this Proposal
 
@@ -165,6 +168,7 @@ pip install -e .
  	  test-gnupg          python3 ./tests/depends/gnupg/test_gnupg.py
  	  test-p2p            python3 ./tests/depends/p2p/setup.py
  	  venv-clean          rm -rf venv rokeys test_gnupg.log
+ 	  test-p2p            python3 ./tests/test.py
  	
  	  build               python3 setup.py build
  	  install             python3 -m pip install -e .
@@ -177,6 +181,7 @@ pip install -e .
  	  pre-commit          pre-commit run -a
  	  docs                build docs from sources/*.md
  	  clean               rm -rf build
+ 	  serve               serve repo on $(PORT)
  	
  	  make   venv && . venv/bin/activate
 

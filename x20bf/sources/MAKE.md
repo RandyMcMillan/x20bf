@@ -13,6 +13,7 @@
  	  test-gnupg          python3 ./tests/depends/gnupg/test_gnupg.py
  	  test-p2p            python3 ./tests/depends/p2p/setup.py
  	  venv-clean          rm -rf venv rokeys test_gnupg.log
+ 	  test-p2p            python3 ./tests/test.py
  	
  	  build               python3 setup.py build
  	  install             python3 -m pip install -e .
@@ -25,5 +26,6 @@
  	  pre-commit          pre-commit run -a
  	  docs                build docs from sources/*.md
  	  clean               rm -rf build
+ 	  serve               serve repo on $(PORT)
  	
  	  make   venv && . venv/bin/activate

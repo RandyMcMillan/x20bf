@@ -1,6 +1,6 @@
 <HR>
 
-<center><H4>0xbf20 - A general purpose messaging protocol</center>
+<center><H4>x20bf - A general purpose messaging protocol</center>
 
 ## Status of this Proposal
 

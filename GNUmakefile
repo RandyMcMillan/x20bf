@@ -70,7 +70,7 @@ export DEPENDSPATH
 BUILDPATH=$(PWD)/build
 export BUILDPATH
 ifeq ($(port),)
-PORT                                    := 0
+PORT                                    := 8383
 else
 PORT                                    := $(port)
 endif
@@ -344,7 +344,8 @@ docs:
 	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/FOOTER.md                >> $(PWD)/README.md'
 	#brew install pandoc
 	bash -c "if hash pandoc 2>/dev/null; then echo; fi || brew install pandoc"
-	bash -c 'pandoc -s README.md -o index.html  --metadata title="$(BASENAME)" '
+	# bash -c 'pandoc -s README.md -o index.html  --metadata title="$(BASENAME)" '
+	bash -c 'pandoc -s README.md -o index.html  --metadata title="" '
 	# bash -c 'pandoc -s README.md -o index.html'
 	#bash -c "if hash open 2>/dev/null; then open README.md; fi || echo failed to open README.md"
 	git add --ignore-errors $(PWD)/$(PROJECT_NAME)/sources/*.md
@@ -360,16 +361,18 @@ clean-venv: venv-clean
 
 
 .PHONY: serve
-
-serve:
-	bash -c "$(PYTHON3) -m http.server $(PORT) -d . &"
+##	:serve               serve repo on $(PORT)
+serve: docs
+#REF: https://docs.python.org/3/library/http.server.html
+	# bash -c "$(PYTHON3) -m http.server $(PORT) --bind 127.0.0.1 -d $(PWD) || open http://127.0.0.1:$(PORT)"
+	$(PYTHON3) -m http.server $(PORT) --bind 127.0.0.1 -d $(PWD) > /dev/null 2>&1 || open http://127.0.0.1:$(PORT)
 
 .PHONY: failure
 failure:
-	@-/bin/false && ([ $$? -eq 0 ] && echo "success!") || echo "failure!"
+	@-/usr/bin/false && ([ $$? -eq 0 ] && echo "success!") || echo "failure!"
 .PHONY: success
 success:
-	@-/bin/true && ([ $$? -eq 0 ] && echo "success!") || echo "failure!"
+	@-/usr/bin/true && ([ $$? -eq 0 ] && echo "success!") || echo "failure!"
 
 
 ##	:

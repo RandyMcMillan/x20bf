@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>x20bf</title>
+  <title>README</title>
   <style>
     html {
       line-height: 1.5;
@@ -159,19 +159,19 @@
   <![endif]-->
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">x20bf</h1>
-</header>
 <a
 href="https://keys.openpgp.org/vks/v1/by-fingerprint/E616FA7221A1613E5B99206297966C06BB06757B">🐝</a>
 <a
 href="https://keys.openpgp.org/vks/v1/by-fingerprint/57C5E8BB2F2746C3474B8A511421BF6C4DC9817F">🥕</a>
-<a href="http://github.com/x20bf-org">Github</a> <a
-href="https://twitter.com/x20bf_org">Twitter</a>
+<a href="http://github.com/0x20bf-org">Github</a> <a
+href="https://twitter.com/0x20bf_org">Twitter</a>
+<html>
+<link rel="shortcut icon" href="x20bf/sources/favicon.ico" />
+</html>
 <HR>
 <center>
 <H4>
-0xbf20 - A general purpose messaging protocol
+x20bf - A general purpose messaging protocol
 </center>
 <h2 id="status-of-this-proposal">Status of this Proposal</h2>
 <p>This document proposes an Internet standards track protocol for
@@ -300,6 +300,7 @@ pip install -e .</code></pre>
   test-gnupg          python3 ./tests/depends/gnupg/test_gnupg.py
   test-p2p            python3 ./tests/depends/p2p/setup.py
   venv-clean          rm -rf venv rokeys test_gnupg.log
+  test-p2p            python3 ./tests/test.py
 
   build               python3 setup.py build
   install             python3 -m pip install -e .
@@ -312,6 +313,7 @@ pip install -e .</code></pre>
   pre-commit          pre-commit run -a
   docs                build docs from sources/*.md
   clean               rm -rf build
+  serve               serve repo on $(PORT)
 
   make   venv &amp;&amp; . venv/bin/activate</code></pre>
 <h2 id="contributing"><a
