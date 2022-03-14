@@ -63,9 +63,9 @@ else
 PROJECT_NAME                            := $(project)
 endif
 export PROJECT_NAME
-PYTHONPATH=$(PWD)/0x20bf
+PYTHONPATH=$(PWD)/$(PROJECT_NAME)
 export PYTHONPATH
-DEPENDSPATH=$(PWD)/0x20bf/depends
+DEPENDSPATH=$(PWD)/$(PROJECT_NAME)/depends
 export DEPENDSPATH
 BUILDPATH=$(PWD)/build
 export BUILDPATH
@@ -150,7 +150,7 @@ init: initialize requirements
 .PHONY: initialize
 ##	:initialize          run 0x020bf/scripts/initialize
 initialize:
-	bash -c "./0x20bf/scripts/initialize"
+	bash -c "./$(PROJECT_NAME)/scripts/initialize"
 .PHONY: requirements reqs
 
 reqs: requirements
@@ -181,7 +181,7 @@ test-venv:
 	   source venv/bin/activate; pip install -r requirements.txt; \
        python3 tests/test.py; \
        python3 tests/test_import.py; \
-       python3 tests/test_0x20bf_version.py; \
+       python3 tests/test_$(PROJECT_NAME)_version.py; \
 	);
 ##	:test-venv-p2p       p2p test battery
 test-venv-p2p:
@@ -189,8 +189,8 @@ test-venv-p2p:
 	test -d venv || virtualenv venv --always-download
 	( \
 	   source venv/bin/activate; pip install -r requirements.txt; \
-       python3 0x20bf/depends/p2p/setup.py build; \
-       python3 0x20bf/depends/p2p/setup.py install; \
+       python3 $(PROJECT_NAME)/depends/p2p/setup.py build; \
+       python3 $(PROJECT_NAME)/depends/p2p/setup.py install; \
        python3 tests/test_time_functions.py; \
        python3 tests/test_node_ping.py; \
        python3 tests/test_node_btc_time.py; \
@@ -310,7 +310,7 @@ git-add: remove
 	git add --ignore-errors sources/*.md
 	#git add --ignore-errors TIME
 	#git add --ignore-errors GLOBAL
-	git add --ignore-errors 0x20bf/*.py
+	git add --ignore-errors $(PROJECT_NAME)/*.py
 	git add --ignore-errors index.html
 	git add --ignore-errors .gitignore
 	git add --ignore-errors .github
@@ -328,21 +328,21 @@ pre-commit:
 .PHONY: docs
 ##	:docs                build docs from sources/*.md
 docs:
-	@echo "##### [make](https://www.gnu.org/software/make/)" > $(PWD)/0x20bf/sources/MAKE.md
-	bash -c "make help >> $(PWD)/0x20bf/sources/MAKE.md"
-	bash -c 'cat $(PWD)/0x20bf/sources/HEADER.md                >  $(PWD)/README.md'
-	bash -c 'cat $(PWD)/0x20bf/sources/PROTOCOL.md              >> $(PWD)/README.md'
-	bash -c 'cat $(PWD)/0x20bf/sources/COMMANDS.md              >> $(PWD)/README.md'
-	bash -c 'cat $(PWD)/0x20bf/sources/GETTING_STARTED.md       >> $(PWD)/README.md'
-	bash -c 'cat $(PWD)/0x20bf/sources/MAKE.md                  >> $(PWD)/README.md'
-	bash -c 'cat $(PWD)/0x20bf/sources/CONTRIBUTING.md          >> $(PWD)/README.md'
-	bash -c 'cat $(PWD)/0x20bf/sources/FOOTER.md                >> $(PWD)/README.md'
+	@echo "##### [make](https://www.gnu.org/software/make/)" > $(PWD)/$(PROJECT_NAME)/sources/MAKE.md
+	bash -c "make help >> $(PWD)/$(PROJECT_NAME)/sources/MAKE.md"
+	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/HEADER.md                >  $(PWD)/README.md'
+	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/PROTOCOL.md              >> $(PWD)/README.md'
+	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/COMMANDS.md              >> $(PWD)/README.md'
+	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/GETTING_STARTED.md       >> $(PWD)/README.md'
+	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/MAKE.md                  >> $(PWD)/README.md'
+	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/CONTRIBUTING.md          >> $(PWD)/README.md'
+	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/FOOTER.md                >> $(PWD)/README.md'
 	#brew install pandoc
 	bash -c "if hash pandoc 2>/dev/null; then echo; fi || brew install pandoc"
 	bash -c 'pandoc -s README.md -o index.html  --metadata title="$(BASENAME)" '
 	# bash -c 'pandoc -s README.md -o index.html'
 	#bash -c "if hash open 2>/dev/null; then open README.md; fi || echo failed to open README.md"
-	git add --ignore-errors $(PWD)/0x20bf/sources/*.md
+	git add --ignore-errors $(PWD)/$(PROJECT_NAME)/sources/*.md
 	git add --ignore-errors *.md
 	git add --ignore-errors *.html
 	#git ls-files -co --exclude-standard | grep '\.md/$\' | xargs git

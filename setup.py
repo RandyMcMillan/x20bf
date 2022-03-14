@@ -27,7 +27,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 packages = find_packages(
     include=[
-        "0x02bf",
+        "x20bf",
         "depends/p2p",
         "depends/gnupg",
         "depends/fastapi",
@@ -38,26 +38,26 @@ print(packages)
 
 
 setup(
-    name="0x20bf",
+    name="x20bf",
     version="0.0.1",
     author="randymcmillan, bitkarrot",
     author_email="randy.lee.mcmillan@gmail.com, me@bitkarrot.co",
     description=(
         str(
-            "0x20bf: An internet standards track protocol for"
+            "x20bf: An internet standards track protocol for"
             + "transporting, broadcasting and syndication of messages"
             + "ver common internet communications channels."
         )
     ),
     license="Apache License 2.0",
     keywords="",
-    url="http://packages.python.org/0x20bf",
+    url="http://packages.python.org/x20bf",
     packages=[
-        "0x20bf",
+        "x20bf",
         "tests",
-        "0x20bf/depends/p2p/p2pnetwork",
-        "0x20bf/depends/gnupg",
-        "0x20bf/depends/fastapi/fastapi",
+        "x20bf/depends/p2p/p2pnetwork",
+        "x20bf/depends/gnupg",
+        "x20bf/depends/fastapi/fastapi",
     ],
     # packages=find_packages(),
     # packages=find_packages(
