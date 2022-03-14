@@ -176,7 +176,7 @@ venv:
 ##	:test-venv           python3 ./tests/test.py
 test-venv:
 	# insert test commands here
-	test -d venv || virtualenv venv --always-download
+	test -d venv || virtualenv venv
 	( \
 	   source venv/bin/activate; pip install -r requirements.txt; \
        python3 tests/test.py; \
@@ -186,7 +186,7 @@ test-venv:
 ##	:test-venv-p2p       p2p test battery
 test-venv-p2p:
 	# insert test commands here
-	test -d venv || virtualenv venv --always-download
+	test -d venv || virtualenv venv
 	( \
 	   source venv/bin/activate; pip install -r requirements.txt; \
        python3 $(PROJECT_NAME)/depends/p2p/setup.py build; \
@@ -211,12 +211,17 @@ venv-clean:
 	rm -rf test_gnupg.log
 test-gnupg: venv
 	. venv/bin/activate;
-	$(PYTHON3) ./tests/depends/gnupg/setup.py install;
-	$(PYTHON3) ./tests/depends/gnupg/test_gnupg.py;
-test-p2p: venv
-	. venv/bin/activate;
-	# pushd tests/depends/p2p && python3 setup.py install && python3 examples/my_own_p2p_application.py && popd
-	pushd tests && python3 test_node_interface.py
+	python3 ./tests/depends/gnupg/setup.py install;
+	python3 ./tests/depends/gnupg/test_gnupg.py;
+##	:test-p2p            python3 ./tests/test.py
+test-p2p:
+	# insert test commands here
+	test -d venv || virtualenv venv
+	( \
+	   source venv/bin/activate; pip install -r requirements.txt; \
+	   source venv/bin/activate; pip install -r requirements.txt; \
+       python3 tests/test_node_interface.py; \
+	);
 #test-fastapi: venv
 #	. venv/bin/activate;
 #	pushd tests/depends/fastapi/tests && python3 test_application.py

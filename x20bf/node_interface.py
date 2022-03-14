@@ -1,9 +1,9 @@
 import asyncio
-from x20bf.logger import logger
-from x20bf.time_functions import genesis_time, btc_time
-from x20bf.time_functions import get_millis, get_seconds
-from x20bf.time_functions import mempool_height, blockcypher_height
-import x20bf.version as version
+from time_functions import genesis_time, btc_time
+from time_functions import get_millis, get_seconds
+from time_functions import mempool_height, blockcypher_height
+import logger as logger
+import version as version
 from p2pnetwork.node import Node
 
 
@@ -16,7 +16,7 @@ class NodeInterface(Node):
             host, port, id, callback, max_connections
         )
         loop = asyncio.new_event_loop()
-        self.logger = logger()
+        self.logger = logger.logger()
 
         self.genesis_time = genesis_time
         self.btc_time = btc_time()

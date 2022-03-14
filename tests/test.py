@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-S = __import__("sys")
-G = __import__("getopt")
-B = __import__("x20bf", globals(), locals(), [], 0)
+import sys as S
+import getopt as G
+import x20bf.node_interface as ni
 
 
 def main(argv):
@@ -40,5 +40,6 @@ print(len(S.argv))
 # B(S.argv[1:])
 # B.main("['test.py', 'arg1', 'arg2', 'arg3']")
 
+print(ni.version)
 if __name__ == "__main__":
     main(S.argv[1:])

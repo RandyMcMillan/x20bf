@@ -7,7 +7,7 @@ import time
 import aiohttp
 import blockcypher
 
-from x20bf.logger import logger
+from logger import logger
 
 genesis_time = 1231006505
 
