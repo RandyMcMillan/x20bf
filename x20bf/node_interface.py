@@ -1,5 +1,8 @@
+import asyncio
 from logger import logger
-from time_functions import btc_time, unix_time_millis
+from time_functions import genesis_time, btc_time
+from time_functions import get_millis, get_seconds
+from time_functions import mempool_height, blockcypher_height
 import version as version
 from p2pnetwork.node import Node
 
@@ -12,13 +15,34 @@ class NodeInterface(Node):
         super(NodeInterface, self).__init__(
             host, port, id, callback, max_connections
         )
+        loop = asyncio.new_event_loop()
+
+        self.genesis_time = genesis_time
+        self.btc_time = btc_time()
+        self.get_millis = get_millis()
+        self.get_seconds = get_seconds()
+        self.mempool_height = loop.run_until_complete(mempool_height())
+        self.blockcypher_height = loop.run_until_complete(blockcypher_height())
         self.version = version.version()
-        self.start_time = str(":" + str(btc_time()) + ":" + str(unix_time_millis()) + ":")
+        self.start_time = str(":" + str(btc_time()) + ":" + str(get_millis()) + ":")
         logger.info("x20bf v" + self.version + " General Purpose Messaging Protocol " + "https://0x20bf.org")
         logger.info(":START_TIME" + self.start_time)
 
     # all the methods below are called when things happen in the network.
     # implement your network node behavior to create the required functionality.
+    def network_lag(self):
+
+        loop = asyncio.new_event_loop()
+
+        # TODO: check time_functions - more sources needed
+        # if delta > 0 - either service unavailable or lag
+        if ((abs(loop.run_until_complete(self.blockcypher_height()) - loop.run_until_complete(self.mempool_height()))) > 0):
+            return ((abs(loop.run_until_complete(self.blockcypher_height()) - loop.run_until_complete(self.mempool_height()))))
+
+        if ((abs(loop.run_until_complete(self.mempool_height()) - loop.run_until_complete(self.blockcypher_height()))) > 0):
+            return ((abs(loop.run_until_complete(self.mempool_height()) - loop.run_until_complete(self.blockcypher_height()))))
+
+        return 0
 
     def outbound_node_connected(self, node):
         print("outbound_node_connected (" + self.id + "): " + node.id)

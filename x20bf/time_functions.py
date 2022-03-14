@@ -39,7 +39,7 @@ def get_seconds():
     return seconds
 
 
-def blockcypher_height():
+async def blockcypher_height():
     try:
         # block_cypher = blockcypher.get_latest_blockcypher_height(coin_symbol='btc')
         block_cypher = blockcypher.get_latest_blockcypher_height()
@@ -73,7 +73,7 @@ def btc_unix_time_millis():
     return SESSION_ID
 
 
-def BTC_UNIX_TIME_SECONDS():
+def btc_unix_time_seconds():
     return str(btc_time()) + ":" + str(get_seconds())
 
 
@@ -83,13 +83,13 @@ def unix_time_millis():
     return unix_time_millis
 
 
-def UNIX_TIME_SECONDS():
+def unix_time_seconds():
     global unix_time_seconds
     unix_time_seconds = str(get_seconds())
     return unix_time_seconds
 
 
-def NETWORK_MODULUS():
+def network_modulus():
     # internal time stamping mechanism
     # rolling deterministic time field:
     # (current_time - genesis time) yields time from bitcoin genesis block
@@ -106,18 +106,18 @@ def NETWORK_MODULUS():
     return NETWORK_MODULUS
 
 
-def NETWORK_WEEBLE_WOBBLE():
+def network_weeble_wobble():
     # :WEEBLE:WOBBLE: construction
     NETWORK_WEEBLE_WOBBLE = str(
-        ":" + str(NETWORK_WEEBLE()) + ":" + str(NETWORK_WOBBLE()) + ":"
+        ":" + str(network_weeble()) + ":" + str(network_wobble()) + ":"
     )
     f = open("NETWORK_WEEBLE_WOBBLE", "w")
-    f.write("" + str(NETWORK_WEEBLE_WOBBLE) + "\n")
+    f.write("" + str(network_weeble_wobble) + "\n")
     f.close()
     return NETWORK_WEEBLE_WOBBLE
 
 
-def NETWORK_WEEBLE():
+def network_weeble():
     # (current_time - genesis time) yields time from bitcoin genesis block
     # dividing by number of blocks yields an average time per block
     NETWORK_WEEBLE = int((get_millis() - genesis_time) / btc_time())
@@ -127,7 +127,7 @@ def NETWORK_WEEBLE():
     return NETWORK_WEEBLE
 
 
-def NETWORK_WOBBLE():
+def network_wobble():
     # wobble is the remainder of the weeble_wobble calculation
     # source of deterministic entropy
     NETWORK_WOBBLE = str(float((get_millis() - genesis_time) / btc_time() % 1)).strip(
@@ -151,13 +151,15 @@ async def mempool_height():
         return height
 
 
+def network_time_logger():
+    logger.info(":NETWORK_MODULUS:" + str(network_modulus()) + ":")
+    logger.info(":NETWORK_WEEBLE:" + str(network_weeble()) + ":")
+    logger.info(":NETWORK_WOBBLE:" + str(network_wobble()) + ":")
+    logger.info(":NETWORK_WEEBLE_WOBBLE" + str(network_weeble_wobble()))
+
+
 loop = asyncio.new_event_loop()
 # loop = asyncio.get_event_loop()
 loop.run_until_complete(mempool_height())
+loop.run_until_complete(blockcypher_height())
 loop.run_until_complete(touch_time(btc_time()))
-TIME_LOGGER = False
-if TIME_LOGGER:
-    logger.info(":NETWORK_MODULUS:" + str(NETWORK_MODULUS()) + ":")
-    logger.info(":NETWORK_WEEBLE:" + str(NETWORK_WEEBLE()) + ":")
-    logger.info(":NETWORK_WOBBLE:" + str(NETWORK_WOBBLE()) + ":")
-    logger.info(":NETWORK_WEEBLE_WOBBLE" + str(NETWORK_WEEBLE_WOBBLE()))
