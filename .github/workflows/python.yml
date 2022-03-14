@@ -60,42 +60,24 @@ jobs:
           cd $GITHUB_WORKSPACE
           python3 -c "import sys; print(sys.version)"
           make
-      - name: make reqs build install dist
+      - name: make reqs
         run: |
           make reqs
+      - name: make depends
+        run: |
+          make depends
+      - name: make build
+        run: |
           make build
+      - name: make install
+        run: |
           make install
+      - name: make dist
+        run: |
           make dist
-          rm -rf rokeys/.gitignore
-      - name: x20bf.py
+      - name: rm -rf rokeys
         run: |
-          pushd x20bf && python3 x20bf.py
-          # TODO: add more config/argparse tests here
-          # TODO: better pydoc compliance - enable pydoc in virtualenv.yml
-      - name: hex_message_digest.py
+          rm -rf rokeys
+      - name: make test-p2p
         run: |
-          pushd x20bf && python3 hex_message_digest.py
-      - name: imports.py
-        run: |
-          pushd x20bf && python3 imports.py
-      - name: logger.py
-        run: |
-          pushd x20bf && python3 logger.py
-      - name: mempool_height.py
-        run: |
-          pushd x20bf && python3 mempool_height.py
-      - name: message_header.py
-        run: |
-          pushd x20bf && python3 message_header.py
-      - name: time_functions.py
-        run: |
-          pushd x20bf && python3 time_functions.py
-      - name: touch_block_time.py
-        run: |
-          pushd x20bf && python3 touch_block_time.py
-          # TODO: use repos secrets to config twitter.ini
-          # and allow more twitterAPI tests
-          #- name: tweet_block_time.py
-          #  run: |
-          #    ./x20bf/tweet_block_time.py
-
+          make test-p2p
