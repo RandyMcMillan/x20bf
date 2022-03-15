@@ -158,6 +158,7 @@ pip install -e .
  	  help
  	  report              environment args
  	  init                initialize requirements
+ 	                      install .git/hooks/pre-commit
  	  initialize          run 0x020bf/scripts/initialize
  	  requirements        pip install --user -r requirements.txt
  	

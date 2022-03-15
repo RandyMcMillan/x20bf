@@ -31,6 +31,8 @@ packages = find_packages(
         "depends/p2p",
         "depends/gnupg",
         "depends/fastapi",
+        "depends/git/git",
+        "depends/git/git/ext/gitdb/gitdb",
     ],
     exclude=["*.tests", "*.tests.*", "tests.*"],
 )
@@ -58,6 +60,8 @@ setup(
         "x20bf/depends/p2p/p2pnetwork",
         "x20bf/depends/gnupg",
         "x20bf/depends/fastapi/fastapi",
+        "x20bf/depends/git/git",
+        "x20bf/depends/git/git/ext/gitdb/gitdb",
     ],
     # packages=find_packages(),
     # packages=find_packages(

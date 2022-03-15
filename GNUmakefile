@@ -144,9 +144,11 @@ export DASH_U
 .PHONY: init initialize requirements
 ##	:report              environment args
 ##	:init                initialize requirements
+##	:                    install .git/hooks/pre-commit
 init: initialize requirements
 	# remove this artifact from gnupg tests
-	sudo rm -rf rokeys/.gitignore
+	rm -rf rokeys/.gitignore || sudo -s rm -rf rokeys/.gitignore
+	cat x20bf/scripts/pre-commit > .git/hooks/pre-commit
 .PHONY: initialize
 ##	:initialize          run 0x020bf/scripts/initialize
 initialize:
@@ -238,7 +240,7 @@ install: build
 	$(PYTHON3) -m $(PIP) install -e .
 ##	:dist                python3 setup.py bdist_egg sdist
 ##	:
-dist: build
+dist: pre-commit build
 	$(PYTHON3) setup.py bdist_egg sdist
 
 ifneq ($(shell id -u),0)
@@ -351,6 +353,7 @@ docs:
 	git add --ignore-errors $(PWD)/$(PROJECT_NAME)/sources/*.md
 	git add --ignore-errors *.md
 	git add --ignore-errors *.html
+	git add --ignore-errors *makefile
 	#git ls-files -co --exclude-standard | grep '\.md/$\' | xargs git
 
 .PHONY: clean clean-venv

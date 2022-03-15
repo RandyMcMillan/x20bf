@@ -111,10 +111,21 @@ fi
     $this_python3 -m pip install "$DASH_U" --upgrade pip
     $this_python3 -m pip install "$DASH_U" -r requirements.txt
 
-    brew install gawk
-    brew install boost boost-build flake8 black rust
-    brew install -f isort poetry
-    # brew link --overwrite isort
+    if ! hash gawk 2>/dev/null; then
+        brew install gawk
+    fi
+    if ! hash flake8 2>/dev/null; then
+        brew install flake8
+    fi
+    if ! hash flake8 2>/dev/null; then
+        brew install black
+    fi
+    if ! hash flake8 2>/dev/null; then
+        brew install poetry
+    fi
+    if ! hash flake8 2>/dev/null; then
+        brew install isort
+    fi
 
 else
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
