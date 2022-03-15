@@ -2,9 +2,7 @@
 import sys
 from time import time
 
-from .lib import (
-    TestBigRepoR
-)
+from .lib import TestBigRepoR
 
 
 class TestObjDBPerformance(TestBigRepoR):

@@ -4,50 +4,50 @@
 # This module is part of GitPython and is released under
 # the BSD License: http://www.opensource.org/licenses/bsd-license.php
 from __future__ import annotations
-from contextlib import contextmanager
+
 import io
 import logging
 import os
 import signal
-from subprocess import (
-    call,
-    Popen,
-    PIPE,
-    DEVNULL
-)
 import subprocess
 import threading
+from contextlib import contextmanager
+from subprocess import DEVNULL, PIPE, Popen, call
 from textwrap import dedent
-
-from git.compat import (
-    defenc,
-    force_bytes,
-    safe_decode,
-    is_posix,
-    is_win,
+from typing import (
+    IO,
+    TYPE_CHECKING,
+    Any,
+    AnyStr,
+    BinaryIO,
+    Callable,
+    Dict,
+    Iterator,
+    List,
+    Mapping,
+    Sequence,
+    TextIO,
+    Tuple,
+    Union,
+    cast,
+    overload,
 )
+
+from git.compat import defenc, force_bytes, is_posix, is_win, safe_decode
 from git.exc import CommandError
-from git.util import is_cygwin_git, cygpath, expand_path, remove_password_if_present
+from git.types import TBD, Literal, PathLike
+from git.util import cygpath, expand_path, is_cygwin_git, remove_password_if_present
 
-from .exc import (
-    GitCommandError,
-    GitCommandNotFound
-)
-from .util import (
-    LazyMixin,
-    stream_copy,
-)
+from .exc import GitCommandError, GitCommandNotFound
+from .util import LazyMixin, stream_copy
 
 # typing ---------------------------------------------------------------------------
 
-from typing import (Any, AnyStr, BinaryIO, Callable, Dict, IO, Iterator, List, Mapping,
-                    Sequence, TYPE_CHECKING, TextIO, Tuple, Union, cast, overload)
 
-from git.types import PathLike, Literal, TBD
 
 if TYPE_CHECKING:
-    from git.repo.base import Repo
     from git.diff import DiffIndex
+    from git.repo.base import Repo
 
 
 # ---------------------------------------------------------------------------------

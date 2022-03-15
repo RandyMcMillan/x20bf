@@ -5,11 +5,11 @@
 # the BSD License: http://www.opensource.org/licenses/bsd-license.php
 
 from test.lib import TestBase
+
 from git import Actor
 
 
 class TestActor(TestBase):
-
     def test_from_string_should_separate_name_and_email(self):
         a = Actor._from_string("Michael Trier <mtrier@example.com>")
         self.assertEqual("Michael Trier", a.name)
