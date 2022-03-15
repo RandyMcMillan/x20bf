@@ -147,7 +147,7 @@ export DASH_U
 ##	:                    install .git/hooks/pre-commit
 init: initialize requirements
 	# remove this artifact from gnupg tests
-	sudo rm -rf rokeys/.gitignore
+	rm -rf rokeys/.gitignore || sudo -s rm -rf rokeys/.gitignore
 	cat x20bf/scripts/pre-commit > .git/hooks/pre-commit
 .PHONY: initialize
 ##	:initialize          run 0x020bf/scripts/initialize
