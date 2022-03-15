@@ -74,7 +74,6 @@ if os.path.__name__ == "ntpath":  # pragma: no cover
     def shell_quote(s):
         return '"%s"' % s
 
-
 else:
     # Section copied from sarge
 
@@ -651,7 +650,7 @@ class ListKeys(SearchKeys):
 
 
 class ScanKeys(ListKeys):
-    """ Handle status messages for --with-fingerprint."""
+    """Handle status messages for --with-fingerprint."""
 
     def sub(self, args):
         # --with-fingerprint --with-colons somehow outputs fewer colons,
