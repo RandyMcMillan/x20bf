@@ -1,18 +1,13 @@
 """Module containing a memory memory manager which provides a sliding window on a number of memory mapped files"""
-from .util import (
-    MapWindow,
-    MapRegion,
-    MapRegionList,
-    is_64_bit,
-)
-
 import sys
 from functools import reduce
 
-__all__ = ["StaticWindowMapManager", "SlidingWindowMapManager", "WindowCursor"]
-#{ Utilities
+from .util import MapRegion, MapRegionList, MapWindow, is_64_bit
 
-#}END utilities
+__all__ = ["StaticWindowMapManager", "SlidingWindowMapManager", "WindowCursor"]
+# { Utilities
+
+# }END utilities
 
 
 class WindowCursor:
@@ -26,12 +21,13 @@ class WindowCursor:
     **Note:**: The current implementation is suited for static and sliding window managers, but it also means
     that it must be suited for the somewhat quite different sliding manager. It could be improved, but
     I see no real need to do so."""
+
     __slots__ = (
-        '_manager',  # the manger keeping all file regions
-        '_rlist',   # a regions list with regions for our file
-        '_region',  # our current class:`MapRegion` or None
-        '_ofs',     # relative offset from the actually mapped area to our start area
-        '_size'     # maximum size we should provide
+        "_manager",  # the manger keeping all file regions
+        "_rlist",  # a regions list with regions for our file
+        "_region",  # our current class:`MapRegion` or None
+        "_ofs",  # relative offset from the actually mapped area to our start area
+        "_size",  # maximum size we should provide
     )
 
     def __init__(self, manager=None, regions=None):
@@ -92,7 +88,7 @@ class WindowCursor:
         cpy._copy_from(self)
         return cpy
 
-    #{ Interface
+    # { Interface
     def assign(self, rhs):
         """Assign rhs to this instance. This is required in order to get a real copy.
         Alternativly, you can copy an existing instance using the copy module"""
@@ -114,7 +110,9 @@ class WindowCursor:
         need_region = True
         man = self._manager
         fsize = self._rlist.file_size()
-        size = min(size or fsize, man.window_size() or fsize)   # clamp size to window size
+        size = min(
+            size or fsize, man.window_size() or fsize
+        )  # clamp size to window size
 
         if self._region is not None:
             if self._region.includes_ofs(offset):
@@ -159,7 +157,7 @@ class WindowCursor:
 
         **Note:** buffers should not be cached passed the duration of your access as it will
         prevent resources from being freed even though they might not be accounted for anymore !"""
-        return memoryview(self._region.buffer())[self._ofs:self._ofs+self._size]
+        return memoryview(self._region.buffer())[self._ofs : self._ofs + self._size]
 
     def map(self):
         """
@@ -202,7 +200,11 @@ class WindowCursor:
 
         **Note:** cursor must be valid for this to work"""
         # unroll methods
-        return (self._region._b + self._ofs) <= ofs < (self._region._b + self._ofs + self._size)
+        return (
+            (self._region._b + self._ofs)
+            <= ofs
+            < (self._region._b + self._ofs + self._size)
+        )
 
     def file_size(self):
         """:return: size of the underlying file"""
@@ -216,7 +218,9 @@ class WindowCursor:
         """:return: path of the underlying mapped file
         :raise ValueError: if attached path is not a path"""
         if isinstance(self._rlist.path_or_fd(), int):
-            raise ValueError("Path queried although mapping was applied to a file descriptor")
+            raise ValueError(
+                "Path queried although mapping was applied to a file descriptor"
+            )
         # END handle type
         return self._rlist.path_or_fd()
 
@@ -226,11 +230,13 @@ class WindowCursor:
         **Note:** it is not required to be valid anymore
         :raise ValueError: if the mapping was not created by a file descriptor"""
         if isinstance(self._rlist.path_or_fd(), str):
-            raise ValueError("File descriptor queried although mapping was generated from path")
+            raise ValueError(
+                "File descriptor queried although mapping was generated from path"
+            )
         # END handle type
         return self._rlist.path_or_fd()
 
-    #} END interface
+    # } END interface
 
 
 class StaticWindowMapManager:
@@ -247,20 +253,20 @@ class StaticWindowMapManager:
     accommodate this fact"""
 
     __slots__ = [
-        '_fdict',           # mapping of path -> StorageHelper (of some kind
-        '_window_size',     # maximum size of a window
-        '_max_memory_size',  # maximum amount of memory we may allocate
-        '_max_handle_count',        # maximum amount of handles to keep open
-        '_memory_size',     # currently allocated memory size
-        '_handle_count',        # amount of currently allocated file handles
+        "_fdict",  # mapping of path -> StorageHelper (of some kind
+        "_window_size",  # maximum size of a window
+        "_max_memory_size",  # maximum amount of memory we may allocate
+        "_max_handle_count",  # maximum amount of handles to keep open
+        "_memory_size",  # currently allocated memory size
+        "_handle_count",  # amount of currently allocated file handles
     ]
 
-    #{ Configuration
+    # { Configuration
     MapRegionListCls = MapRegionList
     MapWindowCls = MapWindow
     MapRegionCls = MapRegion
     WindowCursorCls = WindowCursor
-    #} END configuration
+    # } END configuration
 
     _MB_in_bytes = 1024 * 1024
 
@@ -298,7 +304,7 @@ class StaticWindowMapManager:
             self._max_memory_size = coeff * self._MB_in_bytes
         # END handle max memory size
 
-    #{ Internal Methods
+    # { Internal Methods
 
     def _collect_lru_region(self, size):
         """Unmap the region which was least-recently used and has no client
@@ -321,8 +327,9 @@ class StaticWindowMapManager:
             for regions in self._fdict.values():
                 for region in regions:
                     # check client count - if it's 1, it's just us
-                    if (region.client_count() == 1 and
-                            (lru_region is None or region._uc < lru_region._uc)):
+                    if region.client_count() == 1 and (
+                        lru_region is None or region._uc < lru_region._uc
+                    ):
                         lru_region = region
                         lru_list = regions
                     # END update lru_region
@@ -334,7 +341,7 @@ class StaticWindowMapManager:
             # END handle region not found
 
             num_found += 1
-            del(lru_list[lru_list.index(lru_region)])
+            del lru_list[lru_list.index(lru_region)]
             lru_region.increment_client_count(-1)
             self._memory_size -= lru_region.size()
             self._handle_count -= 1
@@ -379,9 +386,9 @@ class StaticWindowMapManager:
         assert r.includes_ofs(offset)
         return r
 
-    #}END internal methods
+    # }END internal methods
 
-    #{ Interface
+    # { Interface
     def make_cursor(self, path_or_fd):
         """
         :return: a cursor pointing to the given path or file descriptor.
@@ -416,7 +423,11 @@ class StaticWindowMapManager:
 
     def num_open_files(self):
         """Amount of opened files in the system"""
-        return reduce(lambda x, y: x + y, (1 for rlist in self._fdict.values() if len(rlist) > 0), 0)
+        return reduce(
+            lambda x, y: x + y,
+            (1 for rlist in self._fdict.values() if len(rlist) > 0),
+            0,
+        )
 
     def window_size(self):
         """:return: size of each window when allocating new regions"""
@@ -434,9 +445,9 @@ class StaticWindowMapManager:
         """:return: maximum amount of memory we may allocate"""
         return self._max_memory_size
 
-    #} END interface
+    # } END interface
 
-    #{ Special Purpose Interface
+    # { Special Purpose Interface
 
     def force_map_handle_removal_win(self, base_path):
         """ONLY AVAILABLE ON WINDOWS
@@ -451,7 +462,7 @@ class StaticWindowMapManager:
         :return: Amount of closed handles
 
         **Note:** does nothing on non-windows platforms"""
-        if sys.platform != 'win32':
+        if sys.platform != "win32":
             return
         # END early bailout
 
@@ -464,7 +475,8 @@ class StaticWindowMapManager:
             # END path matches
         # END for each path
         return num_closed
-    #} END special purpose interface
+
+    # } END special purpose interface
 
 
 class SlidingWindowMapManager(StaticWindowMapManager):

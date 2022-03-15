@@ -2,16 +2,17 @@
 import os
 
 try:
-    from setuptools import setup, find_packages
+    from setuptools import find_packages, setup
 except ImportError:
     from ez_setup import use_setuptools
+
     use_setuptools()
     from setuptools import setup, find_packages
 
 import smmap
 
 if os.path.exists("README.md"):
-    long_description = open('README.md', encoding="utf-8").read().replace('\r\n', '\n')
+    long_description = open("README.md", encoding="utf-8").read().replace("\r\n", "\n")
 else:
     long_description = "See https://github.com/gitpython-developers/smmap"
 
@@ -46,5 +47,5 @@ setup(
         "Programming Language :: Python :: 3 :: Only",
     ],
     long_description=long_description,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
 )
