@@ -33,6 +33,7 @@ packages = find_packages(
         "depends/fastapi",
         "depends/git/git",
         "depends/git/git/ext/gitdb/gitdb",
+        "depends/git/git/ext/gitdb/gitdb/ext/smmap/smmap",
     ],
     exclude=["*.tests", "*.tests.*", "tests.*"],
 )
@@ -62,6 +63,7 @@ setup(
         "x20bf/depends/fastapi/fastapi",
         "x20bf/depends/git/git",
         "x20bf/depends/git/git/ext/gitdb/gitdb",
+        "x20bf/depends/git/git/ext/gitdb/gitdb/ext/smmap/smmap",
     ],
     # packages=find_packages(),
     # packages=find_packages(
