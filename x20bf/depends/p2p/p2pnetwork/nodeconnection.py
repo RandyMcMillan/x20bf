@@ -47,7 +47,7 @@ class NodeConnection(threading.Thread):
         self.id = str(id)  # Make sure the ID is a string
 
         # End of transmission character for the network streaming messages.
-        self.EOT_CHAR = 0x04 .to_bytes(1, "big")
+        self.EOT_CHAR = 0x04.to_bytes(1, "big")
 
         # Datastore to store additional information concerning the node.
         self.info = {}
