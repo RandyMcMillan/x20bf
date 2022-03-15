@@ -238,7 +238,7 @@ install: build
 	$(PYTHON3) -m $(PIP) install -e .
 ##	:dist                python3 setup.py bdist_egg sdist
 ##	:
-dist: build
+dist: pre-commit build
 	$(PYTHON3) setup.py bdist_egg sdist
 
 ifneq ($(shell id -u),0)
