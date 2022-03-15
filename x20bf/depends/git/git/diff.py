@@ -293,7 +293,7 @@ class Diff(object):
 
     # precompiled regex
     re_header = re.compile(
-        br"""
+        rb"""
                                 ^diff[ ]--git
                                     [ ](?P<a_path_fallback>"?[ab]/.+?"?)[ ](?P<b_path_fallback>"?[ab]/.+?"?)\n
                                 (?:^old[ ]mode[ ](?P<old_mode>\d+)\n

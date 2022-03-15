@@ -144,7 +144,7 @@ class IndexFile(LazyMixin, git_diff.Diffable, Serializable):
 
     @property
     def path(self) -> PathLike:
-        """ :return: Path to the index file we are representing """
+        """:return: Path to the index file we are representing"""
         return self._file_path
 
     def _delete_entries_cache(self) -> None:
@@ -617,7 +617,7 @@ class IndexFile(LazyMixin, git_diff.Diffable, Serializable):
     def _preprocess_add_items(
         self, items: Sequence[Union[PathLike, Blob, BaseIndexEntry, "Submodule"]]
     ) -> Tuple[List[PathLike], List[BaseIndexEntry]]:
-        """ Split the items into two lists of path strings and BaseEntries. """
+        """Split the items into two lists of path strings and BaseEntries."""
         paths = []
         entries = []
         # if it is a string put in list

@@ -111,7 +111,7 @@ class Object(LazyMixin):
         return self.binsha == other.binsha
 
     def __ne__(self, other: Any) -> bool:
-        """:return: True if the objects do not have the same SHA1 """
+        """:return: True if the objects do not have the same SHA1"""
         if not hasattr(other, "binsha"):
             return True
         return self.binsha != other.binsha

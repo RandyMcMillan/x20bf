@@ -22,19 +22,19 @@ if TYPE_CHECKING:
 
 
 class GitError(Exception):
-    """ Base class for all package exceptions """
+    """Base class for all package exceptions"""
 
 
 class InvalidGitRepositoryError(GitError):
-    """ Thrown if the given repository appears to have an invalid format.  """
+    """Thrown if the given repository appears to have an invalid format."""
 
 
 class WorkTreeRepositoryUnsupported(InvalidGitRepositoryError):
-    """ Thrown to indicate we can't handle work tree repositories """
+    """Thrown to indicate we can't handle work tree repositories"""
 
 
 class NoSuchPathError(GitError, OSError):
-    """ Thrown if a path could not be access by the system. """
+    """Thrown if a path could not be access by the system."""
 
 
 class CommandError(GitError):
@@ -100,7 +100,7 @@ class GitCommandNotFound(CommandError):
 
 
 class GitCommandError(CommandError):
-    """ Thrown if execution of the git command fails with non-zero status code. """
+    """Thrown if execution of the git command fails with non-zero status code."""
 
     def __init__(
         self,

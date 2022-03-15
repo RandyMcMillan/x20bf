@@ -372,7 +372,7 @@ class LockedFD(object):
         self._end_writing(successful=False)
 
     def _end_writing(self, successful=True):
-        """Handle the lock according to the write mode """
+        """Handle the lock according to the write mode"""
         if self._write is None:
             raise AssertionError("Cannot end operation if it wasn't started yet")
 

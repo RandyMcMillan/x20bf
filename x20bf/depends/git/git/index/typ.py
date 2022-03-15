@@ -90,7 +90,7 @@ class BaseIndexEntry(BaseIndexEntryHelper):
             Tuple[int, bytes, int, PathLike, bytes, bytes, int, int, int, int, int],
         ],
     ) -> "BaseIndexEntry":
-        """Override __new__ to allow construction from a tuple for backwards compatibility """
+        """Override __new__ to allow construction from a tuple for backwards compatibility"""
         return super().__new__(cls, *inp_tuple)
 
     def __str__(self) -> str:
@@ -146,7 +146,7 @@ class IndexEntry(BaseIndexEntry):
 
     @property
     def mtime(self) -> Tuple[int, int]:
-        """See ctime property, but returns modification time """
+        """See ctime property, but returns modification time"""
         return cast(Tuple[int, int], unpack(">LL", self.mtime_bytes))
 
     @classmethod

@@ -48,7 +48,7 @@ __all__ = ["SymbolicReference"]
 
 
 def _git_dir(repo: "Repo", path: Union[PathLike, None]) -> PathLike:
-    """ Find the git dir that's appropriate for the path"""
+    """Find the git dir that's appropriate for the path"""
     name = f"{path}"
     if name in ["HEAD", "ORIG_HEAD", "FETCH_HEAD", "index", "logs"]:
         return repo.git_dir

@@ -1147,7 +1147,7 @@ class IterableList(List[T_IterableObj]):
 
 
 class IterableClassWatcher(type):
-    """ Metaclass that watches """
+    """Metaclass that watches"""
 
     def __init__(cls, name: str, bases: Tuple, clsdict: Dict) -> None:
         for base in bases:
