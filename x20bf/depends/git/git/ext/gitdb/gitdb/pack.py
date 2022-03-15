@@ -34,9 +34,9 @@ import tempfile
 from binascii import crc32
 from struct import pack
 
-from gitdb.base import (  # Amazing !
+from gitdb.base import ODeltaPackStream  # Amazing !
+from gitdb.base import (
     ODeltaPackInfo,
-    ODeltaPackStream,
     ODeltaStream,
     OInfo,
     OPackInfo,

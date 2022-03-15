@@ -49,13 +49,8 @@ try:
     from git.refs import *  # @NoMove @IgnorePep8
     from git.remote import *  # @NoMove @IgnorePep8
     from git.repo import Repo  # @NoMove @IgnorePep8
-    from git.util import (  # @NoMove @IgnorePep8
-        Actor,
-        BlockingLockFile,
-        LockFile,
-        Stats,
-        rmtree,
-    )
+    from git.util import BlockingLockFile  # @NoMove @IgnorePep8
+    from git.util import Actor, LockFile, Stats, rmtree
 except GitError as exc:
     raise ImportError("%s: %s" % (exc.__class__.__name__, exc)) from exc
 

@@ -19,14 +19,8 @@ from typing import (
 )
 
 if sys.version_info[:2] >= (3, 8):
-    from typing import (  # noqa: F401
-        Final,
-        Literal,
-        Protocol,
-        SupportsIndex,
-        TypedDict,
-        runtime_checkable,
-    )
+    from typing import SupportsIndex  # noqa: F401
+    from typing import Final, Literal, Protocol, TypedDict, runtime_checkable
 else:
     from typing_extensions import SupportsIndex  # noqa: F401; noqa: F401
     from typing_extensions import Final, Literal, Protocol, TypedDict, runtime_checkable

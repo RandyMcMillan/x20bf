@@ -361,8 +361,9 @@ class Git(LazyMixin):
                 if mode in quiet:
                     pass
                 elif mode in warn or mode in error:
-                    err = dedent(
-                        """\
+                    err = (
+                        dedent(
+                            """\
                         %s
                         All git commands will error until this is rectified.
 
@@ -375,14 +376,16 @@ class Git(LazyMixin):
                         Example:
                             export %s=%s
                         """
-                    ) % (
-                        err,
-                        cls._refresh_env_var,
-                        "|".join(quiet),
-                        "|".join(warn),
-                        "|".join(error),
-                        cls._refresh_env_var,
-                        quiet[0],
+                        )
+                        % (
+                            err,
+                            cls._refresh_env_var,
+                            "|".join(quiet),
+                            "|".join(warn),
+                            "|".join(error),
+                            cls._refresh_env_var,
+                            quiet[0],
+                        )
                     )
 
                     if mode in warn:
@@ -390,8 +393,9 @@ class Git(LazyMixin):
                     else:
                         raise ImportError(err)
                 else:
-                    err = dedent(
-                        """\
+                    err = (
+                        dedent(
+                            """\
                         %s environment variable has been set but it has been set with an invalid value.
 
                         Use only the following values:
@@ -399,11 +403,13 @@ class Git(LazyMixin):
                             - %s: for a printed warning
                             - %s: for a raised exception
                         """
-                    ) % (
-                        cls._refresh_env_var,
-                        "|".join(quiet),
-                        "|".join(warn),
-                        "|".join(error),
+                        )
+                        % (
+                            cls._refresh_env_var,
+                            "|".join(quiet),
+                            "|".join(warn),
+                            "|".join(error),
+                        )
                     )
                     raise ImportError(err)
 

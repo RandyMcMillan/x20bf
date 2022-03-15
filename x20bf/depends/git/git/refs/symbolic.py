@@ -1,15 +1,6 @@
 import os
-from typing import (  # NOQA
-    TYPE_CHECKING,
-    Any,
-    Iterator,
-    List,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import Type  # NOQA
+from typing import TYPE_CHECKING, Any, Iterator, List, Tuple, TypeVar, Union, cast
 
 from git.compat import defenc
 from git.objects import Object
