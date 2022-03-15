@@ -2,18 +2,15 @@ default_language_version:
   python: python3
 repos:
   - repo: https://github.com/psf/black
-    rev: 20.8b1
+    rev: 22.1.0
     hooks:
       - id: black
-        exclude: x20bf/depends, x20bf/x20bf/depends, tests/depends
   - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.4
+    rev: 3.9.2
     hooks:
       - id: flake8
         additional_dependencies: ["flake8-bugbear"]
-        exclude: x20bf/depends, x20bf/x20bf/depends, tests/depends
   - repo: https://github.com/PyCQA/isort
-    rev: 5.7.0
+    rev: 5.10.1
     hooks:
       - id: isort
-        exclude: x20bf/x20bf/depends, tests/depends

@@ -24,7 +24,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.isort]
 src_paths = ["x20bf", "tests"]
-skip = ["depends/fastapi","venv", "build"]
+skip = ["venv", "build"]
 
 [tool.black]
 line-length = 88
@@ -32,8 +32,8 @@ target-version = ['py36', 'py37', 'py38']
 include = '\.pyi?$'
 extend-exclude = '''
 /(
-  # The following are specific to Black, you probably don't want those.
-  | depends/fastapi/scripts/docs.py
-  | tests/data
+  | tests/depends
+  | tests/scripts
+  | tests/sources
 )/
 '''
