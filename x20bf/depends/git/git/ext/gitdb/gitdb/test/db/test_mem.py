@@ -2,18 +2,11 @@
 #
 # This module is part of GitDB and is released under
 # the New BSD License: http://www.opensource.org/licenses/bsd-license.php
-from gitdb.test.db.lib import (
-    TestDBBase,
-    with_rw_directory
-)
-from gitdb.db import (
-    MemoryDB,
-    LooseObjectDB
-)
+from gitdb.db import LooseObjectDB, MemoryDB
+from gitdb.test.db.lib import TestDBBase, with_rw_directory
 
 
 class TestMemoryDB(TestDBBase):
-
     @with_rw_directory
     def test_writing(self, path):
         mdb = MemoryDB()

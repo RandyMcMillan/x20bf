@@ -2,17 +2,13 @@
 #
 # This module is part of GitDB and is released under
 # the New BSD License: http://www.opensource.org/licenses/bsd-license.php
-from gitdb.test.db.lib import (
-    TestDBBase,
-    with_rw_directory
-)
 from gitdb.db import LooseObjectDB
 from gitdb.exc import BadObject
+from gitdb.test.db.lib import TestDBBase, with_rw_directory
 from gitdb.util import bin_to_hex
 
 
 class TestLooseDB(TestDBBase):
-
     @with_rw_directory
     def test_basics(self, path):
         ldb = LooseObjectDB(path)
@@ -32,5 +28,5 @@ class TestLooseDB(TestDBBase):
             assert bin_to_hex(ldb.partial_to_complete_sha_hex(short_sha)) == long_sha
         # END for each sha
 
-        self.assertRaises(BadObject, ldb.partial_to_complete_sha_hex, '0000')
+        self.assertRaises(BadObject, ldb.partial_to_complete_sha_hex, "0000")
         # raises if no object could be found

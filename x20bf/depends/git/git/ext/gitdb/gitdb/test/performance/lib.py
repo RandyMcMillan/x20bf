@@ -5,13 +5,11 @@
 """Contains library functions"""
 from gitdb.test.lib import TestBase
 
+# { Base Classes
 
-
-#{ Base Classes
 
 class TestBigRepoR(TestBase):
-    """A placeholder in case we want to add additional functionality to all performance test-cases
-    """
+    """A placeholder in case we want to add additional functionality to all performance test-cases"""
 
 
-#} END base classes
+# } END base classes

@@ -4,32 +4,22 @@
 # the New BSD License: http://www.opensource.org/licenses/bsd-license.php
 """Test for object db"""
 
-from gitdb.test.lib import (
-    TestBase,
-    DummyStream,
-    make_bytes,
-    make_object,
-    fixture_path
-)
+import os
+import tempfile
+import zlib
+from io import BytesIO
 
 from gitdb import (
     DecompressMemMapReader,
     FDCompressedSha1Writer,
-    LooseObjectDB,
-    Sha1Writer,
-    MemoryDB,
     IStream,
+    LooseObjectDB,
+    MemoryDB,
+    Sha1Writer,
 )
+from gitdb.test.lib import DummyStream, TestBase, fixture_path, make_bytes, make_object
+from gitdb.typ import str_blob_type
 from gitdb.util import hex_to_bin
-
-import zlib
-from gitdb.typ import (
-    str_blob_type
-)
-
-import tempfile
-import os
-from io import BytesIO
 
 
 class TestStream(TestBase):
@@ -45,18 +35,21 @@ class TestStream(TestBase):
         :param rewind_stream: function called to rewind the stream to make it ready
             for reuse"""
         ns = 10
-        assert len(cdata) > ns - 1, "Data must be larger than %i, was %i" % (ns, len(cdata))
+        assert len(cdata) > ns - 1, "Data must be larger than %i, was %i" % (
+            ns,
+            len(cdata),
+        )
 
         # read in small steps
         ss = len(cdata) // ns
         for i in range(ns):
             data = stream.read(ss)
-            chunk = cdata[i * ss:(i + 1) * ss]
+            chunk = cdata[i * ss : (i + 1) * ss]
             assert data == chunk
         # END for each step
         rest = stream.read()
         if rest:
-            assert rest == cdata[-len(rest):]
+            assert rest == cdata[-len(rest) :]
         # END handle rest
 
         if isinstance(stream, DecompressMemMapReader):
@@ -86,17 +79,23 @@ class TestStream(TestBase):
                     if with_size:
                         # need object data
                         zdata = zlib.compress(make_object(str_blob_type, cdata))
-                        typ, size, reader = DecompressMemMapReader.new(zdata, close_on_deletion)
+                        typ, size, reader = DecompressMemMapReader.new(
+                            zdata, close_on_deletion
+                        )
                         assert size == len(cdata)
                         assert typ == str_blob_type
 
                         # even if we don't set the size, it will be set automatically on first read
-                        test_reader = DecompressMemMapReader(zdata, close_on_deletion=False)
+                        test_reader = DecompressMemMapReader(
+                            zdata, close_on_deletion=False
+                        )
                         assert test_reader._s == len(cdata)
                     else:
                         # here we need content data
                         zdata = zlib.compress(cdata)
-                        reader = DecompressMemMapReader(zdata, close_on_deletion, len(cdata))
+                        reader = DecompressMemMapReader(
+                            zdata, close_on_deletion, len(cdata)
+                        )
                         assert reader._s == len(cdata)
                     # END get reader
 
@@ -107,7 +106,7 @@ class TestStream(TestBase):
                     reader._m = dummy
 
                     assert not dummy.closed
-                    del(reader)
+                    del reader
                     assert dummy.closed == close_on_deletion
                 # END for each datasize
             # END whether size should be used
@@ -138,20 +137,22 @@ class TestStream(TestBase):
             self.assertRaises(OSError, os.close, fd)
 
             # read everything back, compare to data we zip
-            fd = os.open(path, os.O_RDONLY | getattr(os, 'O_BINARY', 0))
+            fd = os.open(path, os.O_RDONLY | getattr(os, "O_BINARY", 0))
             written_data = os.read(fd, os.path.getsize(path))
             assert len(written_data) == os.path.getsize(path)
             os.close(fd)
-            assert written_data == zlib.compress(data, 1)   # best speed
+            assert written_data == zlib.compress(data, 1)  # best speed
 
             os.remove(path)
         # END for each os
 
     def test_decompress_reader_special_case(self):
-        odb = LooseObjectDB(fixture_path('objects'))
+        odb = LooseObjectDB(fixture_path("objects"))
         mdb = MemoryDB()
-        for sha in (b'888401851f15db0eed60eb1bc29dec5ddcace911',
-                    b'7bb839852ed5e3a069966281bb08d50012fb309b',):
+        for sha in (
+            b"888401851f15db0eed60eb1bc29dec5ddcace911",
+            b"7bb839852ed5e3a069966281bb08d50012fb309b",
+        ):
             ostream = odb.stream(hex_to_bin(sha))
 
             # if there is a bug, we will be missing one byte exactly !

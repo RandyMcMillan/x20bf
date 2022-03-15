@@ -3,23 +3,14 @@
 # This module is part of GitDB and is released under
 # the New BSD License: http://www.opensource.org/licenses/bsd-license.php
 """Contains implementations of database retrieveing objects"""
-from gitdb.util import (
-    join,
-    LazyMixin,
-    hex_to_bin
-)
-
-from gitdb.utils.encoding import force_text
-from gitdb.exc import (
-    BadObject,
-    AmbiguousObjectName
-)
-
-from itertools import chain
 from functools import reduce
+from itertools import chain
 
+from gitdb.exc import AmbiguousObjectName, BadObject
+from gitdb.util import LazyMixin, hex_to_bin, join
+from gitdb.utils.encoding import force_text
 
-__all__ = ('ObjectDBR', 'ObjectDBW', 'FileDBBase', 'CompoundDB', 'CachingDB')
+__all__ = ("ObjectDBR", "ObjectDBW", "FileDBBase", "CompoundDB", "CachingDB")
 
 
 class ObjectDBR(object):
@@ -30,7 +21,7 @@ class ObjectDBR(object):
     def __contains__(self, sha):
         return self.has_obj
 
-    #{ Query Interface
+    # { Query Interface
     def has_object(self, sha):
         """
         Whether the object identified by the given 20 bytes
@@ -41,7 +32,7 @@ class ObjectDBR(object):
         raise NotImplementedError("To be implemented in subclass")
 
     def info(self, sha):
-        """ :return: OInfo instance
+        """:return: OInfo instance
         :param sha: bytes binary sha
         :raise BadObject:"""
         raise NotImplementedError("To be implemented in subclass")
@@ -60,7 +51,7 @@ class ObjectDBR(object):
         """Return iterator yielding 20 byte shas for all objects in this data base"""
         raise NotImplementedError()
 
-    #} END query interface
+    # } END query interface
 
 
 class ObjectDBW(object):
@@ -70,7 +61,7 @@ class ObjectDBW(object):
     def __init__(self, *args, **kwargs):
         self._ostream = None
 
-    #{ Edit Interface
+    # { Edit Interface
     def set_ostream(self, stream):
         """
         Adjusts the stream to which all data should be sent when storing new objects
@@ -102,7 +93,7 @@ class ObjectDBW(object):
         :raise IOError: if data could not be written"""
         raise NotImplementedError("To be implemented in subclass")
 
-    #} END edit interface
+    # } END edit interface
 
 
 class FileDBBase(object):
@@ -120,7 +111,7 @@ class FileDBBase(object):
         super(FileDBBase, self).__init__()
         self._root_path = root_path
 
-    #{ Interface
+    # { Interface
     def root_path(self):
         """:return: path at which this db operates"""
         return self._root_path
@@ -130,14 +121,15 @@ class FileDBBase(object):
         :return: the given relative path relative to our database root, allowing
             to pontentially access datafiles"""
         return join(self._root_path, force_text(rela_path))
-    #} END interface
+
+    # } END interface
 
 
 class CachingDB(object):
 
     """A database which uses caches to speed-up access"""
 
-    #{ Interface
+    # { Interface
     def update_cache(self, force=False):
         """
         Call this method if the underlying data changed to trigger an update
@@ -171,9 +163,9 @@ class CompoundDB(ObjectDBR, LazyMixin, CachingDB):
     Define _set_cache_ to update it with your databases"""
 
     def _set_cache_(self, attr):
-        if attr == '_dbs':
+        if attr == "_dbs":
             self._dbs = list()
-        elif attr == '_db_cache':
+        elif attr == "_db_cache":
             self._db_cache = dict()
         else:
             super(CompoundDB, self)._set_cache_(attr)
@@ -196,7 +188,7 @@ class CompoundDB(ObjectDBR, LazyMixin, CachingDB):
         # END for each database
         raise BadObject(sha)
 
-    #{ ObjectDBR interface
+    # { ObjectDBR interface
 
     def has_object(self, sha):
         try:
@@ -219,9 +211,9 @@ class CompoundDB(ObjectDBR, LazyMixin, CachingDB):
     def sha_iter(self):
         return chain(*(db.sha_iter() for db in self._dbs))
 
-    #} END object DBR Interface
+    # } END object DBR Interface
 
-    #{ Interface
+    # { Interface
 
     def databases(self):
         """:return: tuple of database instances we use for lookups"""
@@ -242,7 +234,7 @@ class CompoundDB(ObjectDBR, LazyMixin, CachingDB):
         """
         :return: 20 byte binary sha1 from the given less-than-40 byte hexsha (bytes or str)
         :param partial_hexsha: hexsha with less than 40 byte
-        :raise AmbiguousObjectName: """
+        :raise AmbiguousObjectName:"""
         databases = list()
         _databases_recursive(self, databases)
         partial_hexsha = force_text(partial_hexsha)
@@ -257,10 +249,12 @@ class CompoundDB(ObjectDBR, LazyMixin, CachingDB):
         for db in databases:
             full_bin_sha = None
             try:
-                if hasattr(db, 'partial_to_complete_sha_hex'):
+                if hasattr(db, "partial_to_complete_sha_hex"):
                     full_bin_sha = db.partial_to_complete_sha_hex(partial_hexsha)
                 else:
-                    full_bin_sha = db.partial_to_complete_sha(partial_binsha, len_partial_hexsha)
+                    full_bin_sha = db.partial_to_complete_sha(
+                        partial_binsha, len_partial_hexsha
+                    )
                 # END handle database type
             except BadObject:
                 continue
@@ -275,4 +269,4 @@ class CompoundDB(ObjectDBR, LazyMixin, CachingDB):
             raise BadObject(partial_binsha)
         return candidate
 
-    #} END interface
+    # } END interface

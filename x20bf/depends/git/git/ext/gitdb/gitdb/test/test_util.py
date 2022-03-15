@@ -3,20 +3,14 @@
 # This module is part of GitDB and is released under
 # the New BSD License: http://www.opensource.org/licenses/bsd-license.php
 """Test for object db"""
-import tempfile
 import os
+import tempfile
 
 from gitdb.test.lib import TestBase
-from gitdb.util import (
-    to_hex_sha,
-    to_bin_sha,
-    NULL_HEX_SHA,
-    LockedFD
-)
+from gitdb.util import NULL_HEX_SHA, LockedFD, to_bin_sha, to_hex_sha
 
 
 class TestUtils(TestBase):
-
     def test_basics(self):
         assert to_hex_sha(NULL_HEX_SHA) == NULL_HEX_SHA
         assert len(to_bin_sha(NULL_HEX_SHA)) == 20
@@ -67,14 +61,14 @@ class TestUtils(TestBase):
 
             assert os.path.isfile(lockfilepath)
             # deletion rolls back
-            del(lfd)
+            del lfd
             assert not os.path.isfile(lockfilepath)
 
             # write data - concurrently
             lfd = LockedFD(my_file)
             olfd = LockedFD(my_file)
             assert not os.path.isfile(lockfilepath)
-            wfdstream = lfd.open(write=True, stream=True)       # this time as stream
+            wfdstream = lfd.open(write=True, stream=True)  # this time as stream
             assert os.path.isfile(lockfilepath)
             # another one fails
             self.assertRaises(IOError, olfd.open)

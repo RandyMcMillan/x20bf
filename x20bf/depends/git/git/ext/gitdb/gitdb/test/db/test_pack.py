@@ -2,24 +2,18 @@
 #
 # This module is part of GitDB and is released under
 # the New BSD License: http://www.opensource.org/licenses/bsd-license.php
-from gitdb.test.db.lib import (
-    TestDBBase,
-    with_rw_directory,
-    with_packs_rw
-)
-from gitdb.db import PackedDB
-
-from gitdb.exc import BadObject, AmbiguousObjectName
-from gitdb.util import mman
-
 import os
 import random
 import sys
 
+from gitdb.db import PackedDB
+from gitdb.exc import AmbiguousObjectName, BadObject
+from gitdb.test.db.lib import TestDBBase, with_packs_rw, with_rw_directory
+from gitdb.util import mman
 from nose.plugins.skip import SkipTest
 
-class TestPackDB(TestDBBase):
 
+class TestPackDB(TestDBBase):
     @with_rw_directory
     @with_packs_rw
     def test_writing(self, path):
@@ -70,7 +64,7 @@ class TestPackDB(TestDBBase):
         min_bytes = 2
         num_ambiguous = 0
         for i, sha in enumerate(sha_list):
-            short_sha = sha[:max((i % max_bytes), min_bytes)]
+            short_sha = sha[: max((i % max_bytes), min_bytes)]
             try:
                 assert pdb.partial_to_complete_sha(short_sha, len(short_sha) * 2) == sha
             except AmbiguousObjectName:
@@ -84,4 +78,4 @@ class TestPackDB(TestDBBase):
         # assert num_ambiguous
 
         # non-existing
-        self.assertRaises(BadObject, pdb.partial_to_complete_sha, b'\0\0', 4)
+        self.assertRaises(BadObject, pdb.partial_to_complete_sha, b"\0\0", 4)

@@ -8,7 +8,7 @@ __author__ = "Sebastian Thiel"
 __contact__ = "byronimo@gmail.com"
 __homepage__ = "https://github.com/gitpython-developers/gitdb"
 version_info = (4, 0, 9)
-__version__ = '.'.join(str(i) for i in version_info)
+__version__ = ".".join(str(i) for i in version_info)
 
 setup(
     name="gitdb",
@@ -17,12 +17,12 @@ setup(
     author=__author__,
     author_email=__contact__,
     url=__homepage__,
-    packages=('gitdb', 'gitdb.db', 'gitdb.utils', 'gitdb.test'),
+    packages=("gitdb", "gitdb.db", "gitdb.utils", "gitdb.test"),
     license="BSD License",
     zip_safe=False,
-    install_requires=['smmap>=3.0.1,<6'],
+    install_requires=["smmap>=3.0.1,<6"],
     long_description="""GitDB is a pure-Python git object database""",
-    python_requires='>=3.6',
+    python_requires=">=3.6",
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         "Development Status :: 5 - Production/Stable",
@@ -39,5 +39,5 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
-    ]
+    ],
 )

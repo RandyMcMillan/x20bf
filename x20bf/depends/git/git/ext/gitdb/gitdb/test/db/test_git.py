@@ -3,20 +3,17 @@
 # This module is part of GitDB and is released under
 # the New BSD License: http://www.opensource.org/licenses/bsd-license.php
 import os
-from gitdb.test.db.lib import (
-    TestDBBase,
-    with_rw_directory
-)
-from gitdb.exc import BadObject
+
+from gitdb.base import OInfo, OStream
 from gitdb.db import GitDB
-from gitdb.base import OStream, OInfo
+from gitdb.exc import BadObject
+from gitdb.test.db.lib import TestDBBase, with_rw_directory
 from gitdb.util import bin_to_hex
 
 
 class TestGitDB(TestDBBase):
-
     def test_reading(self):
-        gdb = GitDB(os.path.join(self.gitrepopath, 'objects'))
+        gdb = GitDB(os.path.join(self.gitrepopath, "objects"))
 
         # we have packs and loose objects, alternates doesn't necessarily exist
         assert 1 < len(gdb.databases()) < 4
@@ -40,7 +37,10 @@ class TestGitDB(TestDBBase):
 
         # mix even/uneven hexshas
         for i, binsha in enumerate(sha_list):
-            assert gdb.partial_to_complete_sha_hex(bin_to_hex(binsha)[:8 - (i % 2)]) == binsha
+            assert (
+                gdb.partial_to_complete_sha_hex(bin_to_hex(binsha)[: 8 - (i % 2)])
+                == binsha
+            )
         # END for each sha
 
         self.assertRaises(BadObject, gdb.partial_to_complete_sha_hex, "0000")

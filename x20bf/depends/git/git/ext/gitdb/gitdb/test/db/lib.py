@@ -3,33 +3,16 @@
 # This module is part of GitDB and is released under
 # the New BSD License: http://www.opensource.org/licenses/bsd-license.php
 """Base classes for object db testing"""
-from gitdb.test.lib import (
-    with_rw_directory,
-    with_packs_rw,
-    fixture_path,
-    TestBase
-)
-
-from gitdb.stream import (
-    Sha1Writer,
-    ZippedStoreShaWriter
-)
-
-from gitdb.base import (
-    IStream,
-    OStream,
-    OInfo
-)
-
-from gitdb.exc import BadObject
-from gitdb.typ import str_blob_type
-
 from io import BytesIO
-
 from struct import pack
 
+from gitdb.base import IStream, OInfo, OStream
+from gitdb.exc import BadObject
+from gitdb.stream import Sha1Writer, ZippedStoreShaWriter
+from gitdb.test.lib import TestBase, fixture_path, with_packs_rw, with_rw_directory
+from gitdb.typ import str_blob_type
 
-__all__ = ('TestDBBase', 'with_rw_directory', 'with_packs_rw', 'fixture_path')
+__all__ = ("TestDBBase", "with_rw_directory", "with_packs_rw", "fixture_path")
 
 
 class TestDBBase(TestBase):
@@ -37,8 +20,8 @@ class TestDBBase(TestBase):
     """Base class providing testing routines on databases"""
 
     # data
-    two_lines = b'1234\nhello world'
-    all_data = (two_lines, )
+    two_lines = b"1234\nhello world"
+    all_data = (two_lines,)
 
     def _assert_object_writing_simple(self, db):
         # write a bunch of objects and query their streams and info

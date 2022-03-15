@@ -3,45 +3,46 @@
 # This module is part of GitDB and is released under
 # the New BSD License: http://www.opensource.org/licenses/bsd-license.php
 
-from io import BytesIO
-
 import mmap
 import os
 import sys
 import zlib
+from io import BytesIO
 
+from gitdb.const import BYTE_SPACE, NULL_BYTE
 from gitdb.fun import (
-    msb_size,
-    stream_copy,
     apply_delta_data,
     connect_deltas,
-    delta_types
+    delta_types,
+    msb_size,
+    stream_copy,
 )
-
-from gitdb.util import (
-    allocate_memory,
-    LazyMixin,
-    make_sha,
-    write,
-    close,
-)
-
-from gitdb.const import NULL_BYTE, BYTE_SPACE
+from gitdb.util import LazyMixin, allocate_memory, close, make_sha, write
 from gitdb.utils.encoding import force_bytes
 
 has_perf_mod = False
 try:
     from gitdb_speedups._perf import apply_delta as c_apply_delta
+
     has_perf_mod = True
 except ImportError:
     pass
 
-__all__ = ('DecompressMemMapReader', 'FDCompressedSha1Writer', 'DeltaApplyReader',
-           'Sha1Writer', 'FlexibleSha1Writer', 'ZippedStoreShaWriter', 'FDCompressedSha1Writer',
-           'FDStream', 'NullStream')
+__all__ = (
+    "DecompressMemMapReader",
+    "FDCompressedSha1Writer",
+    "DeltaApplyReader",
+    "Sha1Writer",
+    "FlexibleSha1Writer",
+    "ZippedStoreShaWriter",
+    "FDCompressedSha1Writer",
+    "FDStream",
+    "NullStream",
+)
 
 
-#{ RO Streams
+# { RO Streams
+
 
 class DecompressMemMapReader(LazyMixin):
 
@@ -60,30 +61,42 @@ class DecompressMemMapReader(LazyMixin):
         hence we try to find a good tradeoff between allocation time and number of
         times we actually allocate. An own zlib implementation would be good here
         to better support streamed reading - it would only need to keep the mmap
-        and decompress it into chunks, that's all ... """
-    __slots__ = ('_m', '_zip', '_buf', '_buflen', '_br', '_cws', '_cwe', '_s', '_close',
-                 '_cbr', '_phi')
+        and decompress it into chunks, that's all ..."""
 
-    max_read_size = 512 * 1024        # currently unused
+    __slots__ = (
+        "_m",
+        "_zip",
+        "_buf",
+        "_buflen",
+        "_br",
+        "_cws",
+        "_cwe",
+        "_s",
+        "_close",
+        "_cbr",
+        "_phi",
+    )
+
+    max_read_size = 512 * 1024  # currently unused
 
     def __init__(self, m, close_on_deletion, size=None):
         """Initialize with mmap for stream reading
         :param m: must be content data - use new if you have object data and no size"""
         self._m = m
         self._zip = zlib.decompressobj()
-        self._buf = None                        # buffer of decompressed bytes
-        self._buflen = 0                        # length of bytes in buffer
+        self._buf = None  # buffer of decompressed bytes
+        self._buflen = 0  # length of bytes in buffer
         if size is not None:
-            self._s = size                      # size of uncompressed data to read in total
-        self._br = 0                            # num uncompressed bytes read
-        self._cws = 0                           # start byte of compression window
-        self._cwe = 0                           # end byte of compression window
-        self._cbr = 0                           # number of compressed bytes read
-        self._phi = False                       # is True if we parsed the header info
-        self._close = close_on_deletion         # close the memmap on deletion ?
+            self._s = size  # size of uncompressed data to read in total
+        self._br = 0  # num uncompressed bytes read
+        self._cws = 0  # start byte of compression window
+        self._cwe = 0  # end byte of compression window
+        self._cbr = 0  # number of compressed bytes read
+        self._phi = False  # is True if we parsed the header info
+        self._close = close_on_deletion  # close the memmap on deletion ?
 
     def _set_cache_(self, attr):
-        assert attr == '_s'
+        assert attr == "_s"
         # only happens for size, which is a marker to indicate we still
         # have to parse the header from the stream
         self._parse_header_info()
@@ -118,7 +131,7 @@ class DecompressMemMapReader(LazyMixin):
 
         return typ, size
 
-    #{ Interface
+    # { Interface
 
     @classmethod
     def new(self, m, close_on_deletion=False):
@@ -140,10 +153,10 @@ class DecompressMemMapReader(LazyMixin):
     def close(self):
         """Close our underlying stream of compressed bytes if this was allowed during initialization
         :return: True if we closed the underlying stream
-        :note: can be called safely 
+        :note: can be called safely
         """
         if self._close:
-            if hasattr(self._m, 'close'):
+            if hasattr(self._m, "close"):
                 self._m.close()
             self._close = False
         # END handle resource freeing
@@ -176,7 +189,7 @@ class DecompressMemMapReader(LazyMixin):
             # manipulate the bytes-read to allow our own read method to continue
             # but keep the window at its current position
             self._br = 0
-            if hasattr(self._zip, 'status'):
+            if hasattr(self._zip, "status"):
                 while self._zip.status == zlib.Z_OK:
                     self.read(mmap.PAGESIZE)
                 # END scrub-loop custom zlib
@@ -195,12 +208,12 @@ class DecompressMemMapReader(LazyMixin):
         # from the count already
         return self._cbr
 
-    #} END interface
+    # } END interface
 
-    def seek(self, offset, whence=getattr(os, 'SEEK_SET', 0)):
+    def seek(self, offset, whence=getattr(os, "SEEK_SET", 0)):
         """Allows to reset the stream to restart reading
         :raise ValueError: If offset and whence are not 0"""
-        if offset != 0 or whence != getattr(os, 'SEEK_SET', 0):
+        if offset != 0 or whence != getattr(os, "SEEK_SET", 0):
             raise ValueError("Can only seek to position 0")
         # END handle offset
 
@@ -208,7 +221,7 @@ class DecompressMemMapReader(LazyMixin):
         self._br = self._cws = self._cwe = self._cbr = 0
         if self._phi:
             self._phi = False
-            del(self._s)        # trigger header parsing on first access
+            del self._s  # trigger header parsing on first access
         # END skip header
 
     def read(self, size=-1):
@@ -234,7 +247,7 @@ class DecompressMemMapReader(LazyMixin):
                 self._br += size
                 return dat
             else:
-                dat = self._buf.read()      # ouch, duplicates data
+                dat = self._buf.read()  # ouch, duplicates data
                 size -= self._buflen
                 self._br += self._buflen
 
@@ -276,7 +289,7 @@ class DecompressMemMapReader(LazyMixin):
         # END adjust winsize
 
         # takes a slice, but doesn't copy the data, it says ...
-        indata = self._m[self._cws:self._cwe]
+        indata = self._m[self._cws : self._cwe]
 
         # get the actual window end to be sure we don't use it for computations
         self._cwe = self._cws + len(indata)
@@ -287,14 +300,14 @@ class DecompressMemMapReader(LazyMixin):
         # if we hit the end of the stream
         # NOTE: Behavior changed in PY2.7 onward, which requires special handling to make the tests work properly.
         # They are thorough, and I assume it is truly working.
-        # Why is this logic as convoluted as it is ? Please look at the table in 
+        # Why is this logic as convoluted as it is ? Please look at the table in
         # https://github.com/gitpython-developers/gitdb/issues/19 to learn about the test-results.
         # Bascially, on py2.6, you want to use branch 1, whereas on all other python version, the second branch
-        # will be the one that works. 
-        # However, the zlib VERSIONs as well as the platform check is used to further match the entries in the 
+        # will be the one that works.
+        # However, the zlib VERSIONs as well as the platform check is used to further match the entries in the
         # table in the github issue. This is it ... it was the only way I could make this work everywhere.
         # IT's CERTAINLY GOING TO BITE US IN THE FUTURE ... .
-        if zlib.ZLIB_VERSION in ('1.2.7', '1.2.5') and not sys.platform == 'darwin':
+        if zlib.ZLIB_VERSION in ("1.2.7", "1.2.5") and not sys.platform == "darwin":
             unused_datalen = len(self._zip.unconsumed_tail)
         else:
             unused_datalen = len(self._zip.unconsumed_tail) + len(self._zip.unused_data)
@@ -345,17 +358,18 @@ class DeltaApplyReader(LazyMixin):
 
      * cmd == 0 - invalid operation ( or error in delta stream )
     """
+
     __slots__ = (
-        "_bstream",             # base stream to which to apply the deltas
-        "_dstreams",            # tuple of delta stream readers
-        "_mm_target",           # memory map of the delta-applied data
-        "_size",                # actual number of bytes in _mm_target
-        "_br"                   # number of bytes read
+        "_bstream",  # base stream to which to apply the deltas
+        "_dstreams",  # tuple of delta stream readers
+        "_mm_target",  # memory map of the delta-applied data
+        "_size",  # actual number of bytes in _mm_target
+        "_br",  # number of bytes read
     )
 
-    #{ Configuration
+    # { Configuration
     k_max_memory_move = 250 * 1000 * 1000
-    #} END configuration
+    # } END configuration
 
     def __init__(self, stream_list):
         """Initialize this instance with a list of streams, the first stream being
@@ -393,7 +407,9 @@ class DeltaApplyReader(LazyMixin):
         self._mm_target = allocate_memory(self._size)
 
         bbuf = allocate_memory(self._bstream.size)
-        stream_copy(self._bstream.read, bbuf.write, self._bstream.size, 256 * mmap.PAGESIZE)
+        stream_copy(
+            self._bstream.read, bbuf.write, self._bstream.size, 256 * mmap.PAGESIZE
+        )
 
         # APPLY CHUNKS
         write = self._mm_target.write
@@ -409,7 +425,7 @@ class DeltaApplyReader(LazyMixin):
         buffer_info_list = list()
         max_target_size = 0
         for dstream in self._dstreams:
-            buf = dstream.read(512)         # read the header information + X
+            buf = dstream.read(512)  # read the header information + X
             offset, src_size = msb_size(buf)
             offset, target_size = msb_size(buf, offset)
             buffer_info_list.append((buf[offset:], offset, src_size, target_size))
@@ -443,7 +459,9 @@ class DeltaApplyReader(LazyMixin):
         # For the actual copying, we use a seek and write pattern of buffer
         # slices.
         final_target_size = None
-        for (dbuf, offset, src_size, target_size), dstream in zip(reversed(buffer_info_list), reversed(self._dstreams)):
+        for (dbuf, offset, src_size, target_size), dstream in zip(
+            reversed(buffer_info_list), reversed(self._dstreams)
+        ):
             # allocate a buffer to hold all delta data - fill in the data for
             # fast access. We do this as we know that reading individual bytes
             # from our stream would be slower than necessary ( although possible )
@@ -455,7 +473,7 @@ class DeltaApplyReader(LazyMixin):
             stream_copy(dstream.read, ddata.write, dstream.size, 256 * mmap.PAGESIZE)
 
             #######################################################################
-            if 'c_apply_delta' in globals():
+            if "c_apply_delta" in globals():
                 c_apply_delta(bbuf, ddata, tbuf)
             else:
                 apply_delta_data(bbuf, src_size, ddata, len(ddata), tbuf.write)
@@ -475,16 +493,16 @@ class DeltaApplyReader(LazyMixin):
         self._mm_target = bbuf
         self._size = final_target_size
 
-    #{ Configuration
+    # { Configuration
     if not has_perf_mod:
         _set_cache_ = _set_cache_brute_
     else:
         _set_cache_ = _set_cache_too_slow_without_c
 
-    #} END configuration
+    # } END configuration
 
     def read(self, count=0):
-        bl = self._size - self._br      # bytes left
+        bl = self._size - self._br  # bytes left
         if count < 1 or count > bl:
             count = bl
         # NOTE: we could check for certain size limits, and possibly
@@ -493,17 +511,17 @@ class DeltaApplyReader(LazyMixin):
         self._br += len(data)
         return data
 
-    def seek(self, offset, whence=getattr(os, 'SEEK_SET', 0)):
+    def seek(self, offset, whence=getattr(os, "SEEK_SET", 0)):
         """Allows to reset the stream to restart reading
 
         :raise ValueError: If offset and whence are not 0"""
-        if offset != 0 or whence != getattr(os, 'SEEK_SET', 0):
+        if offset != 0 or whence != getattr(os, "SEEK_SET", 0):
             raise ValueError("Can only seek to position 0")
         # END handle offset
         self._br = 0
         self._mm_target.seek(0)
 
-    #{ Interface
+    # { Interface
 
     @classmethod
     def new(cls, stream_list):
@@ -524,13 +542,15 @@ class DeltaApplyReader(LazyMixin):
 
         if stream_list[-1].type_id in delta_types:
             raise ValueError(
-                "Cannot resolve deltas if there is no base object stream, last one was type: %s" % stream_list[-1].type)
+                "Cannot resolve deltas if there is no base object stream, last one was type: %s"
+                % stream_list[-1].type
+            )
         # END check stream
         return cls(stream_list)
 
-    #} END interface
+    # } END interface
 
-    #{ OInfo like Interface
+    # { OInfo like Interface
 
     @property
     def type(self):
@@ -545,24 +565,26 @@ class DeltaApplyReader(LazyMixin):
         """:return: number of uncompressed bytes in the stream"""
         return self._size
 
-    #} END oinfo like interface
+    # } END oinfo like interface
 
 
-#} END RO streams
+# } END RO streams
 
 
-#{ W Streams
+# { W Streams
+
 
 class Sha1Writer(object):
 
     """Simple stream writer which produces a sha whenever you like as it degests
     everything it is supposed to write"""
+
     __slots__ = "sha1"
 
     def __init__(self):
         self.sha1 = make_sha()
 
-    #{ Stream Interface
+    # { Stream Interface
 
     def write(self, data):
         """:raise IOError: If not all bytes could be written
@@ -575,7 +597,7 @@ class Sha1Writer(object):
 
     # END stream interface
 
-    #{ Interface
+    # { Interface
 
     def sha(self, as_hex=False):
         """:return: sha so far
@@ -584,14 +606,15 @@ class Sha1Writer(object):
             return self.sha1.hexdigest()
         return self.sha1.digest()
 
-    #} END interface
+    # } END interface
 
 
 class FlexibleSha1Writer(Sha1Writer):
 
     """Writer producing a sha1 while passing on the written bytes to the given
     write function"""
-    __slots__ = 'writer'
+
+    __slots__ = "writer"
 
     def __init__(self, writer):
         Sha1Writer.__init__(self)
@@ -605,7 +628,8 @@ class FlexibleSha1Writer(Sha1Writer):
 class ZippedStoreShaWriter(Sha1Writer):
 
     """Remembers everything someone writes to it and generates a sha"""
-    __slots__ = ('buf', 'zip')
+
+    __slots__ = ("buf", "zip")
 
     def __init__(self):
         Sha1Writer.__init__(self)
@@ -624,10 +648,10 @@ class ZippedStoreShaWriter(Sha1Writer):
     def close(self):
         self.buf.write(self.zip.flush())
 
-    def seek(self, offset, whence=getattr(os, 'SEEK_SET', 0)):
+    def seek(self, offset, whence=getattr(os, "SEEK_SET", 0)):
         """Seeking currently only supports to rewind written data
         Multiple writes are not supported"""
-        if offset != 0 or whence != getattr(os, 'SEEK_SET', 0):
+        if offset != 0 or whence != getattr(os, "SEEK_SET", 0):
             raise ValueError("Can only seek to position 0")
         # END handle offset
         self.buf.seek(0)
@@ -644,6 +668,7 @@ class FDCompressedSha1Writer(Sha1Writer):
 
     **Note:** operates on raw file descriptors
     **Note:** for this to work, you have to use the close-method of this instance"""
+
     __slots__ = ("fd", "sha1", "zip")
 
     # default exception
@@ -654,7 +679,7 @@ class FDCompressedSha1Writer(Sha1Writer):
         self.fd = fd
         self.zip = zlib.compressobj(zlib.Z_BEST_SPEED)
 
-    #{ Stream Interface
+    # { Stream Interface
 
     def write(self, data):
         """:raise IOError: If not all bytes could be written
@@ -674,7 +699,7 @@ class FDCompressedSha1Writer(Sha1Writer):
             raise self.exc
         return close(self.fd)
 
-    #} END stream interface
+    # } END stream interface
 
 
 class FDStream(object):
@@ -682,7 +707,8 @@ class FDStream(object):
     """A simple wrapper providing the most basic functions on a file descriptor
     with the fileobject interface. Cannot use os.fdopen as the resulting stream
     takes ownership"""
-    __slots__ = ("_fd", '_pos')
+
+    __slots__ = ("_fd", "_pos")
 
     def __init__(self, fd):
         self._fd = fd
@@ -715,10 +741,11 @@ class NullStream(object):
 
     """A stream that does nothing but providing a stream interface.
     Use it like /dev/null"""
+
     __slots__ = tuple()
 
     def read(self, size=0):
-        return ''
+        return ""
 
     def close(self):
         pass
@@ -727,4 +754,4 @@ class NullStream(object):
         return len(data)
 
 
-#} END W streams
+# } END W streams

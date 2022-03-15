@@ -5,22 +5,19 @@
 """Specific test for pack streams only"""
 from __future__ import print_function
 
-from gitdb.test.performance.lib import (
-    TestBigRepoR
-)
-
-from gitdb.db.pack import PackedDB
-from gitdb.stream import NullStream
-from gitdb.pack import PackEntity
-from gitdb.test.lib import skip_on_travis_ci
-
 import os
 import sys
 from time import time
 
+from gitdb.db.pack import PackedDB
+from gitdb.pack import PackEntity
+from gitdb.stream import NullStream
+from gitdb.test.lib import skip_on_travis_ci
+from gitdb.test.performance.lib import TestBigRepoR
+
 
 class CountedNullStream(NullStream):
-    __slots__ = '_bw'
+    __slots__ = "_bw"
 
     def __init__(self):
         self._bw = 0
@@ -33,7 +30,6 @@ class CountedNullStream(NullStream):
 
 
 class TestPackStreamingPerformance(TestBigRepoR):
-
     @skip_on_travis_ci
     def test_pack_writing(self):
         # see how fast we can write a pack from object streams.
@@ -51,15 +47,24 @@ class TestPackStreamingPerformance(TestBigRepoR):
                 break
         # END gather objects for pack-writing
         elapsed = time() - st
-        print("PDB Streaming: Got %i streams by sha in in %f s ( %f streams/s )" %
-              (ni, elapsed, ni / (elapsed or 1)), file=sys.stderr)
+        print(
+            "PDB Streaming: Got %i streams by sha in in %f s ( %f streams/s )"
+            % (ni, elapsed, ni / (elapsed or 1)),
+            file=sys.stderr,
+        )
 
         st = time()
-        PackEntity.write_pack((pdb.stream(sha) for sha in pdb.sha_iter()), ostream.write, object_count=ni)
+        PackEntity.write_pack(
+            (pdb.stream(sha) for sha in pdb.sha_iter()), ostream.write, object_count=ni
+        )
         elapsed = time() - st
         total_kb = ostream.bytes_written() / 1000
-        print(sys.stderr, "PDB Streaming: Wrote pack of size %i kb in %f s (%f kb/s)" %
-              (total_kb, elapsed, total_kb / (elapsed or 1)), sys.stderr)
+        print(
+            sys.stderr,
+            "PDB Streaming: Wrote pack of size %i kb in %f s (%f kb/s)"
+            % (total_kb, elapsed, total_kb / (elapsed or 1)),
+            sys.stderr,
+        )
 
     @skip_on_travis_ci
     def test_stream_reading(self):
@@ -81,5 +86,9 @@ class TestPackStreamingPerformance(TestBigRepoR):
             count += 1
         elapsed = time() - st
         total_kib = total_size / 1000
-        print(sys.stderr, "PDB Streaming: Got %i streams by sha and read all bytes totallying %i KiB ( %f KiB / s ) in %f s ( %f streams/s )" %
-              (ni, total_kib, total_kib / (elapsed or 1), elapsed, ni / (elapsed or 1)), sys.stderr)
+        print(
+            sys.stderr,
+            "PDB Streaming: Got %i streams by sha and read all bytes totallying %i KiB ( %f KiB / s ) in %f s ( %f streams/s )"
+            % (ni, total_kib, total_kib / (elapsed or 1), elapsed, ni / (elapsed or 1)),
+            sys.stderr,
+        )

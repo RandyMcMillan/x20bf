@@ -3,30 +3,15 @@
 # This module is part of GitDB and is released under
 # the New BSD License: http://www.opensource.org/licenses/bsd-license.php
 """Contains the MemoryDatabase implementation"""
-from gitdb.db.loose import LooseObjectDB
-from gitdb.db.base import (
-    ObjectDBR,
-    ObjectDBW
-)
-
-from gitdb.base import (
-    OStream,
-    IStream,
-)
-
-from gitdb.exc import (
-    BadObject,
-    UnsupportedOperation
-)
-
-from gitdb.stream import (
-    ZippedStoreShaWriter,
-    DecompressMemMapReader,
-)
-
 from io import BytesIO
 
-__all__ = ("MemoryDB", )
+from gitdb.base import IStream, OStream
+from gitdb.db.base import ObjectDBR, ObjectDBW
+from gitdb.db.loose import LooseObjectDB
+from gitdb.exc import BadObject, UnsupportedOperation
+from gitdb.stream import DecompressMemMapReader, ZippedStoreShaWriter
+
+__all__ = ("MemoryDB",)
 
 
 class MemoryDB(ObjectDBR, ObjectDBW):
@@ -51,13 +36,17 @@ class MemoryDB(ObjectDBR, ObjectDBW):
         self._db.set_ostream(zstream)
 
         istream = self._db.store(istream)
-        zstream.close()     # close to flush
+        zstream.close()  # close to flush
         zstream.seek(0)
 
         # don't provide a size, the stream is written in object format, hence the
         # header needs decompression
-        decomp_stream = DecompressMemMapReader(zstream.getvalue(), close_on_deletion=False)
-        self._cache[istream.binsha] = OStream(istream.binsha, istream.type, istream.size, decomp_stream)
+        decomp_stream = DecompressMemMapReader(
+            zstream.getvalue(), close_on_deletion=False
+        )
+        self._cache[istream.binsha] = OStream(
+            istream.binsha, istream.type, istream.size, decomp_stream
+        )
 
         return istream
 
@@ -84,7 +73,7 @@ class MemoryDB(ObjectDBR, ObjectDBW):
     def sha_iter(self):
         return self._cache.keys()
 
-    #{ Interface
+    # { Interface
     def stream_copy(self, sha_iter, odb):
         """Copy the streams as identified by sha's yielded by sha_iter into the given odb
         The streams will be copied directly
@@ -107,4 +96,5 @@ class MemoryDB(ObjectDBR, ObjectDBW):
             count += 1
         # END for each sha
         return count
-    #} END interface
+
+    # } END interface
