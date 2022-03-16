@@ -53,8 +53,17 @@ setup(
         )
     ),
     license="Apache License 2.0",
-    keywords="",
+    keywords=["p2p", "decentralized", "gnupg", "node", "git", "bitcoin", "bitkarrot"],
     url="http://packages.python.org/x20bf",
+    install_requires=[
+        "pre_commit >= '2.1.0'",
+        "aiohttp >= '3.7.4.post0'",
+        "PyYAML >= '5.4.1'",
+        "gnupg >= '2.3.1'",
+        "asyncio >= '3.4.1'",
+        "p2pnetwork >= '1.1.0'",
+        "GitPython >= '3.1.27'",
+    ],
     packages=[
         "x20bf",
         "tests",
@@ -65,16 +74,6 @@ setup(
         "x20bf/depends/git/git/ext/gitdb/gitdb",
         "x20bf/depends/git/git/ext/gitdb/gitdb/ext/smmap/smmap",
     ],
-    # packages=find_packages(),
-    # packages=find_packages(
-    #     include=[
-    #         "0x02bf",
-    #         "p2pnetwork",
-    #         "gnupg",
-    #         "fastapi",
-    #     ],
-    #     exclude=["*.tests", "*.tests.*", "tests.*"],
-    # ),
     py_modules=[],
     long_description=read("README.md"),
     classifiers=[

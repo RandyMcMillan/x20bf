@@ -22,3 +22,4 @@ gnupg
 pytest
 configparser
 p2pnetwork
+GitPython
