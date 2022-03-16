@@ -298,6 +298,11 @@ fastapi: install-fastapi
 install-fastapi:
 	pushd $(DEPENDSPATH)/fastapi && $(PYTHON3) -m $(PIP) check . && popd
 	pushd $(DEPENDSPATH)/fastapi && $(PYTHON3) -m $(PIP) install . && popd
+.PHONY: install-git
+##	:install-git         install python GitPython
+install-git:
+	pushd $(DEPENDSPATH)/git && $(PYTHON3) -m $(PIP) check . && popd
+	pushd $(DEPENDSPATH)/git && $(PYTHON3) -m $(PIP) install . && popd
 
 
 .PHONY: depends
