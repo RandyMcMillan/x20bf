@@ -137,34 +137,34 @@ export DASH_U
 
 
 .PHONY: - help
-##	:
-##	:help
+##:	COMMAND              SUMMARY
+## :
+##:	help
 -: help
 
 .PHONY: init initialize requirements
-##	:report              environment args
-##	:init                initialize requirements
-##	:                    install .git/hooks/pre-commit
+##:	report               environment args
+##
+##:	init                 initialize requirements
 init: initialize requirements
 	# remove this artifact from gnupg tests
 	rm -rf rokeys/.gitignore || sudo -s rm -rf rokeys/.gitignore
 	cat x20bf/scripts/pre-commit > .git/hooks/pre-commit
 .PHONY: initialize
-##	:initialize          run 0x020bf/scripts/initialize
+##:	initialize           run 0x020bf/scripts/initialize
 initialize:
 	bash -c "./$(PROJECT_NAME)/scripts/initialize"
 .PHONY: requirements reqs
 
 reqs: requirements
-##	:requirements        pip install --user -r requirements.txt
+##:	requirements         pip install --user -r requirements.txt
 requirements:
 	$(PYTHON3) -m $(PIP) install $(DASH_U) --upgrade pip
 	$(PYTHON3) -m $(PIP) install $(DASH_U) -r requirements.txt
 
-
 .PHONY: venv
 ##	:
-##	:venv                create python3 virtual environment
+##:	venv                 create python3 virtual environment
 venv:
 	test -d venv || virtualenv venv
 	( \
@@ -175,7 +175,7 @@ venv:
 	@echo ". venv/bin/activate"
 	@echo "or:"
 	@echo "make test-venv"
-##	:test-venv           python3 ./tests/test.py
+##:	test-venv            python3 ./tests/test.py
 test-venv:
 	# insert test commands here
 	test -d venv || virtualenv venv
@@ -185,7 +185,7 @@ test-venv:
        python3 tests/test_import.py; \
        python3 tests/test_$(PROJECT_NAME)_version.py; \
 	);
-##	:test-venv-p2p       p2p test battery
+##:	test-venv-p2p        p2p test battery
 test-venv-p2p:
 	# insert test commands here
 	test -d venv || virtualenv venv
@@ -202,11 +202,11 @@ test-venv-p2p:
        python3 tests/my_own_p2p_application_using_dict.py; \
 	);
 
-##	:test-depends        test-gnupg test-p2p test-fastapi
+##:	test-depends         test-gnupg test-p2p test-fastapi
 test-depends: test-gnupg test-p2p
-##	:test-gnupg          python3 ./tests/depends/gnupg/test_gnupg.py
-##	:test-p2p            python3 ./tests/depends/p2p/setup.py
-##	:venv-clean          rm -rf venv rokeys test_gnupg.log
+##:	test-gnupg           python3 ./tests/depends/gnupg/test_gnupg.py
+##:	test-p2p             python3 ./tests/depends/p2p/setup.py
+##:	venv-clean           rm -rf venv rokeys test_gnupg.log
 venv-clean:
 	rm -rf venv
 	rm -rf rokeys
@@ -215,7 +215,7 @@ test-gnupg: venv
 	. venv/bin/activate;
 	python3 ./tests/depends/gnupg/setup.py install;
 	python3 ./tests/depends/gnupg/test_gnupg.py;
-##	:test-p2p            python3 ./tests/test.py
+##:	test-p2p             python3 ./tests/test.py
 test-p2p:
 	# insert test commands here
 	test -d venv || virtualenv venv
@@ -231,15 +231,17 @@ test-p2p:
 clean-venv: venv-clean
 
 .PHONY: build install dist
-##	:build               python3 setup.py build
+##:	PACKAGE:
+##	:
+##:	build                python3 setup.py build
 build: depends
 	python3 setup.py build
-##	:install             python3 -m pip install -e .
+##:	install              python3 -m pip install -e .
 install: build
 	rm -rf dist
 	$(PYTHON3) -m $(PIP) install -e .
-##	:dist                python3 setup.py bdist_egg sdist
-##	:
+##:	dist                 python3 setup.py bdist_egg sdist
+##  :
 dist: pre-commit build
 	$(PYTHON3) setup.py bdist_egg sdist
 
@@ -275,34 +277,38 @@ report:
 	@echo '        - GIT_PROFILE=${GIT_PROFILE}'
 	@echo '        - GIT_BRANCH=${GIT_BRANCH}'
 	@echo '        - GIT_HASH=${GIT_HASH}'
-	@echo '        - GIT_PREVIOUS_HASH=${GIT_PREVIOUS_HASH}'
 	@echo '        - GIT_REPO_ORIGIN=${GIT_REPO_ORIGIN}'
 	@echo '        - GIT_REPO_NAME=${GIT_REPO_NAME}'
 	@echo '        - GIT_REPO_PATH=${GIT_REPO_PATH}'
 	@echo ''
 
-
+##:	SUB-PACKAGES
+##	:
+##:	depends              install packages
 .PHONY: install-gnupg
-##	:install-gnupg       install python gnupg on host
+##:	install-gnupg        install python gnupg on host
 gnupg: install-gnupg
 install-gnupg:
 	pushd $(DEPENDSPATH)/gnupg && $(PYTHON3) $(DEPENDSPATH)/gnupg/setup.py install && popd
 .PHONY: install-p2p
-##	:install-p2p         install python p2p-network
+##:	install-p2p          install python p2p-network
 p2p: install-p2p
 install-p2p:
 	pushd $(DEPENDSPATH)/p2p && $(PYTHON3) $(DEPENDSPATH)/p2p/setup.py install && popd
 .PHONY: install-fastapi fastapi
-##	:install-fastapi     install python fastapi
+##:	install-fastapi      install python fastapi
 fastapi: install-fastapi
 install-fastapi:
 	pushd $(DEPENDSPATH)/fastapi && $(PYTHON3) -m $(PIP) check . && popd
 	pushd $(DEPENDSPATH)/fastapi && $(PYTHON3) -m $(PIP) install . && popd
-
-
+.PHONY: install-git
+##:	install-git          install python GitPython
+install-git:
+	pushd $(DEPENDSPATH)/git && $(PYTHON3) -m $(PIP) check . && popd
+	pushd $(DEPENDSPATH)/git && $(PYTHON3) -m $(PIP) install . && popd
 .PHONY: depends
-##	:depends             build and install depends
-depends: install-gnupg install-fastapi install-p2p
+##
+depends: install-gnupg  install-fastapi install-p2p install-git
 
 .PHONY: git-add
 
@@ -328,12 +334,14 @@ git-add: remove
 	#git add --ignore-errors TIME
 
 .PHONY: pre-commit
-##	:pre-commit          pre-commit run -a
+##:	pre-commit           pre-commit run -a
+##:	                     install .git/hooks/pre-commit
 pre-commit:
+	cat x20bf/scripts/pre-commit > .git/hooks/pre-commit
 	pre-commit run -a
 
 .PHONY: docs
-##	:docs                build docs from sources/*.md
+##:	docs                 build docs from sources/*.md
 docs:
 	@echo "##### [make](https://www.gnu.org/software/make/)" > $(PWD)/$(PROJECT_NAME)/sources/MAKE.md
 	bash -c "make help >> $(PWD)/$(PROJECT_NAME)/sources/MAKE.md"
@@ -357,14 +365,14 @@ docs:
 	#git ls-files -co --exclude-standard | grep '\.md/$\' | xargs git
 
 .PHONY: clean clean-venv
-##	:clean               rm -rf build
+##:	clean                rm -rf build
 clean:
 	bash -c "rm -rf $(BUILDDIR)"
 clean-venv: venv-clean
 
 
 .PHONY: serve
-##	:serve               serve repo on $(PORT)
+##:	serve                serve repo on $(PORT)
 serve: docs
 #REF: https://docs.python.org/3/library/http.server.html
 	# bash -c "$(PYTHON3) -m http.server $(PORT) --bind 127.0.0.1 -d $(PWD) || open http://127.0.0.1:$(PORT)"
@@ -378,5 +386,5 @@ success:
 	@-/usr/bin/true && ([ $$? -eq 0 ] && echo "success!") || echo "failure!"
 
 
-##	:
-##	:make   venv && . venv/bin/activate
+##
+##:	make                 venv && . venv/bin/activate

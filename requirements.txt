@@ -1,24 +1,17 @@
-#zlib
 setuptools
-twitter_scraper
 blockcypher
 setuptools
-twitterAPI
-jq
-#hashlib
+# hashlib
 python-gnupg
 aiohttp
 aiohttp[speedups]
 asyncio
 psutil
-gmpy2
 PyYAML==5.4.1
 pre-commit==2.13.0
-mathlib
-pydocstyle
 black
 mypy
 gnupg
-pytest
 configparser
 p2pnetwork
+GitPython

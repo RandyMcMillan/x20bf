@@ -59,4 +59,5 @@ EOF
 fi
 
 # If there are whitespace errors, print the offending file names and fail.
+echo "If whitespace in README.md etc..." && echo "git commit --no-verify"
 exec git diff-index --check --cached $against --
