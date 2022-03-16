@@ -23,6 +23,7 @@
  	  install-gnupg       install python gnupg on host
  	  install-p2p         install python p2p-network
  	  install-fastapi     install python fastapi
+ 	  install-git         install python GitPython
  	  depends             build and install depends
  	  pre-commit          pre-commit run -a
  	  docs                build docs from sources/*.md
