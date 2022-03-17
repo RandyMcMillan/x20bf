@@ -7,12 +7,7 @@ import binascii
 import os
 
 import pytest
-
-from cryptography.exceptions import (
-    AlreadyFinalized,
-    InvalidSignature,
-    _Reasons,
-)
+from cryptography.exceptions import AlreadyFinalized, InvalidSignature, _Reasons
 from cryptography.hazmat.primitives.poly1305 import Poly1305
 
 from ...utils import (
@@ -133,8 +128,7 @@ class TestPoly1305(object):
 
     def test_buffer_protocol(self, backend):
         key = binascii.unhexlify(
-            b"1c9240a5eb55d38af333888604f6b5f0473917c1402b80099dca5cb"
-            b"c207075c0"
+            b"1c9240a5eb55d38af333888604f6b5f0473917c1402b80099dca5cb" b"c207075c0"
         )
         msg = binascii.unhexlify(
             b"2754776173206272696c6c69672c20616e642074686520736c69746"

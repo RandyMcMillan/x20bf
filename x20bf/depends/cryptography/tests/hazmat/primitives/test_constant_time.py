@@ -4,7 +4,6 @@
 
 
 import pytest
-
 from cryptography.hazmat.primitives import constant_time
 
 

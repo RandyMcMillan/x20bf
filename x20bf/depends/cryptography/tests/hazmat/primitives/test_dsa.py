@@ -8,7 +8,6 @@ import os
 import typing
 
 import pytest
-
 from cryptography.exceptions import AlreadyFinalized, InvalidSignature
 from cryptography.hazmat.backends.interfaces import Backend
 from cryptography.hazmat.primitives import hashes, serialization
@@ -19,14 +18,14 @@ from cryptography.hazmat.primitives.asymmetric.utils import (
 )
 from cryptography.utils import CryptographyDeprecationWarning
 
-from .fixtures_dsa import DSA_KEY_1024, DSA_KEY_2048, DSA_KEY_3072
-from .utils import skip_fips_traditional_openssl
 from ...doubles import DummyHashAlgorithm, DummyKeySerializationEncryption
 from ...utils import (
     load_fips_dsa_key_pair_vectors,
     load_fips_dsa_sig_vectors,
     load_vectors_from_file,
 )
+from .fixtures_dsa import DSA_KEY_1024, DSA_KEY_2048, DSA_KEY_3072
+from .utils import skip_fips_traditional_openssl
 
 _ALGORITHMS_DICT: typing.Dict[str, typing.Type[hashes.HashAlgorithm]] = {
     "SHA1": hashes.SHA1,
@@ -44,9 +43,9 @@ def _skip_if_dsa_not_supported(
     q: int,
     g: int,
 ) -> None:
-    if not backend.dsa_parameters_supported(
-        p, q, g
-    ) or not backend.dsa_hash_supported(algorithm):
+    if not backend.dsa_parameters_supported(p, q, g) or not backend.dsa_hash_supported(
+        algorithm
+    ):
         pytest.skip(
             "{} does not support the provided args. p: {}, hash: {}".format(
                 backend, p.bit_length(), algorithm.name
@@ -76,10 +75,7 @@ class TestDSA(object):
         ),
     )
     def test_generate_dsa_keys(self, vector, backend):
-        if (
-            backend._fips_enabled
-            and vector["p"] < backend._fips_dsa_min_modulus
-        ):
+        if backend._fips_enabled and vector["p"] < backend._fips_dsa_min_modulus:
             pytest.skip("Small modulus blocked in FIPS mode")
         parameters = dsa.DSAParameterNumbers(
             p=vector["p"], q=vector["q"], g=vector["g"]
@@ -425,9 +421,7 @@ class TestDSAVerification(object):
 
     def test_signature_not_bytes(self, backend):
         public_key = DSA_KEY_1024.public_numbers.public_key(backend)
-        with pytest.raises(TypeError), pytest.warns(
-            CryptographyDeprecationWarning
-        ):
+        with pytest.raises(TypeError), pytest.warns(CryptographyDeprecationWarning):
             public_key.verifier(1234, hashes.SHA1())
 
     def test_use_after_finalize(self, backend):
@@ -474,18 +468,12 @@ class TestDSAVerification(object):
 
     def test_prehashed_unsupported_in_signer_ctx(self, backend):
         private_key = DSA_KEY_1024.private_key(backend)
-        with pytest.raises(TypeError), pytest.warns(
-            CryptographyDeprecationWarning
-        ):
-            private_key.signer(
-                Prehashed(hashes.SHA1())  # type: ignore[arg-type]
-            )
+        with pytest.raises(TypeError), pytest.warns(CryptographyDeprecationWarning):
+            private_key.signer(Prehashed(hashes.SHA1()))  # type: ignore[arg-type]
 
     def test_prehashed_unsupported_in_verifier_ctx(self, backend):
         public_key = DSA_KEY_1024.private_key(backend).public_key()
-        with pytest.raises(TypeError), pytest.warns(
-            CryptographyDeprecationWarning
-        ):
+        with pytest.raises(TypeError), pytest.warns(CryptographyDeprecationWarning):
             public_key.verifier(
                 b"0" * 64, Prehashed(hashes.SHA1())  # type: ignore[arg-type]
             )
@@ -518,9 +506,7 @@ class TestDSASignature(object):
                 signature = private_key.sign(vector["msg"], algorithm)
                 assert signature
 
-                private_key.public_key().verify(
-                    signature, vector["msg"], algorithm
-                )
+                private_key.public_key().verify(signature, vector["msg"], algorithm)
 
     def test_use_after_finalize(self, backend):
         private_key = DSA_KEY_1024.private_key(backend)
@@ -582,17 +568,13 @@ class TestDSANumbers(object):
 
     def test_dsa_public_numbers(self):
         parameter_numbers = dsa.DSAParameterNumbers(p=1, q=2, g=3)
-        public_numbers = dsa.DSAPublicNumbers(
-            y=4, parameter_numbers=parameter_numbers
-        )
+        public_numbers = dsa.DSAPublicNumbers(y=4, parameter_numbers=parameter_numbers)
         assert public_numbers.y == 4
         assert public_numbers.parameter_numbers == parameter_numbers
 
     def test_dsa_public_numbers_invalid_types(self):
         with pytest.raises(TypeError):
-            dsa.DSAPublicNumbers(
-                y=4, parameter_numbers=None  # type: ignore[arg-type]
-            )
+            dsa.DSAPublicNumbers(y=4, parameter_numbers=None)  # type: ignore[arg-type]
 
         with pytest.raises(TypeError):
             parameter_numbers = dsa.DSAParameterNumbers(p=1, q=2, g=3)
@@ -603,20 +585,14 @@ class TestDSANumbers(object):
 
     def test_dsa_private_numbers(self):
         parameter_numbers = dsa.DSAParameterNumbers(p=1, q=2, g=3)
-        public_numbers = dsa.DSAPublicNumbers(
-            y=4, parameter_numbers=parameter_numbers
-        )
-        private_numbers = dsa.DSAPrivateNumbers(
-            x=5, public_numbers=public_numbers
-        )
+        public_numbers = dsa.DSAPublicNumbers(y=4, parameter_numbers=parameter_numbers)
+        private_numbers = dsa.DSAPrivateNumbers(x=5, public_numbers=public_numbers)
         assert private_numbers.x == 5
         assert private_numbers.public_numbers == public_numbers
 
     def test_dsa_private_numbers_invalid_types(self):
         parameter_numbers = dsa.DSAParameterNumbers(p=1, q=2, g=3)
-        public_numbers = dsa.DSAPublicNumbers(
-            y=4, parameter_numbers=parameter_numbers
-        )
+        public_numbers = dsa.DSAPublicNumbers(y=4, parameter_numbers=parameter_numbers)
         with pytest.raises(TypeError):
             dsa.DSAPrivateNumbers(
                 x=4,
@@ -630,13 +606,9 @@ class TestDSANumbers(object):
 
     def test_repr(self):
         parameter_numbers = dsa.DSAParameterNumbers(p=1, q=2, g=3)
-        assert (
-            repr(parameter_numbers) == "<DSAParameterNumbers(p=1, q=2, g=3)>"
-        )
+        assert repr(parameter_numbers) == "<DSAParameterNumbers(p=1, q=2, g=3)>"
 
-        public_numbers = dsa.DSAPublicNumbers(
-            y=4, parameter_numbers=parameter_numbers
-        )
+        public_numbers = dsa.DSAPublicNumbers(y=4, parameter_numbers=parameter_numbers)
         assert repr(public_numbers) == (
             "<DSAPublicNumbers(y=4, parameter_numbers=<DSAParameterNumbers(p=1"
             ", q=2, g=3)>)>"
@@ -724,9 +696,7 @@ class TestDSASerialization(object):
             fmt,
             serialization.BestAvailableEncryption(password),
         )
-        loaded_key = serialization.load_pem_private_key(
-            serialized, password, backend
-        )
+        loaded_key = serialization.load_pem_private_key(serialized, password, backend)
         assert isinstance(loaded_key, dsa.DSAPrivateKey)
         loaded_priv_num = loaded_key.private_numbers()
         priv_num = key.private_numbers()
@@ -767,9 +737,7 @@ class TestDSASerialization(object):
             fmt,
             serialization.BestAvailableEncryption(password),
         )
-        loaded_key = serialization.load_der_private_key(
-            serialized, password, backend
-        )
+        loaded_key = serialization.load_der_private_key(serialized, password, backend)
         assert isinstance(loaded_key, dsa.DSAPrivateKey)
         loaded_priv_num = loaded_key.private_numbers()
         priv_num = key.private_numbers()
@@ -800,13 +768,9 @@ class TestDSASerialization(object):
             ],
         ],
     )
-    def test_private_bytes_unencrypted(
-        self, backend, encoding, fmt, loader_func
-    ):
+    def test_private_bytes_unencrypted(self, backend, encoding, fmt, loader_func):
         key = DSA_KEY_1024.private_key(backend)
-        serialized = key.private_bytes(
-            encoding, fmt, serialization.NoEncryption()
-        )
+        serialized = key.private_bytes(encoding, fmt, serialization.NoEncryption())
         loaded_key = loader_func(serialized, None, backend)
         loaded_priv_num = loaded_key.private_numbers()
         priv_num = key.private_numbers()
@@ -828,9 +792,7 @@ class TestDSASerialization(object):
                 serialization.load_pem_private_key,
             ],
             [
-                os.path.join(
-                    "asymmetric", "DER_Serialization", "dsa.1024.der"
-                ),
+                os.path.join("asymmetric", "DER_Serialization", "dsa.1024.der"),
                 serialization.Encoding.DER,
                 serialization.load_der_private_key,
             ],
@@ -936,9 +898,7 @@ class TestDSAPEMPublicKeySerialization(object):
             ),
         ],
     )
-    def test_public_bytes_match(
-        self, key_path, loader_func, encoding, backend
-    ):
+    def test_public_bytes_match(self, key_path, loader_func, encoding, backend):
         key_bytes = load_vectors_from_file(
             key_path, lambda pemfile: pemfile.read(), mode="rb"
         )

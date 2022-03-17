@@ -6,11 +6,9 @@
 import binascii
 
 import pytest
-
 from cryptography.exceptions import AlreadyFinalized, InvalidKey
 from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.concatkdf import ConcatKDFHMAC
-from cryptography.hazmat.primitives.kdf.concatkdf import ConcatKDFHash
+from cryptography.hazmat.primitives.kdf.concatkdf import ConcatKDFHash, ConcatKDFHMAC
 
 
 class TestConcatKDFHash(object):
@@ -101,23 +99,17 @@ class TestConcatKDFHash(object):
             )
 
         with pytest.raises(TypeError):
-            ckdf = ConcatKDFHash(
-                hashes.SHA256(), 16, otherinfo=None, backend=backend
-            )
+            ckdf = ConcatKDFHash(hashes.SHA256(), 16, otherinfo=None, backend=backend)
 
             ckdf.derive("foo")  # type: ignore[arg-type]
 
         with pytest.raises(TypeError):
-            ckdf = ConcatKDFHash(
-                hashes.SHA256(), 16, otherinfo=None, backend=backend
-            )
+            ckdf = ConcatKDFHash(hashes.SHA256(), 16, otherinfo=None, backend=backend)
 
             ckdf.verify("foo", b"bar")  # type: ignore[arg-type]
 
         with pytest.raises(TypeError):
-            ckdf = ConcatKDFHash(
-                hashes.SHA256(), 16, otherinfo=None, backend=backend
-            )
+            ckdf = ConcatKDFHash(hashes.SHA256(), 16, otherinfo=None, backend=backend)
 
             ckdf.verify(b"foo", "bar")  # type: ignore[arg-type]
 
@@ -145,8 +137,7 @@ class TestConcatKDFHMAC(object):
         )
 
         okm = binascii.unhexlify(
-            b"64ce901db10d558661f10b6836a122a7"
-            b"605323ce2f39bf27eaaac8b34cf89f2f"
+            b"64ce901db10d558661f10b6836a122a7" b"605323ce2f39bf27eaaac8b34cf89f2f"
         )
 
         oinfo = binascii.unhexlify(
@@ -166,8 +157,7 @@ class TestConcatKDFHMAC(object):
         )
 
         okm = binascii.unhexlify(
-            b"64ce901db10d558661f10b6836a122a7"
-            b"605323ce2f39bf27eaaac8b34cf89f2f"
+            b"64ce901db10d558661f10b6836a122a7" b"605323ce2f39bf27eaaac8b34cf89f2f"
         )
 
         oinfo = binascii.unhexlify(
@@ -187,8 +177,7 @@ class TestConcatKDFHMAC(object):
         )
 
         okm = binascii.unhexlify(
-            b"64ce901db10d558661f10b6836a122a7"
-            b"605323ce2f39bf27eaaac8b34cf89f2f"
+            b"64ce901db10d558661f10b6836a122a7" b"605323ce2f39bf27eaaac8b34cf89f2f"
         )
 
         oinfo = binascii.unhexlify(
@@ -196,9 +185,7 @@ class TestConcatKDFHMAC(object):
             b"9fbd216d12b49160b2ae5157650f43415653696421e68e"
         )
 
-        ckdf = ConcatKDFHMAC(
-            hashes.SHA512(), 32, b"\x00" * 128, oinfo, backend
-        )
+        ckdf = ConcatKDFHMAC(hashes.SHA512(), 32, b"\x00" * 128, oinfo, backend)
 
         assert ckdf.derive(prk) == okm
 
@@ -210,8 +197,7 @@ class TestConcatKDFHMAC(object):
         )
 
         okm = binascii.unhexlify(
-            b"64ce901db10d558661f10b6836a122a7"
-            b"605323ce2f39bf27eaaac8b34cf89f2f"
+            b"64ce901db10d558661f10b6836a122a7" b"605323ce2f39bf27eaaac8b34cf89f2f"
         )
 
         oinfo = binascii.unhexlify(

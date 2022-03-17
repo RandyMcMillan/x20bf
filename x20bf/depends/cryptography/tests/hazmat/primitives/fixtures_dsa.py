@@ -9,7 +9,6 @@ from cryptography.hazmat.primitives.asymmetric.dsa import (
     DSAPublicNumbers,
 )
 
-
 DSA_KEY_1024 = DSAPrivateNumbers(
     public_numbers=DSAPublicNumbers(
         parameter_numbers=DSAParameterNumbers(
@@ -59,8 +58,7 @@ DSA_KEY_2048 = DSAPrivateNumbers(
                 16,
             ),
             q=int(
-                "8ec73f3761caf5fdfe6e4e82098bf10f898740dcb808204bf6b18f507"
-                "192c19d",
+                "8ec73f3761caf5fdfe6e4e82098bf10f898740dcb808204bf6b18f507" "192c19d",
                 16,
             ),
             g=int(
@@ -89,9 +87,7 @@ DSA_KEY_2048 = DSAPrivateNumbers(
             16,
         ),
     ),
-    x=int(
-        "405772da6e90d809e77d5de796562a2dd4dfd10ef00a83a3aba6bd818a0348a1", 16
-    ),
+    x=int("405772da6e90d809e77d5de796562a2dd4dfd10ef00a83a3aba6bd818a0348a1", 16),
 )
 
 DSA_KEY_3072 = DSAPrivateNumbers(
@@ -115,8 +111,7 @@ DSA_KEY_3072 = DSAPrivateNumbers(
                 16,
             ),
             q=int(
-                "d3eba6521240694015ef94412e08bf3cf8d635a455a398d6f210f6169"
-                "041653b",
+                "d3eba6521240694015ef94412e08bf3cf8d635a455a398d6f210f6169" "041653b",
                 16,
             ),
             g=int(
@@ -154,7 +149,5 @@ DSA_KEY_3072 = DSAPrivateNumbers(
             16,
         ),
     ),
-    x=int(
-        "b2764c46113983777d3e7e97589f1303806d14ad9f2f1ef033097de954b17706", 16
-    ),
+    x=int("b2764c46113983777d3e7e97589f1303806d14ad9f2f1ef033097de954b17706", 16),
 )

@@ -7,12 +7,11 @@ import binascii
 import os
 
 import pytest
-
 from cryptography.hazmat.primitives import keywrap
 from cryptography.hazmat.primitives.ciphers import algorithms, modes
 
-from .utils import _load_all_params
 from ...utils import load_nist_vectors
+from .utils import _load_all_params
 
 
 class TestAESKeyWrap(object):
@@ -33,9 +32,7 @@ class TestAESKeyWrap(object):
             with subtests.test():
                 wrapping_key = binascii.unhexlify(param["k"])
                 key_to_wrap = binascii.unhexlify(param["p"])
-                wrapped_key = keywrap.aes_key_wrap(
-                    wrapping_key, key_to_wrap, backend
-                )
+                wrapped_key = keywrap.aes_key_wrap(wrapping_key, key_to_wrap, backend)
                 assert param["c"] == binascii.hexlify(wrapped_key)
 
     @pytest.mark.supported(
@@ -57,9 +54,7 @@ class TestAESKeyWrap(object):
                 wrapped_key = binascii.unhexlify(param["c"])
                 if param.get("fail") is True:
                     with pytest.raises(keywrap.InvalidUnwrap):
-                        keywrap.aes_key_unwrap(
-                            wrapping_key, wrapped_key, backend
-                        )
+                        keywrap.aes_key_unwrap(wrapping_key, wrapped_key, backend)
                 else:
                     unwrapped_key = keywrap.aes_key_unwrap(
                         wrapping_key, wrapped_key, backend
@@ -139,9 +134,7 @@ class TestAESKeyWrapWithPadding(object):
                 assert param["c"] == binascii.hexlify(wrapped_key)
 
     def test_wrap_additional_vectors(self, backend, subtests):
-        params = _load_all_params(
-            "keywrap", ["kwp_botan.txt"], load_nist_vectors
-        )
+        params = _load_all_params("keywrap", ["kwp_botan.txt"], load_nist_vectors)
         for param in params:
             with subtests.test():
                 wrapping_key = binascii.unhexlify(param["key"])
@@ -173,9 +166,7 @@ class TestAESKeyWrapWithPadding(object):
                     assert param["p"] == binascii.hexlify(unwrapped_key)
 
     def test_unwrap_additional_vectors(self, backend, subtests):
-        params = _load_all_params(
-            "keywrap", ["kwp_botan.txt"], load_nist_vectors
-        )
+        params = _load_all_params("keywrap", ["kwp_botan.txt"], load_nist_vectors)
         for param in params:
             with subtests.test():
                 wrapping_key = binascii.unhexlify(param["key"])
@@ -187,9 +178,7 @@ class TestAESKeyWrapWithPadding(object):
 
     def test_unwrap_invalid_wrapped_key_length(self, backend):
         # Keys to unwrap must be at least 16 bytes
-        with pytest.raises(
-            keywrap.InvalidUnwrap, match="Must be at least 16 bytes"
-        ):
+        with pytest.raises(keywrap.InvalidUnwrap, match="Must be at least 16 bytes"):
             keywrap.aes_key_unwrap_with_padding(
                 b"sixteen_byte_key", b"\x00" * 15, backend
             )
@@ -200,6 +189,4 @@ class TestAESKeyWrapWithPadding(object):
 
     def test_unwrap_invalid_key_length(self, backend):
         with pytest.raises(ValueError, match="must be a valid AES key length"):
-            keywrap.aes_key_unwrap_with_padding(
-                b"badkey", b"\x00" * 16, backend
-            )
+            keywrap.aes_key_unwrap_with_padding(b"badkey", b"\x00" * 16, backend)

@@ -6,12 +6,10 @@
 import binascii
 
 import pytest
-
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
 from .utils import wycheproof_tests
-
 
 _HASH_ALGORITHMS = {
     "HKDF-SHA-1": hashes.SHA1(),

@@ -7,11 +7,10 @@ import binascii
 import os
 
 import pytest
-
 from cryptography.hazmat.primitives.ciphers import algorithms, modes
 
-from .utils import generate_encrypt_test
 from ...utils import load_nist_vectors
+from .utils import generate_encrypt_test
 
 
 @pytest.mark.supported(

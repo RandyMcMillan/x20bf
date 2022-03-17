@@ -6,9 +6,7 @@
 import typing
 
 from cryptography import utils
-from cryptography.exceptions import (
-    AlreadyFinalized,
-)
+from cryptography.exceptions import AlreadyFinalized
 from cryptography.hazmat.primitives import ciphers
 
 
@@ -24,9 +22,7 @@ class CMAC(object):
         self._algorithm = algorithm
 
         if ctx is None:
-            from cryptography.hazmat.backends.openssl.backend import (
-                backend as ossl,
-            )
+            from cryptography.hazmat.backends.openssl.backend import backend as ossl
 
             self._ctx = ossl.create_cmac_ctx(self._algorithm)
         else:

@@ -6,13 +6,11 @@
 import binascii
 
 import pytest
-
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
 
 from .utils import wycheproof_tests
-
 
 _DIGESTS = {
     "SHA-1": hashes.SHA1(),
@@ -71,9 +69,7 @@ def test_rsa_pkcs1v15_signature(backend, wycheproof):
     digest = _DIGESTS[wycheproof.testgroup["sha"]]
 
     if digest is None or not backend.hash_supported(digest):
-        pytest.skip(
-            "Hash {} not supported".format(wycheproof.testgroup["sha"])
-        )
+        pytest.skip("Hash {} not supported".format(wycheproof.testgroup["sha"]))
 
     if should_verify(backend, wycheproof):
         key.verify(
@@ -215,15 +211,11 @@ def test_rsa_oaep_encryption(backend, wycheproof):
         )
 
     if wycheproof.valid or wycheproof.acceptable:
-        pt = key.decrypt(
-            binascii.unhexlify(wycheproof.testcase["ct"]), padding_algo
-        )
+        pt = key.decrypt(binascii.unhexlify(wycheproof.testcase["ct"]), padding_algo)
         assert pt == binascii.unhexlify(wycheproof.testcase["msg"])
     else:
         with pytest.raises(ValueError):
-            key.decrypt(
-                binascii.unhexlify(wycheproof.testcase["ct"]), padding_algo
-            )
+            key.decrypt(binascii.unhexlify(wycheproof.testcase["ct"]), padding_algo)
 
 
 @wycheproof_tests(

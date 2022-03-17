@@ -7,7 +7,6 @@ import os
 import typing
 
 import pytest
-
 from cryptography import x509
 from cryptography.exceptions import _Reasons
 from cryptography.hazmat.primitives import hashes, serialization
@@ -58,26 +57,16 @@ class TestPKCS7Loading(object):
         assert len(certs) == 2
         assert certs[0].subject.get_attributes_for_oid(
             x509.oid.NameOID.COMMON_NAME
-        ) == [
-            x509.NameAttribute(
-                x509.oid.NameOID.COMMON_NAME, "Amazon Root CA 3"
-            )
-        ]
+        ) == [x509.NameAttribute(x509.oid.NameOID.COMMON_NAME, "Amazon Root CA 3")]
         assert certs[1].subject.get_attributes_for_oid(
             x509.oid.NameOID.COMMON_NAME
-        ) == [
-            x509.NameAttribute(
-                x509.oid.NameOID.COMMON_NAME, "Amazon Root CA 2"
-            )
-        ]
+        ) == [x509.NameAttribute(x509.oid.NameOID.COMMON_NAME, "Amazon Root CA 2")]
 
     def test_load_pkcs7_unsupported_type(self, backend):
         with raises_unsupported_algorithm(_Reasons.UNSUPPORTED_SERIALIZATION):
             load_vectors_from_file(
                 os.path.join("pkcs7", "enveloped.pem"),
-                lambda pemfile: pkcs7.load_pem_pkcs7_certificates(
-                    pemfile.read()
-                ),
+                lambda pemfile: pkcs7.load_pem_pkcs7_certificates(pemfile.read()),
                 mode="rb",
             )
 
@@ -138,9 +127,7 @@ def _pkcs7_verify(encoding, sig, msg, certs, options, backend):
 def _load_cert_key():
     key = load_vectors_from_file(
         os.path.join("x509", "custom", "ca", "ca_key.pem"),
-        lambda pemfile: serialization.load_pem_private_key(
-            pemfile.read(), None
-        ),
+        lambda pemfile: serialization.load_pem_private_key(pemfile.read(), None),
         mode="rb",
     )
     cert = load_vectors_from_file(
@@ -173,9 +160,7 @@ class TestPKCS7Builder(object):
 
     def test_sign_no_data(self, backend):
         cert, key = _load_cert_key()
-        builder = pkcs7.PKCS7SignatureBuilder().add_signer(
-            cert, key, hashes.SHA256()
-        )
+        builder = pkcs7.PKCS7SignatureBuilder().add_signer(cert, key, hashes.SHA256())
         with pytest.raises(ValueError):
             builder.sign(serialization.Encoding.SMIME, [])
 
@@ -288,9 +273,7 @@ class TestPKCS7Builder(object):
         # as a separate section before the PKCS7 data. So we should expect to
         # have data in sig but not in sig_binary
         assert data in sig
-        _pkcs7_verify(
-            serialization.Encoding.SMIME, sig, data, [cert], options, backend
-        )
+        _pkcs7_verify(serialization.Encoding.SMIME, sig, data, [cert], options, backend)
         assert data not in sig_binary
         _pkcs7_verify(
             serialization.Encoding.DER,
@@ -343,25 +326,19 @@ class TestPKCS7Builder(object):
             (hashes.SHA512(), b"\x06\t`\x86H\x01e\x03\x04\x02\x03"),
         ],
     )
-    def test_sign_alternate_digests_der(
-        self, hash_alg, expected_value, backend
-    ):
+    def test_sign_alternate_digests_der(self, hash_alg, expected_value, backend):
         if isinstance(hash_alg, hashes.SHA1) and backend._fips_enabled:
             pytest.skip("SHA1 not supported in FIPS mode")
 
         data = b"hello world"
         cert, key = _load_cert_key()
         builder = (
-            pkcs7.PKCS7SignatureBuilder()
-            .set_data(data)
-            .add_signer(cert, key, hash_alg)
+            pkcs7.PKCS7SignatureBuilder().set_data(data).add_signer(cert, key, hash_alg)
         )
         options: typing.List[pkcs7.PKCS7Options] = []
         sig = builder.sign(serialization.Encoding.DER, options)
         assert expected_value in sig
-        _pkcs7_verify(
-            serialization.Encoding.DER, sig, None, [cert], options, backend
-        )
+        _pkcs7_verify(serialization.Encoding.DER, sig, None, [cert], options, backend)
 
     @pytest.mark.parametrize(
         ("hash_alg", "expected_value"),
@@ -372,18 +349,14 @@ class TestPKCS7Builder(object):
             (hashes.SHA512(), b"sha-512"),
         ],
     )
-    def test_sign_alternate_digests_detached(
-        self, hash_alg, expected_value, backend
-    ):
+    def test_sign_alternate_digests_detached(self, hash_alg, expected_value, backend):
         if isinstance(hash_alg, hashes.SHA1) and backend._fips_enabled:
             pytest.skip("SHA1 not supported in FIPS mode")
 
         data = b"hello world"
         cert, key = _load_cert_key()
         builder = (
-            pkcs7.PKCS7SignatureBuilder()
-            .set_data(data)
-            .add_signer(cert, key, hash_alg)
+            pkcs7.PKCS7SignatureBuilder().set_data(data).add_signer(cert, key, hash_alg)
         )
         options = [pkcs7.PKCS7Options.DetachedSignature]
         sig = builder.sign(serialization.Encoding.SMIME, options)
@@ -581,17 +554,13 @@ class TestPKCS7Builder(object):
         cert, key = _load_cert_key()
         rsa_key = load_vectors_from_file(
             os.path.join("x509", "custom", "ca", "rsa_key.pem"),
-            lambda pemfile: serialization.load_pem_private_key(
-                pemfile.read(), None
-            ),
+            lambda pemfile: serialization.load_pem_private_key(pemfile.read(), None),
             mode="rb",
         )
         assert isinstance(rsa_key, rsa.RSAPrivateKey)
         rsa_cert = load_vectors_from_file(
             os.path.join("x509", "custom", "ca", "rsa_ca.pem"),
-            loader=lambda pemfile: x509.load_pem_x509_certificate(
-                pemfile.read()
-            ),
+            loader=lambda pemfile: x509.load_pem_x509_certificate(pemfile.read()),
             mode="rb",
         )
         builder = (
@@ -618,16 +587,12 @@ class TestPKCS7Builder(object):
         cert, key = _load_cert_key()
         rsa_key = load_vectors_from_file(
             os.path.join("x509", "custom", "ca", "rsa_key.pem"),
-            lambda pemfile: serialization.load_pem_private_key(
-                pemfile.read(), None
-            ),
+            lambda pemfile: serialization.load_pem_private_key(pemfile.read(), None),
             mode="rb",
         )
         rsa_cert = load_vectors_from_file(
             os.path.join("x509", "custom", "ca", "rsa_ca.pem"),
-            loader=lambda pemfile: x509.load_pem_x509_certificate(
-                pemfile.read()
-            ),
+            loader=lambda pemfile: x509.load_pem_x509_certificate(pemfile.read()),
             mode="rb",
         )
         assert isinstance(rsa_key, rsa.RSAPrivateKey)
@@ -662,9 +627,7 @@ class TestPKCS7Builder(object):
         cert, key = _load_cert_key()
         rsa_cert = load_vectors_from_file(
             os.path.join("x509", "custom", "ca", "rsa_ca.pem"),
-            loader=lambda pemfile: x509.load_pem_x509_certificate(
-                pemfile.read()
-            ),
+            loader=lambda pemfile: x509.load_pem_x509_certificate(pemfile.read()),
             mode="rb",
         )
         builder = (
@@ -675,18 +638,14 @@ class TestPKCS7Builder(object):
         )
         options: typing.List[pkcs7.PKCS7Options] = []
         sig = builder.sign(serialization.Encoding.DER, options)
-        assert (
-            sig.count(rsa_cert.public_bytes(serialization.Encoding.DER)) == 1
-        )
+        assert sig.count(rsa_cert.public_bytes(serialization.Encoding.DER)) == 1
 
     def test_add_multiple_additional_certs(self, backend):
         data = b"hello world"
         cert, key = _load_cert_key()
         rsa_cert = load_vectors_from_file(
             os.path.join("x509", "custom", "ca", "rsa_ca.pem"),
-            loader=lambda pemfile: x509.load_pem_x509_certificate(
-                pemfile.read()
-            ),
+            loader=lambda pemfile: x509.load_pem_x509_certificate(pemfile.read()),
             mode="rb",
         )
         builder = (
@@ -698,6 +657,4 @@ class TestPKCS7Builder(object):
         )
         options: typing.List[pkcs7.PKCS7Options] = []
         sig = builder.sign(serialization.Encoding.DER, options)
-        assert (
-            sig.count(rsa_cert.public_bytes(serialization.Encoding.DER)) == 2
-        )
+        assert sig.count(rsa_cert.public_bytes(serialization.Encoding.DER)) == 2

@@ -6,21 +6,12 @@
 import binascii
 
 import pytest
-
 from cryptography.exceptions import AlreadyFinalized, _Reasons
-from cryptography.hazmat.primitives.ciphers import (
-    Cipher,
-    algorithms,
-    base,
-    modes,
-)
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, base, modes
 
-from .utils import (
-    generate_aead_exception_test,
-    generate_aead_tag_exception_test,
-)
 from ...doubles import DummyCipherAlgorithm, DummyMode
 from ...utils import raises_unsupported_algorithm
+from .utils import generate_aead_exception_test, generate_aead_tag_exception_test
 
 
 class TestCipher(object):
@@ -43,9 +34,7 @@ class TestCipher(object):
     def test_instantiate_with_non_algorithm(self, backend):
         algorithm = object()
         with pytest.raises(TypeError):
-            Cipher(
-                algorithm, mode=None, backend=backend  # type: ignore[arg-type]
-            )
+            Cipher(algorithm, mode=None, backend=backend)  # type: ignore[arg-type]
 
 
 class TestCipherContext(object):
@@ -111,9 +100,7 @@ class TestCipherContext(object):
             cipher.decryptor()
 
     def test_incorrectly_padded(self, backend):
-        cipher = Cipher(
-            algorithms.AES(b"\x00" * 16), modes.CBC(b"\x00" * 16), backend
-        )
+        cipher = Cipher(algorithms.AES(b"\x00" * 16), modes.CBC(b"\x00" * 16), backend)
         encryptor = cipher.encryptor()
         encryptor.update(b"1")
         with pytest.raises(ValueError):

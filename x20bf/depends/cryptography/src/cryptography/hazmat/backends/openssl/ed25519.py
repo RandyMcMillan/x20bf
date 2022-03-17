@@ -6,10 +6,10 @@
 from cryptography import exceptions
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import (
-    Ed25519PrivateKey,
-    Ed25519PublicKey,
     _ED25519_KEY_SIZE,
     _ED25519_SIG_SIZE,
+    Ed25519PrivateKey,
+    Ed25519PublicKey,
 )
 
 
@@ -31,9 +31,7 @@ class _Ed25519PublicKey(Ed25519PublicKey):
                 encoding is not serialization.Encoding.Raw
                 or format is not serialization.PublicFormat.Raw
             ):
-                raise ValueError(
-                    "When using Raw both encoding and format must be Raw"
-                )
+                raise ValueError("When using Raw both encoding and format must be Raw")
 
             return self._raw_public_bytes()
 
@@ -125,9 +123,7 @@ class _Ed25519PrivateKey(Ed25519PrivateKey):
             if (
                 format is not serialization.PrivateFormat.Raw
                 or encoding is not serialization.Encoding.Raw
-                or not isinstance(
-                    encryption_algorithm, serialization.NoEncryption
-                )
+                or not isinstance(encryption_algorithm, serialization.NoEncryption)
             ):
                 raise ValueError(
                     "When using Raw both encoding and format must be Raw "

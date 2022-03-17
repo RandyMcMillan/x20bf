@@ -9,16 +9,12 @@ import json
 import os
 import time
 
+import cryptography_vectors
 import iso8601
-
 import pretend
-
 import pytest
-
 from cryptography.fernet import Fernet, InvalidToken, MultiFernet
 from cryptography.hazmat.primitives.ciphers import algorithms, modes
-
-import cryptography_vectors
 
 
 def json_parametrize(keys, filename):
@@ -56,9 +52,7 @@ class TestFernet(object):
         ("secret", "now", "src", "ttl_sec", "token"),
         "verify.json",
     )
-    def test_verify(
-        self, secret, now, src, ttl_sec, token, backend, monkeypatch
-    ):
+    def test_verify(self, secret, now, src, ttl_sec, token, backend, monkeypatch):
         f = Fernet(secret.encode("ascii"), backend=backend)
         current_time = calendar.timegm(iso8601.parse_date(now).utctimetuple())
         payload = f.decrypt_at_time(
@@ -220,9 +214,7 @@ class TestMultiFernet(object):
         original_time = int(time.time()) - 5 * 60
         mf1_ciphertext = mf1.encrypt_at_time(plaintext, original_time)
 
-        rotated_time, _ = Fernet._get_unverified_token_data(
-            mf2.rotate(mf1_ciphertext)
-        )
+        rotated_time, _ = Fernet._get_unverified_token_data(mf2.rotate(mf1_ciphertext))
 
         assert int(time.time()) != rotated_time
         assert original_time == rotated_time

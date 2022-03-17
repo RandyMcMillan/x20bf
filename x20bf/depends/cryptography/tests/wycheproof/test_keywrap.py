@@ -6,7 +6,6 @@
 import binascii
 
 import pytest
-
 from cryptography.hazmat.primitives import keywrap
 
 from .utils import wycheproof_tests
@@ -18,22 +17,16 @@ def test_keywrap_with_padding(backend, wycheproof):
     key_to_wrap = binascii.unhexlify(wycheproof.testcase["msg"])
     expected = binascii.unhexlify(wycheproof.testcase["ct"])
 
-    result = keywrap.aes_key_wrap_with_padding(
-        wrapping_key, key_to_wrap, backend
-    )
+    result = keywrap.aes_key_wrap_with_padding(wrapping_key, key_to_wrap, backend)
     if wycheproof.valid or wycheproof.acceptable:
         assert result == expected
 
     if wycheproof.valid or (wycheproof.acceptable and not len(expected) < 16):
-        result = keywrap.aes_key_unwrap_with_padding(
-            wrapping_key, expected, backend
-        )
+        result = keywrap.aes_key_unwrap_with_padding(wrapping_key, expected, backend)
         assert result == key_to_wrap
     else:
         with pytest.raises(keywrap.InvalidUnwrap):
-            keywrap.aes_key_unwrap_with_padding(
-                wrapping_key, expected, backend
-            )
+            keywrap.aes_key_unwrap_with_padding(wrapping_key, expected, backend)
 
 
 @wycheproof_tests("kw_test.json")

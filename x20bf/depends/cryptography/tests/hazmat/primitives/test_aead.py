@@ -7,7 +7,6 @@ import binascii
 import os
 
 import pytest
-
 from cryptography.exceptions import InvalidTag, UnsupportedAlgorithm, _Reasons
 from cryptography.hazmat.primitives.ciphers.aead import (
     AESCCM,
@@ -16,13 +15,13 @@ from cryptography.hazmat.primitives.ciphers.aead import (
     ChaCha20Poly1305,
 )
 
-from .utils import _load_all_params
 from ...utils import (
     load_nist_ccm_vectors,
     load_nist_vectors,
     load_vectors_from_file,
     raises_unsupported_algorithm,
 )
+from .utils import _load_all_params
 
 
 class FakeData(bytes):
@@ -82,9 +81,7 @@ class TestChaCha20Poly1305(object):
             [b"0" * 12, b"data", object()],
         ],
     )
-    def test_params_not_bytes_encrypt(
-        self, nonce, data, associated_data, backend
-    ):
+    def test_params_not_bytes_encrypt(self, nonce, data, associated_data, backend):
         key = ChaCha20Poly1305.generate_key()
         chacha = ChaCha20Poly1305(key)
         with pytest.raises(TypeError):

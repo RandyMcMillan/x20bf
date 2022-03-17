@@ -7,13 +7,9 @@ import binascii
 import os
 
 import pytest
-
 from cryptography.exceptions import _Reasons
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric.x448 import (
-    X448PrivateKey,
-    X448PublicKey,
-)
+from cryptography.hazmat.primitives.asymmetric.x448 import X448PrivateKey, X448PublicKey
 
 from ...utils import (
     load_nist_vectors,
@@ -71,9 +67,7 @@ class TestX448Exchange(object):
         public_key = X448PublicKey.from_public_bytes(public)
         for _ in range(1000):
             computed_shared_key = private_key.exchange(public_key)
-            private_key = X448PrivateKey.from_private_bytes(
-                computed_shared_key
-            )
+            private_key = X448PrivateKey.from_private_bytes(computed_shared_key)
             public_key = X448PublicKey.from_public_bytes(old_private)
             old_private = computed_shared_key
 
@@ -232,9 +226,7 @@ class TestX448Exchange(object):
             )
 
         with pytest.raises(ValueError):
-            key.public_bytes(
-                serialization.Encoding.PEM, serialization.PublicFormat.Raw
-            )
+            key.public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.Raw)
 
     def test_buffer_protocol(self, backend):
         private_bytes = binascii.unhexlify(

@@ -4,11 +4,7 @@
 
 
 from cryptography import utils
-from cryptography.exceptions import (
-    InvalidSignature,
-    UnsupportedAlgorithm,
-    _Reasons,
-)
+from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm, _Reasons
 from cryptography.hazmat.primitives import constant_time
 from cryptography.hazmat.primitives.ciphers.modes import CBC
 
@@ -67,9 +63,7 @@ class _CMACContext(object):
 
     def copy(self) -> "_CMACContext":
         copied_ctx = self._backend._lib.CMAC_CTX_new()
-        copied_ctx = self._backend._ffi.gc(
-            copied_ctx, self._backend._lib.CMAC_CTX_free
-        )
+        copied_ctx = self._backend._ffi.gc(copied_ctx, self._backend._lib.CMAC_CTX_free)
         res = self._backend._lib.CMAC_CTX_copy(copied_ctx, self._ctx)
         self._backend.openssl_assert(res == 1)
         return _CMACContext(self._backend, self._algorithm, ctx=copied_ctx)

@@ -9,13 +9,12 @@ import os
 import typing
 
 import pytest
-
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import dh
 
-from .fixtures_dh import FFDH3072_P
 from ...doubles import DummyKeySerializationEncryption
 from ...utils import load_nist_vectors, load_vectors_from_file
+from .fixtures_dh import FFDH3072_P
 
 # RFC 3526
 P_1536 = int(
@@ -101,9 +100,7 @@ def test_dh_parameter_numbers_equality():
     assert dh.DHParameterNumbers(P_1536, 7, 12345) == dh.DHParameterNumbers(
         P_1536, 7, 12345
     )
-    assert dh.DHParameterNumbers(P_1536 + 2, 2) != dh.DHParameterNumbers(
-        P_1536, 2
-    )
+    assert dh.DHParameterNumbers(P_1536 + 2, 2) != dh.DHParameterNumbers(P_1536, 2)
     assert dh.DHParameterNumbers(P_1536, 2, 123) != dh.DHParameterNumbers(
         P_1536, 2, 456
     )
@@ -169,10 +166,7 @@ class TestDH(object):
     )
     def test_dh_parameters_allows_rfc3526_groups(self, backend, vector):
         p = int.from_bytes(binascii.unhexlify(vector["p"]), "big")
-        if (
-            backend._fips_enabled
-            and p.bit_length() < backend._fips_dh_min_modulus
-        ):
+        if backend._fips_enabled and p.bit_length() < backend._fips_dh_min_modulus:
             pytest.skip("modulus too small for FIPS mode")
 
         params = dh.DHParameterNumbers(p, int(vector["g"]))
@@ -183,9 +177,7 @@ class TestDH(object):
         # re-serialized form that has q as well (the Sophie Germain prime of
         # that group). This makes a naive comparison of the parameter numbers
         # objects fail, so we have to be a bit smarter
-        serialized_params = (
-            key.private_numbers().public_numbers.parameter_numbers
-        )
+        serialized_params = key.private_numbers().public_numbers.parameter_numbers
         if serialized_params.q is None:
             # This is the path OpenSSL < 3.0 takes
             assert serialized_params == params
@@ -369,22 +361,15 @@ class TestDH(object):
         ),
     )
     def test_bad_exchange(self, backend, vector):
-        if (
-            backend._fips_enabled
-            and int(vector["p1"]) < backend._fips_dh_min_modulus
-        ):
+        if backend._fips_enabled and int(vector["p1"]) < backend._fips_dh_min_modulus:
             pytest.skip("modulus too small for FIPS mode")
-        parameters1 = dh.DHParameterNumbers(
-            int(vector["p1"]), int(vector["g"])
-        )
+        parameters1 = dh.DHParameterNumbers(int(vector["p1"]), int(vector["g"]))
         public1 = dh.DHPublicNumbers(int(vector["y1"]), parameters1)
         private1 = dh.DHPrivateNumbers(int(vector["x1"]), public1)
         key1 = private1.private_key(backend)
         pub_key1 = key1.public_key()
 
-        parameters2 = dh.DHParameterNumbers(
-            int(vector["p2"]), int(vector["g"])
-        )
+        parameters2 = dh.DHParameterNumbers(int(vector["p2"]), int(vector["g"]))
         public2 = dh.DHPublicNumbers(int(vector["y2"]), parameters2)
         private2 = dh.DHPrivateNumbers(int(vector["x2"]), public2)
         key2 = private2.private_key(backend)
@@ -398,9 +383,7 @@ class TestDH(object):
 
     @pytest.mark.skip_fips(reason="key_size too small for FIPS")
     @pytest.mark.supported(
-        only_if=lambda backend: (
-            not backend._lib.CRYPTOGRAPHY_OPENSSL_300_OR_GREATER
-        ),
+        only_if=lambda backend: (not backend._lib.CRYPTOGRAPHY_OPENSSL_300_OR_GREATER),
         skip_message="256-bit DH keys are not supported in OpenSSL 3.0.0+",
     )
     def test_load_256bit_key_from_pkcs8(self, backend):
@@ -420,10 +403,7 @@ class TestDH(object):
         ),
     )
     def test_dh_vectors(self, backend, vector):
-        if (
-            backend._fips_enabled
-            and int(vector["p"]) < backend._fips_dh_min_modulus
-        ):
+        if backend._fips_enabled and int(vector["p"]) < backend._fips_dh_min_modulus:
             pytest.skip("modulus too small for FIPS mode")
 
         if int(vector["p"]).bit_length() < 512:
@@ -588,12 +568,8 @@ class TestDHPrivateKeySerialization(object):
         private_numbers = key.private_numbers()
         assert private_numbers.x == int(vec["x"], 16)
         assert private_numbers.public_numbers.y == int(vec["y"], 16)
-        assert private_numbers.public_numbers.parameter_numbers.g == int(
-            vec["g"], 16
-        )
-        assert private_numbers.public_numbers.parameter_numbers.p == int(
-            vec["p"], 16
-        )
+        assert private_numbers.public_numbers.parameter_numbers.g == int(vec["g"], 16)
+        assert private_numbers.public_numbers.parameter_numbers.p == int(vec["p"], 16)
         if "q" in vec:
             assert private_numbers.public_numbers.parameter_numbers.q == int(
                 vec["q"], 16
@@ -705,9 +681,7 @@ class TestDHPublicKeySerialization(object):
             ),
         ],
     )
-    def test_public_bytes_match(
-        self, key_path, loader_func, encoding, is_dhx, backend
-    ):
+    def test_public_bytes_match(self, key_path, loader_func, encoding, is_dhx, backend):
         _skip_dhx_unsupported(backend, is_dhx)
         key_bytes = load_vectors_from_file(
             key_path, lambda pemfile: pemfile.read(), mode="rb"

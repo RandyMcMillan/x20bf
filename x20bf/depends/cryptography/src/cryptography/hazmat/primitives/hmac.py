@@ -6,9 +6,7 @@
 import typing
 
 from cryptography import utils
-from cryptography.exceptions import (
-    AlreadyFinalized,
-)
+from cryptography.exceptions import AlreadyFinalized
 from cryptography.hazmat.primitives import hashes
 
 
@@ -26,9 +24,7 @@ class HMAC(hashes.HashContext):
 
         self._key = key
         if ctx is None:
-            from cryptography.hazmat.backends.openssl.backend import (
-                backend as ossl,
-            )
+            from cryptography.hazmat.backends.openssl.backend import backend as ossl
 
             self._ctx = ossl.create_hmac_ctx(key, self.algorithm)
         else:

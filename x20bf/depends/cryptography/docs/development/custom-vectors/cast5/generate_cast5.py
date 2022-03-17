@@ -31,9 +31,7 @@ def build_vectors(mode, filename):
             if line.startswith("KEY"):
                 if count != 0:
                     output.append(
-                        "CIPHERTEXT = {}".format(
-                            encrypt(mode, key, iv, plaintext)
-                        )
+                        "CIPHERTEXT = {}".format(encrypt(mode, key, iv, plaintext))
                     )
                 output.append("\nCOUNT = {}".format(count))
                 count += 1
@@ -46,9 +44,7 @@ def build_vectors(mode, filename):
             elif line.startswith("PLAINTEXT"):
                 name, plaintext = line.split(" = ")
                 output.append("PLAINTEXT = {}".format(plaintext))
-        output.append(
-            "CIPHERTEXT = {}".format(encrypt(mode, key, iv, plaintext))
-        )
+        output.append("CIPHERTEXT = {}".format(encrypt(mode, key, iv, plaintext)))
     return "\n".join(output)
 
 

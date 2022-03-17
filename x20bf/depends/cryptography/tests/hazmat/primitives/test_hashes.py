@@ -6,13 +6,12 @@
 import binascii
 
 import pytest
-
 from cryptography.exceptions import AlreadyFinalized, _Reasons
 from cryptography.hazmat.primitives import hashes
 
-from .utils import generate_base_hash_test
 from ...doubles import DummyHashAlgorithm
 from ...utils import raises_unsupported_algorithm
+from .utils import generate_base_hash_test
 
 
 class TestHashContext(object):
@@ -110,9 +109,7 @@ class TestMD5(object):
 
 
 @pytest.mark.supported(
-    only_if=lambda backend: backend.hash_supported(
-        hashes.BLAKE2b(digest_size=64)
-    ),
+    only_if=lambda backend: backend.hash_supported(hashes.BLAKE2b(digest_size=64)),
     skip_message="Does not support BLAKE2b",
 )
 class TestBLAKE2b(object):
@@ -133,9 +130,7 @@ class TestBLAKE2b(object):
 
 
 @pytest.mark.supported(
-    only_if=lambda backend: backend.hash_supported(
-        hashes.BLAKE2s(digest_size=32)
-    ),
+    only_if=lambda backend: backend.hash_supported(hashes.BLAKE2s(digest_size=32)),
     skip_message="Does not support BLAKE2s",
 )
 class TestBLAKE2s(object):

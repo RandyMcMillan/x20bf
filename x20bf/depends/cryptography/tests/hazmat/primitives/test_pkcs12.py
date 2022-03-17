@@ -7,7 +7,6 @@ import os
 from datetime import datetime
 
 import pytest
-
 from cryptography import x509
 from cryptography.hazmat.backends.openssl.backend import _RC2
 from cryptography.hazmat.primitives import hashes, serialization
@@ -32,16 +31,12 @@ class TestPKCS12Loading(object):
     def _test_load_pkcs12_ec_keys(self, filename, password, backend):
         cert = load_vectors_from_file(
             os.path.join("x509", "custom", "ca", "ca.pem"),
-            lambda pemfile: x509.load_pem_x509_certificate(
-                pemfile.read(), backend
-            ),
+            lambda pemfile: x509.load_pem_x509_certificate(pemfile.read(), backend),
             mode="rb",
         )
         key = load_vectors_from_file(
             os.path.join("x509", "custom", "ca", "ca_key.pem"),
-            lambda pemfile: load_pem_private_key(
-                pemfile.read(), None, backend
-            ),
+            lambda pemfile: load_pem_private_key(pemfile.read(), None, backend),
             mode="rb",
         )
         assert isinstance(key, ec.EllipticCurvePrivateKey)
@@ -84,9 +79,7 @@ class TestPKCS12Loading(object):
     def test_load_pkcs12_cert_only(self, backend):
         cert = load_vectors_from_file(
             os.path.join("x509", "custom", "ca", "ca.pem"),
-            lambda pemfile: x509.load_pem_x509_certificate(
-                pemfile.read(), backend
-            ),
+            lambda pemfile: x509.load_pem_x509_certificate(pemfile.read(), backend),
             mode="rb",
         )
         parsed_key, parsed_cert, parsed_more_certs = load_vectors_from_file(
@@ -103,9 +96,7 @@ class TestPKCS12Loading(object):
     def test_load_pkcs12_key_only(self, backend):
         key = load_vectors_from_file(
             os.path.join("x509", "custom", "ca", "ca_key.pem"),
-            lambda pemfile: load_pem_private_key(
-                pemfile.read(), None, backend
-            ),
+            lambda pemfile: load_pem_private_key(pemfile.read(), None, backend),
             mode="rb",
         )
         assert isinstance(key, ec.EllipticCurvePrivateKey)
@@ -186,13 +177,9 @@ class TestPKCS12Loading(object):
             ),
         ],
     )
-    def test_load_object(
-        self, filename, name, name2, name3, password, backend
-    ):
+    def test_load_object(self, filename, name, name2, name3, password, backend):
         cert, key = _load_ca(backend)
-        cert2 = _load_cert(
-            backend, os.path.join("x509", "cryptography.io.pem")
-        )
+        cert2 = _load_cert(backend, os.path.join("x509", "cryptography.io.pem"))
         cert3 = _load_cert(backend, os.path.join("x509", "letsencryptx3.pem"))
 
         pkcs12 = load_vectors_from_file(
@@ -236,12 +223,8 @@ class TestPKCS12Loading(object):
             ),
         ],
     )
-    def test_load_object_no_cert_key(
-        self, filename, name2, name3, password, backend
-    ):
-        cert2 = _load_cert(
-            backend, os.path.join("x509", "cryptography.io.pem")
-        )
+    def test_load_object_no_cert_key(self, filename, name2, name3, password, backend):
+        cert2 = _load_cert(backend, os.path.join("x509", "cryptography.io.pem"))
         cert3 = _load_cert(backend, os.path.join("x509", "letsencryptx3.pem"))
 
         pkcs12 = load_vectors_from_file(
@@ -261,9 +244,7 @@ class TestPKCS12Loading(object):
 def _load_cert(backend, path):
     return load_vectors_from_file(
         path,
-        lambda pemfile: x509.load_pem_x509_certificate(
-            pemfile.read(), backend
-        ),
+        lambda pemfile: x509.load_pem_x509_certificate(pemfile.read(), backend),
         mode="rb",
     )
 
@@ -328,9 +309,7 @@ class TestPKCS12Creation(object):
         cert2 = _load_cert(backend, os.path.join("x509", "letsencryptx3.pem"))
         encryption = serialization.NoEncryption()
         with pytest.raises(TypeError) as exc:
-            serialize_key_and_certificates(
-                b"name", cert, cert, None, encryption
-            )
+            serialize_key_and_certificates(b"name", cert, cert, None, encryption)
         assert (
             str(exc.value)
             == "Key must be RSA, DSA, or EllipticCurve private key or None."
@@ -343,8 +322,7 @@ class TestPKCS12Creation(object):
         with pytest.raises(TypeError) as exc:
             serialize_key_and_certificates(b"name", key, cert, None, key)
         assert str(exc.value) == (
-            "Key encryption algorithm must be a "
-            "KeySerializationEncryption instance"
+            "Key encryption algorithm must be a " "KeySerializationEncryption instance"
         )
 
         with pytest.raises(TypeError) as exc:
@@ -372,9 +350,7 @@ class TestPKCS12Creation(object):
             serialize_key_and_certificates(
                 None, None, None, None, serialization.NoEncryption()
             )
-        assert str(exc.value) == (
-            "You must supply at least one of key, cert, or cas"
-        )
+        assert str(exc.value) == ("You must supply at least one of key, cert, or cas")
 
     def test_generate_unsupported_encryption_type(self, backend):
         cert, key = _load_ca(backend)
@@ -639,9 +615,7 @@ class TestPKCS12Objects(object):
 
     def test_key_and_certificates_repr(self, backend):
         cert, key = _load_ca(backend)
-        cert2 = _load_cert(
-            backend, os.path.join("x509", "cryptography.io.pem")
-        )
+        cert2 = _load_cert(backend, os.path.join("x509", "cryptography.io.pem"))
         assert (
             repr(
                 PKCS12KeyAndCertificates(

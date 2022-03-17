@@ -4,15 +4,11 @@
 
 
 import pytest
-
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.twofactor import InvalidToken
 from cryptography.hazmat.primitives.twofactor.totp import TOTP
 
-from ....utils import (
-    load_nist_vectors,
-    load_vectors_from_file,
-)
+from ....utils import load_nist_vectors, load_vectors_from_file
 
 vectors = load_vectors_from_file("twofactor/rfc-6238.txt", load_nist_vectors)
 
@@ -22,9 +18,7 @@ class TestTOTP(object):
         only_if=lambda backend: backend.hmac_supported(hashes.SHA1()),
         skip_message="Does not support HMAC-SHA1.",
     )
-    @pytest.mark.parametrize(
-        "params", [i for i in vectors if i["mode"] == b"SHA1"]
-    )
+    @pytest.mark.parametrize("params", [i for i in vectors if i["mode"] == b"SHA1"])
     def test_generate_sha1(self, backend, params):
         secret = params["secret"]
         time = int(params["time"])
@@ -37,9 +31,7 @@ class TestTOTP(object):
         only_if=lambda backend: backend.hmac_supported(hashes.SHA256()),
         skip_message="Does not support HMAC-SHA256.",
     )
-    @pytest.mark.parametrize(
-        "params", [i for i in vectors if i["mode"] == b"SHA256"]
-    )
+    @pytest.mark.parametrize("params", [i for i in vectors if i["mode"] == b"SHA256"])
     def test_generate_sha256(self, backend, params):
         secret = params["secret"]
         time = int(params["time"])
@@ -52,9 +44,7 @@ class TestTOTP(object):
         only_if=lambda backend: backend.hmac_supported(hashes.SHA512()),
         skip_message="Does not support HMAC-SHA512.",
     )
-    @pytest.mark.parametrize(
-        "params", [i for i in vectors if i["mode"] == b"SHA512"]
-    )
+    @pytest.mark.parametrize("params", [i for i in vectors if i["mode"] == b"SHA512"])
     def test_generate_sha512(self, backend, params):
         secret = params["secret"]
         time = int(params["time"])
@@ -67,9 +57,7 @@ class TestTOTP(object):
         only_if=lambda backend: backend.hmac_supported(hashes.SHA1()),
         skip_message="Does not support HMAC-SHA1.",
     )
-    @pytest.mark.parametrize(
-        "params", [i for i in vectors if i["mode"] == b"SHA1"]
-    )
+    @pytest.mark.parametrize("params", [i for i in vectors if i["mode"] == b"SHA1"])
     def test_verify_sha1(self, backend, params):
         secret = params["secret"]
         time = int(params["time"])
@@ -82,9 +70,7 @@ class TestTOTP(object):
         only_if=lambda backend: backend.hmac_supported(hashes.SHA256()),
         skip_message="Does not support HMAC-SHA256.",
     )
-    @pytest.mark.parametrize(
-        "params", [i for i in vectors if i["mode"] == b"SHA256"]
-    )
+    @pytest.mark.parametrize("params", [i for i in vectors if i["mode"] == b"SHA256"])
     def test_verify_sha256(self, backend, params):
         secret = params["secret"]
         time = int(params["time"])
@@ -97,9 +83,7 @@ class TestTOTP(object):
         only_if=lambda backend: backend.hmac_supported(hashes.SHA512()),
         skip_message="Does not support HMAC-SHA512.",
     )
-    @pytest.mark.parametrize(
-        "params", [i for i in vectors if i["mode"] == b"SHA512"]
-    )
+    @pytest.mark.parametrize("params", [i for i in vectors if i["mode"] == b"SHA512"])
     def test_verify_sha512(self, backend, params):
         secret = params["secret"]
         time = int(params["time"])

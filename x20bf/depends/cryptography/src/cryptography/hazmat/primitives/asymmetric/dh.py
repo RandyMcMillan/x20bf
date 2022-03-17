@@ -8,7 +8,6 @@ import typing
 
 from cryptography.hazmat.primitives import serialization
 
-
 _MIN_MODULUS_SIZE = 512
 
 
@@ -43,17 +42,13 @@ class DHParameterNumbers(object):
         if not isinstance(other, DHParameterNumbers):
             return NotImplemented
 
-        return (
-            self._p == other._p and self._g == other._g and self._q == other._q
-        )
+        return self._p == other._p and self._g == other._g and self._q == other._q
 
     def __ne__(self, other):
         return not self == other
 
     def parameters(self, backend: typing.Any = None) -> "DHParameters":
-        from cryptography.hazmat.backends.openssl.backend import (
-            backend as ossl,
-        )
+        from cryptography.hazmat.backends.openssl.backend import backend as ossl
 
         return ossl.load_dh_parameter_numbers(self)
 
@@ -68,9 +63,7 @@ class DHPublicNumbers(object):
             raise TypeError("y must be an integer.")
 
         if not isinstance(parameter_numbers, DHParameterNumbers):
-            raise TypeError(
-                "parameters must be an instance of DHParameterNumbers."
-            )
+            raise TypeError("parameters must be an instance of DHParameterNumbers.")
 
         self._y = y
         self._parameter_numbers = parameter_numbers
@@ -80,17 +73,14 @@ class DHPublicNumbers(object):
             return NotImplemented
 
         return (
-            self._y == other._y
-            and self._parameter_numbers == other._parameter_numbers
+            self._y == other._y and self._parameter_numbers == other._parameter_numbers
         )
 
     def __ne__(self, other):
         return not self == other
 
     def public_key(self, backend: typing.Any = None) -> "DHPublicKey":
-        from cryptography.hazmat.backends.openssl.backend import (
-            backend as ossl,
-        )
+        from cryptography.hazmat.backends.openssl.backend import backend as ossl
 
         return ossl.load_dh_public_numbers(self)
 
@@ -104,9 +94,7 @@ class DHPrivateNumbers(object):
             raise TypeError("x must be an integer.")
 
         if not isinstance(public_numbers, DHPublicNumbers):
-            raise TypeError(
-                "public_numbers must be an instance of " "DHPublicNumbers."
-            )
+            raise TypeError("public_numbers must be an instance of " "DHPublicNumbers.")
 
         self._x = x
         self._public_numbers = public_numbers
@@ -115,18 +103,13 @@ class DHPrivateNumbers(object):
         if not isinstance(other, DHPrivateNumbers):
             return NotImplemented
 
-        return (
-            self._x == other._x
-            and self._public_numbers == other._public_numbers
-        )
+        return self._x == other._x and self._public_numbers == other._public_numbers
 
     def __ne__(self, other):
         return not self == other
 
     def private_key(self, backend: typing.Any = None) -> "DHPrivateKey":
-        from cryptography.hazmat.backends.openssl.backend import (
-            backend as ossl,
-        )
+        from cryptography.hazmat.backends.openssl.backend import backend as ossl
 
         return ossl.load_dh_private_numbers(self)
 

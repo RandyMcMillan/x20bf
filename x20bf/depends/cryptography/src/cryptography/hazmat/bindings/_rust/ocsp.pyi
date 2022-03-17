@@ -1,14 +1,14 @@
 import typing
 
-from cryptography.hazmat.primitives.asymmetric.types import PRIVATE_KEY_TYPES
 from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric.types import PRIVATE_KEY_TYPES
 from cryptography.x509 import Extension
 from cryptography.x509.ocsp import (
     OCSPRequest,
     OCSPRequestBuilder,
     OCSPResponse,
-    OCSPResponseStatus,
     OCSPResponseBuilder,
+    OCSPResponseStatus,
 )
 
 def load_der_ocsp_request(data: bytes) -> OCSPRequest: ...

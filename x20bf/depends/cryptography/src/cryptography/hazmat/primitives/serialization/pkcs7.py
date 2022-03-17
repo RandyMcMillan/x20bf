@@ -4,8 +4,7 @@
 
 import typing
 
-from cryptography import utils
-from cryptography import x509
+from cryptography import utils, x509
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec, rsa
 from cryptography.utils import _check_byteslike
@@ -31,9 +30,7 @@ _ALLOWED_PKCS7_HASH_TYPES = typing.Union[
     hashes.SHA512,
 ]
 
-_ALLOWED_PRIVATE_KEY_TYPES = typing.Union[
-    rsa.RSAPrivateKey, ec.EllipticCurvePrivateKey
-]
+_ALLOWED_PRIVATE_KEY_TYPES = typing.Union[rsa.RSAPrivateKey, ec.EllipticCurvePrivateKey]
 
 
 class PKCS7Options(utils.Enum):
@@ -81,9 +78,7 @@ class PKCS7SignatureBuilder(object):
         if not isinstance(certificate, x509.Certificate):
             raise TypeError("certificate must be a x509.Certificate")
 
-        if not isinstance(
-            private_key, (rsa.RSAPrivateKey, ec.EllipticCurvePrivateKey)
-        ):
+        if not isinstance(private_key, (rsa.RSAPrivateKey, ec.EllipticCurvePrivateKey)):
             raise TypeError("Only RSA & EC keys are supported at this time.")
 
         return PKCS7SignatureBuilder(
@@ -91,9 +86,7 @@ class PKCS7SignatureBuilder(object):
             self._signers + [(certificate, private_key, hash_algorithm)],
         )
 
-    def add_certificate(
-        self, certificate: x509.Certificate
-    ) -> "PKCS7SignatureBuilder":
+    def add_certificate(self, certificate: x509.Certificate) -> "PKCS7SignatureBuilder":
         if not isinstance(certificate, x509.Certificate):
             raise TypeError("certificate must be a x509.Certificate")
 
@@ -119,9 +112,7 @@ class PKCS7SignatureBuilder(object):
             serialization.Encoding.DER,
             serialization.Encoding.SMIME,
         ):
-            raise ValueError(
-                "Must be PEM, DER, or SMIME from the Encoding enum"
-            )
+            raise ValueError("Must be PEM, DER, or SMIME from the Encoding enum")
 
         # Text is a meaningless option unless it is accompanied by
         # DetachedSignature
@@ -130,8 +121,7 @@ class PKCS7SignatureBuilder(object):
             and PKCS7Options.DetachedSignature not in options
         ):
             raise ValueError(
-                "When passing the Text option you must also pass "
-                "DetachedSignature"
+                "When passing the Text option you must also pass " "DetachedSignature"
             )
 
         if PKCS7Options.Text in options and encoding in (
@@ -153,8 +143,6 @@ class PKCS7SignatureBuilder(object):
                 "both values."
             )
 
-        from cryptography.hazmat.backends.openssl.backend import (
-            backend as ossl,
-        )
+        from cryptography.hazmat.backends.openssl.backend import backend as ossl
 
         return ossl.pkcs7_sign(self, encoding, options)

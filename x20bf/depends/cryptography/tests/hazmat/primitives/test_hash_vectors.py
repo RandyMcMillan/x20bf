@@ -7,11 +7,10 @@ import binascii
 import os
 
 import pytest
-
 from cryptography.hazmat.primitives import hashes
 
-from .utils import _load_all_params, generate_hash_test
 from ...utils import load_hash_vectors, load_nist_vectors
+from .utils import _load_all_params, generate_hash_test
 
 
 @pytest.mark.supported(
@@ -119,9 +118,7 @@ class TestMD5(object):
 
 
 @pytest.mark.supported(
-    only_if=lambda backend: backend.hash_supported(
-        hashes.BLAKE2b(digest_size=64)
-    ),
+    only_if=lambda backend: backend.hash_supported(hashes.BLAKE2b(digest_size=64)),
     skip_message="Does not support BLAKE2b",
 )
 class TestBLAKE2b(object):
@@ -134,9 +131,7 @@ class TestBLAKE2b(object):
 
 
 @pytest.mark.supported(
-    only_if=lambda backend: backend.hash_supported(
-        hashes.BLAKE2s(digest_size=32)
-    ),
+    only_if=lambda backend: backend.hash_supported(hashes.BLAKE2s(digest_size=32)),
     skip_message="Does not support BLAKE2s",
 )
 class TestBLAKE2s256(object):
@@ -201,9 +196,7 @@ class TestSHA3512(object):
 
 
 @pytest.mark.supported(
-    only_if=lambda backend: backend.hash_supported(
-        hashes.SHAKE128(digest_size=16)
-    ),
+    only_if=lambda backend: backend.hash_supported(hashes.SHAKE128(digest_size=16)),
     skip_message="Does not support SHAKE128",
 )
 class TestSHAKE128(object):
@@ -231,9 +224,7 @@ class TestSHAKE128(object):
 
 
 @pytest.mark.supported(
-    only_if=lambda backend: backend.hash_supported(
-        hashes.SHAKE256(digest_size=32)
-    ),
+    only_if=lambda backend: backend.hash_supported(hashes.SHAKE256(digest_size=32)),
     skip_message="Does not support SHAKE256",
 )
 class TestSHAKE256(object):

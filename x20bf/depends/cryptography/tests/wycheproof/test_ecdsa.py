@@ -6,13 +6,11 @@
 import binascii
 
 import pytest
-
 from cryptography.exceptions import InvalidSignature, UnsupportedAlgorithm
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
 
 from .utils import wycheproof_tests
-
 
 _DIGESTS = {
     "SHA-1": hashes.SHA1(),
@@ -66,9 +64,7 @@ def test_ecdsa_signature(backend, wycheproof):
         # instead of  Unsupported Algorithm. We can remove handling for that
         # exception when we drop support.
         pytest.skip(
-            "unable to load key (curve {})".format(
-                wycheproof.testgroup["key"]["curve"]
-            )
+            "unable to load key (curve {})".format(wycheproof.testgroup["key"]["curve"])
         )
     digest = _DIGESTS[wycheproof.testgroup["sha"]]
 

@@ -6,9 +6,7 @@ import abc
 import typing
 
 from cryptography import utils
-from cryptography.exceptions import (
-    AlreadyFinalized,
-)
+from cryptography.exceptions import AlreadyFinalized
 
 
 class HashAlgorithm(metaclass=abc.ABCMeta):
@@ -76,9 +74,7 @@ class Hash(HashContext):
         self._algorithm = algorithm
 
         if ctx is None:
-            from cryptography.hazmat.backends.openssl.backend import (
-                backend as ossl,
-            )
+            from cryptography.hazmat.backends.openssl.backend import backend as ossl
 
             self._ctx = ossl.create_hash_ctx(self.algorithm)
         else:

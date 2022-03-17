@@ -8,7 +8,6 @@ import os
 import typing
 
 import pytest
-
 from cryptography.exceptions import (
     AlreadyFinalized,
     AlreadyUpdated,
@@ -26,9 +25,9 @@ from cryptography.hazmat.primitives.ciphers import (
 from cryptography.hazmat.primitives.ciphers.modes import GCM
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF, HKDFExpand
 from cryptography.hazmat.primitives.kdf.kbkdf import (
-    CounterLocation,
     KBKDFCMAC,
     KBKDFHMAC,
+    CounterLocation,
     Mode,
 )
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
@@ -45,9 +44,7 @@ def _load_all_params(path, file_names, param_loader):
     return all_params
 
 
-def generate_encrypt_test(
-    param_loader, path, file_names, cipher_factory, mode_factory
-):
+def generate_encrypt_test(param_loader, path, file_names, cipher_factory, mode_factory):
     all_params = _load_all_params(path, file_names, param_loader)
 
     def test_encryption(self, backend, subtests):
@@ -59,15 +56,11 @@ def generate_encrypt_test(
 
 
 def encrypt_test(backend, cipher_factory, mode_factory, params):
-    assert backend.cipher_supported(
-        cipher_factory(**params), mode_factory(**params)
-    )
+    assert backend.cipher_supported(cipher_factory(**params), mode_factory(**params))
 
     plaintext = params["plaintext"]
     ciphertext = params["ciphertext"]
-    cipher = Cipher(
-        cipher_factory(**params), mode_factory(**params), backend=backend
-    )
+    cipher = Cipher(cipher_factory(**params), mode_factory(**params), backend=backend)
     encryptor = cipher.encryptor()
     actual_ciphertext = encryptor.update(binascii.unhexlify(plaintext))
     actual_ciphertext += encryptor.finalize()
@@ -78,9 +71,7 @@ def encrypt_test(backend, cipher_factory, mode_factory, params):
     assert actual_plaintext == binascii.unhexlify(plaintext)
 
 
-def generate_aead_test(
-    param_loader, path, file_names, cipher_factory, mode_factory
-):
+def generate_aead_test(param_loader, path, file_names, cipher_factory, mode_factory):
     all_params = _load_all_params(path, file_names, param_loader)
 
     assert mode_factory is GCM
@@ -96,11 +87,7 @@ def generate_aead_test(
 
 
 def aead_test(backend, cipher_factory, mode_factory, params):
-    if (
-        mode_factory is GCM
-        and backend._fips_enabled
-        and len(params["iv"]) != 24
-    ):
+    if mode_factory is GCM and backend._fips_enabled and len(params["iv"]) != 24:
         # Red Hat disables non-96-bit IV support as part of its FIPS
         # patches. The check is for a byte length of 24 because the value is
         # hex encoded.
@@ -153,9 +140,7 @@ def aead_test(backend, cipher_factory, mode_factory, params):
         assert actual_plaintext == plaintext
 
 
-def generate_stream_encryption_test(
-    param_loader, path, file_names, cipher_factory
-):
+def generate_stream_encryption_test(param_loader, path, file_names, cipher_factory):
     all_params = _load_all_params(path, file_names, param_loader)
 
     def test_stream_encryption(self, backend, subtests):
@@ -424,9 +409,7 @@ def generate_kbkdf_counter_mode_test(param_loader, path, file_names):
 
 
 def _kbkdf_hmac_counter_mode_test(backend, prf, ctr_loc, params):
-    supported_hash_algorithms: typing.Dict[
-        str, typing.Type[hashes.HashAlgorithm]
-    ] = {
+    supported_hash_algorithms: typing.Dict[str, typing.Type[hashes.HashAlgorithm]] = {
         "hmac_sha1": hashes.SHA1,
         "hmac_sha224": hashes.SHA224,
         "hmac_sha256": hashes.SHA256,
@@ -456,9 +439,7 @@ def _kbkdf_hmac_counter_mode_test(backend, prf, ctr_loc, params):
 
 
 def _kbkdf_cmac_counter_mode_test(backend, prf, ctr_loc, params):
-    supported_cipher_algorithms: typing.Dict[
-        str, typing.Type[BlockCipherAlgorithm]
-    ] = {
+    supported_cipher_algorithms: typing.Dict[str, typing.Type[BlockCipherAlgorithm]] = {
         "cmac_aes128": algorithms.AES,
         "cmac_aes192": algorithms.AES,
         "cmac_aes256": algorithms.AES,
@@ -495,9 +476,7 @@ def kbkdf_counter_mode_test(backend, params):
     ctr_loc = supported_counter_locations.get(params.get("ctrlocation"))
     if ctr_loc is None or not isinstance(ctr_loc, CounterLocation):
         pytest.skip(
-            "Does not support counter location: {}".format(
-                params.get("ctrlocation")
-            )
+            "Does not support counter location: {}".format(params.get("ctrlocation"))
         )
     del params["ctrlocation"]
 
@@ -516,9 +495,7 @@ def generate_rsa_verification_test(
     param_loader, path, file_names, hash_alg, pad_factory
 ):
     all_params = _load_all_params(path, file_names, param_loader)
-    all_params = [
-        i for i in all_params if i["algorithm"] == hash_alg.name.upper()
-    ]
+    all_params = [i for i in all_params if i["algorithm"] == hash_alg.name.upper()]
 
     def test_rsa_verification(self, backend, subtests):
         for params in all_params:
@@ -564,10 +541,5 @@ def _check_dsa_private_numbers(skey):
 
 
 def skip_fips_traditional_openssl(backend, fmt):
-    if (
-        fmt is serialization.PrivateFormat.TraditionalOpenSSL
-        and backend._fips_enabled
-    ):
-        pytest.skip(
-            "Traditional OpenSSL key format is not supported in FIPS mode."
-        )
+    if fmt is serialization.PrivateFormat.TraditionalOpenSSL and backend._fips_enabled:
+        pytest.skip("Traditional OpenSSL key format is not supported in FIPS mode.")

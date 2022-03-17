@@ -11,12 +11,9 @@ import re
 import typing
 from contextlib import contextmanager
 
-import pytest
-
-from cryptography.exceptions import UnsupportedAlgorithm
-
 import cryptography_vectors
-
+import pytest
+from cryptography.exceptions import UnsupportedAlgorithm
 
 HashVector = collections.namedtuple("HashVector", ["message", "digest"])
 KeyedHashVector = collections.namedtuple(
@@ -41,9 +38,7 @@ def raises_unsupported_algorithm(reason):
 T = typing.TypeVar("T")
 
 
-def load_vectors_from_file(
-    filename, loader: typing.Callable[..., T], mode="r"
-) -> T:
+def load_vectors_from_file(filename, loader: typing.Callable[..., T], mode="r") -> T:
     with cryptography_vectors.open_vector_file(filename, mode) as vector_file:
         return loader(vector_file)
 
@@ -105,9 +100,7 @@ def load_cryptrec_vectors(vector_data):
             ct = line.split(" : ")[1].replace(" ", "").encode("ascii")
             # after a C is found the K+P+C tuple is complete
             # there are many P+C pairs for each K
-            cryptrec_list.append(
-                {"key": key, "plaintext": pt, "ciphertext": ct}
-            )
+            cryptrec_list.append({"key": key, "plaintext": pt, "ciphertext": ct})
         else:
             raise ValueError("Invalid line in file '{}'".format(line))
     return cryptrec_list
@@ -232,10 +225,7 @@ def load_pkcs1_vectors(vector_data):
                     == public_key_vector["public_exponent"]
                 )
 
-                assert (
-                    private_key_vector["modulus"]
-                    == public_key_vector["modulus"]
-                )
+                assert private_key_vector["modulus"] == public_key_vector["modulus"]
 
                 vectors.append((private_key_vector, public_key_vector))
 
@@ -379,9 +369,7 @@ def load_fips_dsa_sig_vectors(vector_data):
     Loads data out of the FIPS DSA SigVer vector files.
     """
     vectors = []
-    sha_regex = re.compile(
-        r"\[mod = L=...., N=..., SHA-(?P<sha>1|224|256|384|512)\]"
-    )
+    sha_regex = re.compile(r"\[mod = L=...., N=..., SHA-(?P<sha>1|224|256|384|512)\]")
 
     for line in vector_data:
         line = line.strip()
@@ -399,9 +387,7 @@ def load_fips_dsa_sig_vectors(vector_data):
         name, value = [c.strip() for c in line.split("=")]
 
         if name == "P":
-            vectors.append(
-                {"p": int(value, 16), "digest_algorithm": digest_algorithm}
-            )
+            vectors.append({"p": int(value, 16), "digest_algorithm": digest_algorithm})
         elif name == "Q":
             vectors[-1]["q"] = int(value, 16)
         elif name == "G":

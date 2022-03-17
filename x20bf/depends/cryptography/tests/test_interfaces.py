@@ -5,11 +5,7 @@
 import abc
 
 import pytest
-
-from cryptography.utils import (
-    InterfaceNotImplemented,
-    verify_interface,
-)
+from cryptography.utils import InterfaceNotImplemented, verify_interface
 
 
 class TestVerifyInterface(object):
@@ -75,6 +71,4 @@ class TestVerifyInterface(object):
             verify_interface(
                 SimpleInterface, ClassWithoutSignature, check_annotations=True
             )
-        verify_interface(
-            SimpleInterface, ClassWithSignature, check_annotations=True
-        )
+        verify_interface(SimpleInterface, ClassWithSignature, check_annotations=True)

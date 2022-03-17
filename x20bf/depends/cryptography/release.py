@@ -11,7 +11,6 @@ import time
 import zipfile
 
 import click
-
 import requests
 
 
@@ -111,9 +110,7 @@ def release(version):
 
     # Generate and upload vector packages
     run("python", "setup.py", "sdist", "bdist_wheel", cwd="vectors/")
-    packages = glob.glob(
-        "vectors/dist/cryptography_vectors-{0}*".format(version)
-    )
+    packages = glob.glob("vectors/dist/cryptography_vectors-{0}*".format(version))
     run("twine", "upload", "-s", *packages)
 
     # Generate sdist for upload
@@ -121,9 +118,7 @@ def release(version):
     sdist = glob.glob("dist/cryptography-{0}*".format(version))
 
     # Wait for Actions to complete and download the wheels
-    github_actions_wheel_paths = fetch_github_actions_wheels(
-        github_token, version
-    )
+    github_actions_wheel_paths = fetch_github_actions_wheels(github_token, version)
 
     # Upload sdist and wheels
     run("twine", "upload", "-s", *sdist)

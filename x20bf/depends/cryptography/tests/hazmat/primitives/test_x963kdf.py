@@ -6,7 +6,6 @@
 import binascii
 
 import pytest
-
 from cryptography.exceptions import AlreadyFinalized, InvalidKey
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.x963kdf import X963KDF
@@ -28,9 +27,7 @@ class TestX963KDF(object):
             xkdf.derive(b"\x02" * 16)
 
     def test_derive(self, backend):
-        key = binascii.unhexlify(
-            b"96c05619d56c328ab95fe84b18264b08725b85e33fd34f08"
-        )
+        key = binascii.unhexlify(b"96c05619d56c328ab95fe84b18264b08725b85e33fd34f08")
 
         derivedkey = binascii.unhexlify(b"443024c3dae66b95e6f5670601558f71")
 
@@ -40,9 +37,7 @@ class TestX963KDF(object):
 
     def test_buffer_protocol(self, backend):
         key = bytearray(
-            binascii.unhexlify(
-                b"96c05619d56c328ab95fe84b18264b08725b85e33fd34f08"
-            )
+            binascii.unhexlify(b"96c05619d56c328ab95fe84b18264b08725b85e33fd34f08")
         )
 
         derivedkey = binascii.unhexlify(b"443024c3dae66b95e6f5670601558f71")
@@ -52,9 +47,7 @@ class TestX963KDF(object):
         assert xkdf.derive(key) == derivedkey
 
     def test_verify(self, backend):
-        key = binascii.unhexlify(
-            b"22518b10e70f2a3f243810ae3254139efbee04aa57c7af7d"
-        )
+        key = binascii.unhexlify(b"22518b10e70f2a3f243810ae3254139efbee04aa57c7af7d")
 
         sharedinfo = binascii.unhexlify(b"75eef81aa3041e33b80971203d2c0c52")
 
@@ -70,9 +63,7 @@ class TestX963KDF(object):
         xkdf.verify(key, derivedkey)
 
     def test_invalid_verify(self, backend):
-        key = binascii.unhexlify(
-            b"96c05619d56c328ab95fe84b18264b08725b85e33fd34f08"
-        )
+        key = binascii.unhexlify(b"96c05619d56c328ab95fe84b18264b08725b85e33fd34f08")
 
         xkdf = X963KDF(hashes.SHA256(), 16, None, backend)
 
@@ -89,22 +80,16 @@ class TestX963KDF(object):
             )
 
         with pytest.raises(TypeError):
-            xkdf = X963KDF(
-                hashes.SHA256(), 16, sharedinfo=None, backend=backend
-            )
+            xkdf = X963KDF(hashes.SHA256(), 16, sharedinfo=None, backend=backend)
 
             xkdf.derive("foo")  # type: ignore[arg-type]
 
         with pytest.raises(TypeError):
-            xkdf = X963KDF(
-                hashes.SHA256(), 16, sharedinfo=None, backend=backend
-            )
+            xkdf = X963KDF(hashes.SHA256(), 16, sharedinfo=None, backend=backend)
 
             xkdf.verify("foo", b"bar")  # type: ignore[arg-type]
 
         with pytest.raises(TypeError):
-            xkdf = X963KDF(
-                hashes.SHA256(), 16, sharedinfo=None, backend=backend
-            )
+            xkdf = X963KDF(hashes.SHA256(), 16, sharedinfo=None, backend=backend)
 
             xkdf.verify(b"foo", "bar")  # type: ignore[arg-type]

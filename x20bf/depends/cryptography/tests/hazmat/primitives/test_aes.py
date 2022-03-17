@@ -7,12 +7,11 @@ import binascii
 import os
 
 import pytest
-
 from cryptography.hazmat.primitives.ciphers import algorithms, base, modes
 
-from .utils import _load_all_params, generate_encrypt_test
 from ...doubles import DummyMode
 from ...utils import load_nist_vectors
+from .utils import _load_all_params, generate_encrypt_test
 
 
 @pytest.mark.supported(
@@ -42,9 +41,7 @@ class TestAESModeXTS(object):
                 tweak = binascii.unhexlify(vector["i"])
                 pt = binascii.unhexlify(vector["pt"])
                 ct = binascii.unhexlify(vector["ct"])
-                cipher = base.Cipher(
-                    algorithms.AES(key), modes.XTS(tweak), backend
-                )
+                cipher = base.Cipher(algorithms.AES(key), modes.XTS(tweak), backend)
                 enc = cipher.encryptor()
                 computed_ct = enc.update(pt) + enc.finalize()
                 assert computed_ct == ct
@@ -61,9 +58,7 @@ class TestAESModeXTS(object):
             enc.update(b"0" * 15)
 
     @pytest.mark.supported(
-        only_if=lambda backend: (
-            backend._lib.CRYPTOGRAPHY_OPENSSL_111D_OR_GREATER
-        ),
+        only_if=lambda backend: (backend._lib.CRYPTOGRAPHY_OPENSSL_111D_OR_GREATER),
         skip_message="duplicate key encryption error added in OpenSSL 1.1.1d",
     )
     def test_xts_no_duplicate_keys_encryption(self, backend):

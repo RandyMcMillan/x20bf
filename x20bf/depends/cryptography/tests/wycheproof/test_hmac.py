@@ -6,12 +6,10 @@
 import binascii
 
 import pytest
-
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import hashes, hmac
 
 from .utils import wycheproof_tests
-
 
 _HMAC_ALGORITHMS = {
     "HMACSHA1": hashes.SHA1(),

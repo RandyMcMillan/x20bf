@@ -8,15 +8,12 @@ import inspect
 import os
 import textwrap
 
-import pretend
-
-import pytest
-
 import cryptography
 import cryptography.utils
-from cryptography.exceptions import UnsupportedAlgorithm, _Reasons
-
 import cryptography_vectors
+import pretend
+import pytest
+from cryptography.exceptions import UnsupportedAlgorithm, _Reasons
 
 from .utils import (
     check_backend_support,
@@ -172,12 +169,10 @@ def test_load_ed25519_vectors():
     assert load_ed25519_vectors(vector_data) == [
         {
             "secret_key": (
-                "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7"
-                "f60"
+                "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7" "f60"
             ),
             "public_key": (
-                "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f7075"
-                "11a"
+                "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f7075" "11a"
             ),
             "message": "",
             "signature": (
@@ -188,12 +183,10 @@ def test_load_ed25519_vectors():
         },
         {
             "secret_key": (
-                "4ccd089b28ff96da9db6c346ec114e0f5b8a319f35aba624da8cf6ed4fb8a"
-                "6fb"
+                "4ccd089b28ff96da9db6c346ec114e0f5b8a319f35aba624da8cf6ed4fb8a" "6fb"
             ),
             "public_key": (
-                "3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af46"
-                "60c"
+                "3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af46" "60c"
             ),
             "message": "72",
             "signature": (
@@ -204,12 +197,10 @@ def test_load_ed25519_vectors():
         },
         {
             "secret_key": (
-                "c5aa8df43f9f837bedb7442f31dcb7b166d38535076f094b85ce3a2e0b445"
-                "8f7"
+                "c5aa8df43f9f837bedb7442f31dcb7b166d38535076f094b85ce3a2e0b445" "8f7"
             ),
             "public_key": (
-                "fc51cd8e6218a1a38da47ed00230f0580816ed13ba3303ac5deb911548908"
-                "025"
+                "fc51cd8e6218a1a38da47ed00230f0580816ed13ba3303ac5deb911548908" "025"
             ),
             "message": "af82",
             "signature": (
@@ -220,12 +211,10 @@ def test_load_ed25519_vectors():
         },
         {
             "secret_key": (
-                "0d4a05b07352a5436e180356da0ae6efa0345ff7fb1572575772e8005ed97"
-                "8e9"
+                "0d4a05b07352a5436e180356da0ae6efa0345ff7fb1572575772e8005ed97" "8e9"
             ),
             "public_key": (
-                "e61a185bcef2613a6c7cb79763ce945d3b245d76114dd440bcf5f2dc1aa57"
-                "057"
+                "e61a185bcef2613a6c7cb79763ce945d3b245d76114dd440bcf5f2dc1aa57" "057"
             ),
             "message": "cbc77b",
             "signature": (
@@ -1819,13 +1808,11 @@ de61329a78d526f65245380ce877e979c5b50de66c9c30d66382c8f254653d25a1eb1d3a4897d7\
                 16,
             ),
             "q": int(
-                "8ec73f3761caf5fdfe6e4e82098bf10f898740dcb808204bf6b1"
-                "8f507192c19d",
+                "8ec73f3761caf5fdfe6e4e82098bf10f898740dcb808204bf6b1" "8f507192c19d",
                 16,
             ),
             "x": int(
-                "405772da6e90d809e77d5de796562a2dd4dfd10ef00a83a3aba6"
-                "bd818a0348a1",
+                "405772da6e90d809e77d5de796562a2dd4dfd10ef00a83a3aba6" "bd818a0348a1",
                 16,
             ),
             "y": int(
@@ -1869,13 +1856,11 @@ de61329a78d526f65245380ce877e979c5b50de66c9c30d66382c8f254653d25a1eb1d3a4897d7\
                 16,
             ),
             "q": int(
-                "8ec73f3761caf5fdfe6e4e82098bf10f898740dcb808204bf6b1"
-                "8f507192c19d",
+                "8ec73f3761caf5fdfe6e4e82098bf10f898740dcb808204bf6b1" "8f507192c19d",
                 16,
             ),
             "x": int(
-                "0e0b95e31fda3f888059c46c3002ef8f2d6be112d0209aeb9e95"
-                "45da67aeea80",
+                "0e0b95e31fda3f888059c46c3002ef8f2d6be112d0209aeb9e95" "45da67aeea80",
                 16,
             ),
             "y": int(
@@ -1929,13 +1914,11 @@ de61329a78d526f65245380ce877e979c5b50de66c9c30d66382c8f254653d25a1eb1d3a4897d7\
                 16,
             ),
             "q": int(
-                "d3eba6521240694015ef94412e08bf3cf8d635a455a398d6f210"
-                "f6169041653b",
+                "d3eba6521240694015ef94412e08bf3cf8d635a455a398d6f210" "f6169041653b",
                 16,
             ),
             "x": int(
-                "b2764c46113983777d3e7e97589f1303806d14ad9f2f1ef03309"
-                "7de954b17706",
+                "b2764c46113983777d3e7e97589f1303806d14ad9f2f1ef03309" "7de954b17706",
                 16,
             ),
             "y": int(
@@ -1993,13 +1976,11 @@ de61329a78d526f65245380ce877e979c5b50de66c9c30d66382c8f254653d25a1eb1d3a4897d7\
                 16,
             ),
             "q": int(
-                "d3eba6521240694015ef94412e08bf3cf8d635a455a398d6f210"
-                "f6169041653b",
+                "d3eba6521240694015ef94412e08bf3cf8d635a455a398d6f210" "f6169041653b",
                 16,
             ),
             "x": int(
-                "52e3e040efb30e1befd909a0bdbcfd140d005b1bff094af97186"
-                "080262f1904d",
+                "52e3e040efb30e1befd909a0bdbcfd140d005b1bff094af97186" "080262f1904d",
                 16,
             ),
             "y": int(
@@ -2222,8 +2203,7 @@ a6c9b4f8dbbe915b794497227ba62
                 16,
             ),
             "q": int(
-                "8e056ec9d4b7acb580087a6ed9ba3478711bb025d5b8d9c731ef9b3"
-                "8bd43db2f",
+                "8e056ec9d4b7acb580087a6ed9ba3478711bb025d5b8d9c731ef9b3" "8bd43db2f",
                 16,
             ),
             "g": int(
@@ -2248,8 +2228,7 @@ a6c9b4f8dbbe915b794497227ba62
                 b"e3549703b187deeb3296"
             ),
             "x": int(
-                "56c897b5938ad5b3d437d7e4826da586a6b3be15e893fa1aaa946f2"
-                "0a028b6b3",
+                "56c897b5938ad5b3d437d7e4826da586a6b3be15e893fa1aaa946f2" "0a028b6b3",
                 16,
             ),
             "y": int(
@@ -2266,13 +2245,11 @@ a6c9b4f8dbbe915b794497227ba62
                 16,
             ),
             "r": int(
-                "3b85b17be240ed658beb3652c9d93e8e9eea160d35ee24596143058"
-                "02963374e",
+                "3b85b17be240ed658beb3652c9d93e8e9eea160d35ee24596143058" "02963374e",
                 16,
             ),
             "s": int(
-                "726800a5174a53b56dce86064109c0273cd11fcfa3c92c5cd6aa910"
-                "260c0e3c7",
+                "726800a5174a53b56dce86064109c0273cd11fcfa3c92c5cd6aa910" "260c0e3c7",
                 16,
             ),
             "result": "F",
@@ -2292,8 +2269,7 @@ a6c9b4f8dbbe915b794497227ba62
                 16,
             ),
             "q": int(
-                "8e056ec9d4b7acb580087a6ed9ba3478711bb025d5b8d9c731ef9b3"
-                "8bd43db2f",
+                "8e056ec9d4b7acb580087a6ed9ba3478711bb025d5b8d9c731ef9b3" "8bd43db2f",
                 16,
             ),
             "g": int(
@@ -2318,8 +2294,7 @@ a6c9b4f8dbbe915b794497227ba62
                 b"18a9eb148cd1e8b262ae"
             ),
             "x": int(
-                "2faf566a9f057960f1b50c69508f483d9966d6e35743591f3a677a9"
-                "dc40e1555",
+                "2faf566a9f057960f1b50c69508f483d9966d6e35743591f3a677a9" "dc40e1555",
                 16,
             ),
             "y": int(
@@ -2336,13 +2311,11 @@ a6c9b4f8dbbe915b794497227ba62
                 16,
             ),
             "r": int(
-                "343ea0a9e66277380f604d5880fca686bffab69ca97bfba015a102a"
-                "7e23dce0e",
+                "343ea0a9e66277380f604d5880fca686bffab69ca97bfba015a102a" "7e23dce0e",
                 16,
             ),
             "s": int(
-                "6258488c770e0f5ad7b9da8bade5023fc0d17c6ec517bd08d53e6dc"
-                "01ac5c2b3",
+                "6258488c770e0f5ad7b9da8bade5023fc0d17c6ec517bd08d53e6dc" "01ac5c2b3",
                 16,
             ),
             "result": "P",
@@ -2531,8 +2504,7 @@ e284935a53f67a1aa8e25d8ad5c4ad55d83aef883a4d9eeb6297e6a53f65049ba9e2c6b7953a7\
                 16,
             ),
             "q": int(
-                "e71f8567447f42e75f5ef85ca20fe557ab0343d37ed09edc3f6e686"
-                "04d6b9dfb",
+                "e71f8567447f42e75f5ef85ca20fe557ab0343d37ed09edc3f6e686" "04d6b9dfb",
                 16,
             ),
             "g": int(
@@ -2570,13 +2542,11 @@ e284935a53f67a1aa8e25d8ad5c4ad55d83aef883a4d9eeb6297e6a53f65049ba9e2c6b7953a7\
                 16,
             ),
             "r": int(
-                "633055e055f237c38999d81c397848c38cce80a55b649d9e7905c29"
-                "8e2a51447",
+                "633055e055f237c38999d81c397848c38cce80a55b649d9e7905c29" "8e2a51447",
                 16,
             ),
             "s": int(
-                "2bbf68317660ec1e4b154915027b0bc00ee19cfc0bf75d01930504f"
-                "2ce10a8b0",
+                "2bbf68317660ec1e4b154915027b0bc00ee19cfc0bf75d01930504f" "2ce10a8b0",
                 16,
             ),
         },
@@ -2595,8 +2565,7 @@ e284935a53f67a1aa8e25d8ad5c4ad55d83aef883a4d9eeb6297e6a53f65049ba9e2c6b7953a7\
                 16,
             ),
             "q": int(
-                "e71f8567447f42e75f5ef85ca20fe557ab0343d37ed09edc3f6e686"
-                "04d6b9dfb",
+                "e71f8567447f42e75f5ef85ca20fe557ab0343d37ed09edc3f6e686" "04d6b9dfb",
                 16,
             ),
             "g": int(
@@ -2634,13 +2603,11 @@ e284935a53f67a1aa8e25d8ad5c4ad55d83aef883a4d9eeb6297e6a53f65049ba9e2c6b7953a7\
                 16,
             ),
             "r": int(
-                "bcd490568c0a89ba311bef88ea4f4b03d273e793722722327095a37"
-                "8dd6f3522",
+                "bcd490568c0a89ba311bef88ea4f4b03d273e793722722327095a37" "8dd6f3522",
                 16,
             ),
             "s": int(
-                "74498fc43091fcdd2d1ef0775f8286945a01cd72b805256b0451f9c"
-                "bd943cf82",
+                "74498fc43091fcdd2d1ef0775f8286945a01cd72b805256b0451f9c" "bd943cf82",
                 16,
             ),
         },
@@ -2726,13 +2693,11 @@ a4090a3a2f602a77ff3bac1417f7e25a683f667b3b91f105016a47afad46a0367b18e2bdf0c
                 16,
             ),
             "x": int(
-                "1c7475da9a161e4b3f7d6b086494063543a979e34b8d7ac4"
-                "4204d47bf9f",
+                "1c7475da9a161e4b3f7d6b086494063543a979e34b8d7ac4" "4204d47bf9f",
                 16,
             ),
             "y": int(
-                "131cbd433f112871cc175943991b6a1350bf0cdd57ed8c83"
-                "1a2a7710c92",
+                "131cbd433f112871cc175943991b6a1350bf0cdd57ed8c83" "1a2a7710c92",
                 16,
             ),
         },
@@ -2743,13 +2708,11 @@ a4090a3a2f602a77ff3bac1417f7e25a683f667b3b91f105016a47afad46a0367b18e2bdf0c
                 16,
             ),
             "x": int(
-                "d37500a0391d98d3070d493e2b392a2c79dc736c097ed24b"
-                "7dd5ddec44",
+                "d37500a0391d98d3070d493e2b392a2c79dc736c097ed24b" "7dd5ddec44",
                 16,
             ),
             "y": int(
-                "1d996cc79f37d8dba143d4a8ad9a8a60ed7ea760aae1ddba"
-                "34d883f65d9",
+                "1d996cc79f37d8dba143d4a8ad9a8a60ed7ea760aae1ddba" "34d883f65d9",
                 16,
             ),
         },
@@ -3235,12 +3198,8 @@ d518475576730ed528779366568e46b7dd4ed787cb72d0733c93
                 16,
             ),
             "q": 1386090807861091316803998193774751098153687863463,
-            "x1": int(
-                "32e642683d745a23dccf4f12f989d8dfd1fd9894c422930950cb4c71", 16
-            ),
-            "x2": int(
-                "7d8ae93df3bc09d399a4157ec562126acf51092c3269ab27f60a3a2b", 16
-            ),
+            "x1": int("32e642683d745a23dccf4f12f989d8dfd1fd9894c422930950cb4c71", 16),
+            "x2": int("7d8ae93df3bc09d399a4157ec562126acf51092c3269ab27f60a3a2b", 16),
             "y1": int(
                 "8cd371363b32fcc2e936e345f2278b77001f2efdf78512c3ee75c12f88507"
                 "e2d5c0e5cdded3bb78435506c8028a3f4d6f028c0f49a0d61f1285795197e"
@@ -3297,12 +3256,8 @@ d518475576730ed528779366568e46b7dd4ed787cb72d0733c93
                 16,
             ),
             "q": 1386090807861091316803998193774751098153687863463,
-            "x1": int(
-                "66502429aba271e2f2ee2197a2b336e5f0467f192aa28b60dcbf1194", 16
-            ),
-            "x2": int(
-                "106b358be4f068348ac240ecbb454e5c39ca80b078cb0fafd856e9c5", 16
-            ),
+            "x1": int("66502429aba271e2f2ee2197a2b336e5f0467f192aa28b60dcbf1194", 16),
+            "x2": int("106b358be4f068348ac240ecbb454e5c39ca80b078cb0fafd856e9c5", 16),
             "y1": int(
                 "dfb001294215423d7146a2453cdb8598ccef01e1d931a913c3e4ed4a3cf38"
                 "a912066c28e4eaf77dd80ff07183a6160bd95932f513402f864dcf7a70cbe"
@@ -3366,15 +3321,9 @@ d518475576730ed528779366568e46b7dd4ed787cb72d0733c93
                 "0e6f27672beebc9963befc73",
                 16,
             ),
-            "q": int(
-                "a9a17de95a29091bf8e07dab53ea1aba9403be3c61027c6c8f48bac5", 16
-            ),
-            "x1": int(
-                "1610eaa4e0ccc8857e2b53149e008492b1fbd9025a6e8d95aaee9c0f", 16
-            ),
-            "x2": int(
-                "c4c83d75b27864b052cadc556e500e25aabf0c9d1bc01f0e1fe3862", 16
-            ),
+            "q": int("a9a17de95a29091bf8e07dab53ea1aba9403be3c61027c6c8f48bac5", 16),
+            "x1": int("1610eaa4e0ccc8857e2b53149e008492b1fbd9025a6e8d95aaee9c0f", 16),
+            "x2": int("c4c83d75b27864b052cadc556e500e25aabf0c9d1bc01f0e1fe3862", 16),
             "y1": int(
                 "51ee21cd9f97015180f258fad5c94ff5a458806b1412087236bf77fe87aae"
                 "1a36735816ed6e2160a731159814b6ae1f3f52c478dd9207094adfb62f766"
@@ -3440,15 +3389,9 @@ d518475576730ed528779366568e46b7dd4ed787cb72d0733c93
                 "63befc73",
                 16,
             ),
-            "q": int(
-                "a9a17de95a29091bf8e07dab53ea1aba9403be3c61027c6c8f48bac5", 16
-            ),
-            "x1": int(
-                "9ee22ac51664e40e0a24dbb94142dba40605e2b6eeaaa0268a0f6847", 16
-            ),
-            "x2": int(
-                "438093a468236658821bf64eb08456139963d4fb27121c3ed6c55876", 16
-            ),
+            "q": int("a9a17de95a29091bf8e07dab53ea1aba9403be3c61027c6c8f48bac5", 16),
+            "x1": int("9ee22ac51664e40e0a24dbb94142dba40605e2b6eeaaa0268a0f6847", 16),
+            "x2": int("438093a468236658821bf64eb08456139963d4fb27121c3ed6c55876", 16),
             "y1": int(
                 "c2630c9d38ed5c825d1c6a3eba7143f3fc8a049c8bcd1efc212d2af64eca9"
                 "94308208691d330aa8f27fc4a1e55de4e512113996d21375a667f8c26d76d"
@@ -3656,26 +3599,14 @@ f47021022a6c9b45ed791d09d9540eb81ea065fc1959eca365001ee39928c343d75
             "fail": False,
             "COUNT": 0,
             "CAVS": {
-                "d": int(
-                    "f70c297a683d6b7ef82b5af7349606c4447c8b4fc6fa5e80", 16
-                ),
-                "x": int(
-                    "f7b5061fb557e516c50abf541d97dbfd76ca7172b22cf590", 16
-                ),
-                "y": int(
-                    "135e15e21f9e85c76205fd148a92ac19f9e6243ddab322d1", 16
-                ),
+                "d": int("f70c297a683d6b7ef82b5af7349606c4447c8b4fc6fa5e80", 16),
+                "x": int("f7b5061fb557e516c50abf541d97dbfd76ca7172b22cf590", 16),
+                "y": int("135e15e21f9e85c76205fd148a92ac19f9e6243ddab322d1", 16),
             },
             "IUT": {
-                "d": int(
-                    "a5b4bbad57f101ca48021cb7440cd681a9d40cd51b99d917", 16
-                ),
-                "x": int(
-                    "79a77fcb18a32cdb59ed5d87740f29e8565d649dbf01ce86", 16
-                ),
-                "y": int(
-                    "f7187efaa0b1573f1fb00905d46810b880bf738b4c720bb7", 16
-                ),
+                "d": int("a5b4bbad57f101ca48021cb7440cd681a9d40cd51b99d917", 16),
+                "x": int("79a77fcb18a32cdb59ed5d87740f29e8565d649dbf01ce86", 16),
+                "y": int("f7187efaa0b1573f1fb00905d46810b880bf738b4c720bb7", 16),
             },
             "Z": int("26382468d721761e14a87dc3bee67340095c6455962d1ba3", 16),
             "curve": "secp192r1",
@@ -3685,26 +3616,14 @@ f47021022a6c9b45ed791d09d9540eb81ea065fc1959eca365001ee39928c343d75
             "fail": True,
             "COUNT": 2,
             "CAVS": {
-                "d": int(
-                    "5f909dcb0ccce58c82fada748c47297579e6a981b5518a96", 16
-                ),
-                "x": int(
-                    "537f1ecfda0e366de393a9bc8188fcc280311bffefe21ecf", 16
-                ),
-                "y": int(
-                    "a1fa1f98498d65f2754caff4e5303a4066a5ff89fde95381", 16
-                ),
+                "d": int("5f909dcb0ccce58c82fada748c47297579e6a981b5518a96", 16),
+                "x": int("537f1ecfda0e366de393a9bc8188fcc280311bffefe21ecf", 16),
+                "y": int("a1fa1f98498d65f2754caff4e5303a4066a5ff89fde95381", 16),
             },
             "IUT": {
-                "d": int(
-                    "3357aa7f47f3e09421602cc12cdce4434c68e330d44de05e", 16
-                ),
-                "x": int(
-                    "6a33d43d9c72173eabc7a771a5687748c4774c62762e96ec", 16
-                ),
-                "y": int(
-                    "8033f238b3abc69470aad4be8dbe4f60a2fd50207626c56a", 16
-                ),
+                "d": int("3357aa7f47f3e09421602cc12cdce4434c68e330d44de05e", 16),
+                "x": int("6a33d43d9c72173eabc7a771a5687748c4774c62762e96ec", 16),
+                "y": int("8033f238b3abc69470aad4be8dbe4f60a2fd50207626c56a", 16),
             },
             "Z": int("3153034f6617326f19c35be8c99a0585431adf09d2f8e0fd", 16),
             "curve": "secp192r1",
@@ -3714,26 +3633,14 @@ f47021022a6c9b45ed791d09d9540eb81ea065fc1959eca365001ee39928c343d75
             "fail": False,
             "COUNT": 8,
             "CAVS": {
-                "d": int(
-                    "8fcfaf0524cc868fad20e50410a2205319f1327308d98dc8", 16
-                ),
-                "x": int(
-                    "9b0243d80a9e328738080fb4d46bc450243d0efb7ead0c92", 16
-                ),
-                "y": int(
-                    "ad5bebad7f03849693071537f60ef858cad214123beee7c7", 16
-                ),
+                "d": int("8fcfaf0524cc868fad20e50410a2205319f1327308d98dc8", 16),
+                "x": int("9b0243d80a9e328738080fb4d46bc450243d0efb7ead0c92", 16),
+                "y": int("ad5bebad7f03849693071537f60ef858cad214123beee7c7", 16),
             },
             "IUT": {
-                "d": int(
-                    "bba95dac90289cb68ca2b006f9757219b70579c299ad7a7d", 16
-                ),
-                "x": int(
-                    "7733dc0cb365cd6312724196b9b4eb491fd4d2e31b9afdb1", 16
-                ),
-                "y": int(
-                    "92ffa3722acc5b94d772258ba2d471b06c0f53f56fcd8662", 16
-                ),
+                "d": int("bba95dac90289cb68ca2b006f9757219b70579c299ad7a7d", 16),
+                "x": int("7733dc0cb365cd6312724196b9b4eb491fd4d2e31b9afdb1", 16),
+                "y": int("92ffa3722acc5b94d772258ba2d471b06c0f53f56fcd8662", 16),
             },
             "Z": int("0f3c6e4a29a08296ae730f56a1ebf819ea2edfa6f0434e40", 16),
             "curve": "secp192r1",
@@ -3744,35 +3651,29 @@ f47021022a6c9b45ed791d09d9540eb81ea065fc1959eca365001ee39928c343d75
             "COUNT": 0,
             "CAVS": {
                 "d": int(
-                    "e53a88af7cf8ce6bf13c8b9ad191494e37a6acc1368c71f4"
-                    "306e39e5",
+                    "e53a88af7cf8ce6bf13c8b9ad191494e37a6acc1368c71f4" "306e39e5",
                     16,
                 ),
                 "x": int(
-                    "3a24217c4b957fea922eec9d9ac52d5cb4b3fcd95efde1e4"
-                    "fa0dd6e2",
+                    "3a24217c4b957fea922eec9d9ac52d5cb4b3fcd95efde1e4" "fa0dd6e2",
                     16,
                 ),
                 "y": int(
-                    "775b94025a808eb6f4af14ea4b57dca576c35373c6dc198b"
-                    "15b981df",
+                    "775b94025a808eb6f4af14ea4b57dca576c35373c6dc198b" "15b981df",
                     16,
                 ),
             },
             "IUT": {
                 "d": int(
-                    "09f51e302c6a0fe6ff48f34c208c6af91e70f65f88102e6f"
-                    "cab9af4a",
+                    "09f51e302c6a0fe6ff48f34c208c6af91e70f65f88102e6f" "cab9af4a",
                     16,
                 ),
                 "x": int(
-                    "c5d5706ccd7424c74fd616e699865af96e56f39adea6aa05"
-                    "9e5092b5",
+                    "c5d5706ccd7424c74fd616e699865af96e56f39adea6aa05" "9e5092b5",
                     16,
                 ),
                 "y": int(
-                    "f0729077bb602404d56d2f7e2ba5bb2f383df4a542556788"
-                    "1ff0165d",
+                    "f0729077bb602404d56d2f7e2ba5bb2f383df4a542556788" "1ff0165d",
                     16,
                 ),
             },
@@ -3821,8 +3722,7 @@ f47021022a6c9b45ed791d09d9540eb81ea065fc1959eca365001ee39928c343d75
                 ),
             },
             "Z": int(
-                "c0147c3c2691b450b5edc08b51aea224d9f4359ff67aab6d"
-                "a3146f396dbceaea",
+                "c0147c3c2691b450b5edc08b51aea224d9f4359ff67aab6d" "a3146f396dbceaea",
                 16,
             ),
             "curve": "secp256r1",
@@ -3978,35 +3878,29 @@ ffdfa60dd7
             "COUNT": 50,
             "CAVS": {
                 "d": int(
-                    "540904b67b3716823dd621ed72ad3dbc615887b4f56f910b"
-                    "78a57199",
+                    "540904b67b3716823dd621ed72ad3dbc615887b4f56f910b" "78a57199",
                     16,
                 ),
                 "x": int(
-                    "28e5f3a72d8f6b8499dd1bcdfceafcecec68a0d715789bcf"
-                    "4b55fe15",
+                    "28e5f3a72d8f6b8499dd1bcdfceafcecec68a0d715789bcf" "4b55fe15",
                     16,
                 ),
                 "y": int(
-                    "8c8006a7da7c1a19f5328d7e865522b0c0dfb9a29b2c46dc"
-                    "96590d2a",
+                    "8c8006a7da7c1a19f5328d7e865522b0c0dfb9a29b2c46dc" "96590d2a",
                     16,
                 ),
             },
             "IUT": {
                 "d": int(
-                    "5e717ae889fc8d67be11c2ebe1a7d3550051448d68a040b2"
-                    "dee8e327",
+                    "5e717ae889fc8d67be11c2ebe1a7d3550051448d68a040b2" "dee8e327",
                     16,
                 ),
                 "x": int(
-                    "ae7f3db340b647d61713f5374c019f1be2b28573cb6219bb"
-                    "7b747223",
+                    "ae7f3db340b647d61713f5374c019f1be2b28573cb6219bb" "7b747223",
                     16,
                 ),
                 "y": int(
-                    "800e6bffcf97c15864ec6e5673fb83359b45f89b8a26a27f"
-                    "6f3dfbff",
+                    "800e6bffcf97c15864ec6e5673fb83359b45f89b8a26a27f" "6f3dfbff",
                     16,
                 ),
             },
@@ -4425,9 +4319,7 @@ def test_raises_unsupported_algorithm_wrong_reason():
     # Check that it fails if the wrong reason code is raised.
     with pytest.raises(AssertionError):
         with raises_unsupported_algorithm(None):
-            raise UnsupportedAlgorithm(
-                "An error.", _Reasons.BACKEND_MISSING_INTERFACE
-            )
+            raise UnsupportedAlgorithm("An error.", _Reasons.BACKEND_MISSING_INTERFACE)
 
 
 def test_raises_unsupported_no_exc():
@@ -4439,20 +4331,14 @@ def test_raises_unsupported_no_exc():
 
 def test_raises_unsupported_algorithm():
     # Check that it doesn't assert if the right things are raised.
-    with raises_unsupported_algorithm(
-        _Reasons.BACKEND_MISSING_INTERFACE
-    ) as exc_info:
-        raise UnsupportedAlgorithm(
-            "An error.", _Reasons.BACKEND_MISSING_INTERFACE
-        )
+    with raises_unsupported_algorithm(_Reasons.BACKEND_MISSING_INTERFACE) as exc_info:
+        raise UnsupportedAlgorithm("An error.", _Reasons.BACKEND_MISSING_INTERFACE)
     assert exc_info.type is UnsupportedAlgorithm
 
 
 def test_inspect_deprecated_module():
     # Check if inspection is supported by _ModuleWithDeprecations.
-    assert isinstance(
-        cryptography.utils, cryptography.utils._ModuleWithDeprecations
-    )
+    assert isinstance(cryptography.utils, cryptography.utils._ModuleWithDeprecations)
     source_file = inspect.getsourcefile(cryptography.utils)
     assert isinstance(source_file, str)
     assert source_file.endswith("utils.py")

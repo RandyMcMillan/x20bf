@@ -5,10 +5,7 @@
 
 from cryptography.hazmat.backends.openssl.utils import _evp_pkey_derive
 from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric.x448 import (
-    X448PrivateKey,
-    X448PublicKey,
-)
+from cryptography.hazmat.primitives.asymmetric.x448 import X448PrivateKey, X448PublicKey
 
 _X448_KEY_SIZE = 56
 
@@ -31,9 +28,7 @@ class _X448PublicKey(X448PublicKey):
                 encoding is not serialization.Encoding.Raw
                 or format is not serialization.PublicFormat.Raw
             ):
-                raise ValueError(
-                    "When using Raw both encoding and format must be Raw"
-                )
+                raise ValueError("When using Raw both encoding and format must be Raw")
 
             return self._raw_public_bytes()
 
@@ -86,9 +81,7 @@ class _X448PrivateKey(X448PrivateKey):
             if (
                 format is not serialization.PrivateFormat.Raw
                 or encoding is not serialization.Encoding.Raw
-                or not isinstance(
-                    encryption_algorithm, serialization.NoEncryption
-                )
+                or not isinstance(encryption_algorithm, serialization.NoEncryption)
             ):
                 raise ValueError(
                     "When using Raw both encoding and format must be Raw "

@@ -5,7 +5,6 @@ import time
 import zipfile
 
 import requests
-
 from urllib3.util.retry import Retry
 
 
@@ -13,9 +12,7 @@ def get_response(session, url, token):
     # Retry on non-502s
     for i in range(5):
         try:
-            response = session.get(
-                url, headers={"Authorization": "token " + token}
-            )
+            response = session.get(url, headers={"Authorization": "token " + token})
         except requests.exceptions.ChunkedEncodingError as e:
             print("Exception ({}) fetching {}, retrying".format(e, url))
             time.sleep(2)
@@ -31,9 +28,7 @@ def get_response(session, url, token):
         return response
     response = session.get(url, headers={"Authorization": "token " + token})
     if response.status_code != 200:
-        raise ValueError(
-            "Got HTTP {} fetching {}: ".format(response.status_code, url)
-        )
+        raise ValueError("Got HTTP {} fetching {}: ".format(response.status_code, url))
     return response
 
 
@@ -65,9 +60,7 @@ def main(platform, target):
     for artifact in response["artifacts"]:
         if artifact["name"] == target:
             print("Found artifact")
-            response = get_response(
-                session, artifact["archive_download_url"], token
-            )
+            response = get_response(session, artifact["archive_download_url"], token)
             zipfile.ZipFile(io.BytesIO(response.content)).extractall(
                 os.path.join(path, artifact["name"])
             )

@@ -6,11 +6,10 @@
 import binascii
 
 import pytest
-
 from cryptography.hazmat.primitives import hashes, hmac
 
-from .utils import generate_hmac_test
 from ...utils import load_hash_vectors
+from .utils import generate_hmac_test
 
 
 @pytest.mark.supported(
@@ -92,9 +91,7 @@ class TestHMACSHA512(object):
 
 
 @pytest.mark.supported(
-    only_if=lambda backend: backend.hmac_supported(
-        hashes.BLAKE2b(digest_size=64)
-    ),
+    only_if=lambda backend: backend.hmac_supported(hashes.BLAKE2b(digest_size=64)),
     skip_message="Does not support BLAKE2",
 )
 class TestHMACBLAKE2(object):

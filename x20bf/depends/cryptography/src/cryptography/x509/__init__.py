@@ -31,19 +31,19 @@ from cryptography.x509.extensions import (
     AuthorityInformationAccess,
     AuthorityKeyIdentifier,
     BasicConstraints,
+    CertificateIssuer,
+    CertificatePolicies,
     CRLDistributionPoints,
     CRLNumber,
     CRLReason,
-    CertificateIssuer,
-    CertificatePolicies,
     DeltaCRLIndicator,
     DistributionPoint,
     DuplicateExtension,
     ExtendedKeyUsage,
     Extension,
     ExtensionNotFound,
-    ExtensionType,
     Extensions,
+    ExtensionType,
     FreshestCRL,
     GeneralNames,
     InhibitAnyPolicy,
@@ -57,8 +57,8 @@ from cryptography.x509.extensions import (
     OCSPNonce,
     PolicyConstraints,
     PolicyInformation,
-    PrecertPoison,
     PrecertificateSignedCertificateTimestamps,
+    PrecertPoison,
     ReasonFlags,
     SignedCertificateTimestamps,
     SubjectAlternativeName,
@@ -70,32 +70,27 @@ from cryptography.x509.extensions import (
     UserNotice,
 )
 from cryptography.x509.general_name import (
-    DNSName,
     DirectoryName,
+    DNSName,
     GeneralName,
     IPAddress,
     OtherName,
-    RFC822Name,
     RegisteredID,
+    RFC822Name,
     UniformResourceIdentifier,
     UnsupportedGeneralNameType,
 )
-from cryptography.x509.name import (
-    Name,
-    NameAttribute,
-    RelativeDistinguishedName,
-)
+from cryptography.x509.name import Name, NameAttribute, RelativeDistinguishedName
 from cryptography.x509.oid import (
     AuthorityInformationAccessOID,
-    CRLEntryExtensionOID,
     CertificatePoliciesOID,
+    CRLEntryExtensionOID,
     ExtendedKeyUsageOID,
     ExtensionOID,
     NameOID,
     ObjectIdentifier,
     SignatureAlgorithmOID,
 )
-
 
 OID_AUTHORITY_INFORMATION_ACCESS = ExtensionOID.AUTHORITY_INFORMATION_ACCESS
 OID_AUTHORITY_KEY_IDENTIFIER = ExtensionOID.AUTHORITY_KEY_IDENTIFIER

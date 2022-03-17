@@ -6,7 +6,6 @@
 import binascii
 
 import pytest
-
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.ciphers.algorithms import AES
 from cryptography.hazmat.primitives.cmac import CMAC

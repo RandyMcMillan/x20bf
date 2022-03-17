@@ -6,9 +6,7 @@
 import datetime
 
 import pytest
-
 import pytz
-
 from cryptography import x509
 
 
@@ -98,9 +96,7 @@ class TestRevokedCertificateBuilder(object):
         )
 
         with pytest.raises(ValueError):
-            builder.add_extension(
-                x509.CRLReason(x509.ReasonFlags.ca_compromise), False
-            )
+            builder.add_extension(x509.CRLReason(x509.ReasonFlags.ca_compromise), False)
 
     def test_add_invalid_extension(self):
         with pytest.raises(TypeError):
@@ -158,21 +154,15 @@ class TestRevokedCertificateBuilder(object):
         assert revoked_certificate.serial_number == serial_number
         assert revoked_certificate.revocation_date == revocation_date
         assert len(revoked_certificate.extensions) == 1
-        ext = revoked_certificate.extensions.get_extension_for_class(
-            type(extension)
-        )
+        ext = revoked_certificate.extensions.get_extension_for_class(type(extension))
         assert ext.critical is False
         assert ext.value == extension
 
     def test_add_multiple_extensions(self, backend):
         serial_number = 333
         revocation_date = datetime.datetime(2002, 1, 1, 12, 1)
-        invalidity_date = x509.InvalidityDate(
-            datetime.datetime(2015, 1, 1, 0, 0)
-        )
-        certificate_issuer = x509.CertificateIssuer(
-            [x509.DNSName("cryptography.io")]
-        )
+        invalidity_date = x509.InvalidityDate(datetime.datetime(2015, 1, 1, 0, 0))
+        certificate_issuer = x509.CertificateIssuer([x509.DNSName("cryptography.io")])
         crl_reason = x509.CRLReason(x509.ReasonFlags.aa_compromise)
         builder = (
             x509.RevokedCertificateBuilder()
@@ -186,8 +176,6 @@ class TestRevokedCertificateBuilder(object):
         revoked_certificate = builder.build(backend)
         assert len(revoked_certificate.extensions) == 3
         for ext_data in [invalidity_date, certificate_issuer, crl_reason]:
-            ext = revoked_certificate.extensions.get_extension_for_class(
-                type(ext_data)
-            )
+            ext = revoked_certificate.extensions.get_extension_for_class(type(ext_data))
             assert ext.critical is True
             assert ext.value == ext_data

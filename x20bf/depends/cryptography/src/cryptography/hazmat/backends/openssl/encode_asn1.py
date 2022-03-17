@@ -5,7 +5,6 @@
 
 from cryptography import x509
 
-
 _CRLREASONFLAGS = {
     x509.ReasonFlags.key_compromise: 1,
     x509.ReasonFlags.ca_compromise: 2,

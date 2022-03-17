@@ -2,9 +2,7 @@ import os
 
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
-from cryptography.hazmat.primitives.asymmetric.utils import (
-    encode_dss_signature,
-)
+from cryptography.hazmat.primitives.asymmetric.utils import encode_dss_signature
 
 from tests.utils import load_fips_ecdsa_signing_vectors, load_vectors_from_file
 
@@ -42,8 +40,6 @@ def verify_vectors(vectors):
 
 vector_path = os.path.join("asymmetric", "ECDSA", "SECP256K1", "SigGen.txt")
 
-secp256k1_vectors = load_vectors_from_file(
-    vector_path, load_fips_ecdsa_signing_vectors
-)
+secp256k1_vectors = load_vectors_from_file(vector_path, load_fips_ecdsa_signing_vectors)
 
 verify_vectors(secp256k1_vectors)

@@ -6,14 +6,12 @@
 import binascii
 
 import pytest
-
 from cryptography.exceptions import UnsupportedAlgorithm
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ec
 
-from .utils import wycheproof_tests
 from ..hazmat.primitives.test_ec import _skip_exchange_algorithm_unsupported
-
+from .utils import wycheproof_tests
 
 _CURVES = {
     "secp224r1": ec.SECP224R1(),
@@ -51,9 +49,7 @@ _CURVES = {
 def test_ecdh(backend, wycheproof):
     curve = _CURVES[wycheproof.testgroup["curve"]]
     if curve is None:
-        pytest.skip(
-            "Unsupported curve ({})".format(wycheproof.testgroup["curve"])
-        )
+        pytest.skip("Unsupported curve ({})".format(wycheproof.testgroup["curve"]))
     _skip_exchange_algorithm_unsupported(backend, ec.ECDH(), curve)
 
     private_key = ec.derive_private_key(

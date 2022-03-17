@@ -28,9 +28,7 @@ def build_vectors(mode, filename):
         if line.startswith("KEY"):
             if count != 0:
                 output.append(
-                    "CIPHERTEXT = {0}".format(
-                        encrypt(mode, key, iv, plaintext)
-                    )
+                    "CIPHERTEXT = {0}".format(encrypt(mode, key, iv, plaintext))
                 )
             output.append("\nCOUNT = {0}".format(count))
             count += 1

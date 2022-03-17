@@ -6,7 +6,6 @@ import enum
 import typing
 
 import pytest
-
 from cryptography import utils
 
 

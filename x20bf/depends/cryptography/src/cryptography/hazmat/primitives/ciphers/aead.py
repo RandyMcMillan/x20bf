@@ -42,9 +42,7 @@ class ChaCha20Poly1305(object):
 
         if len(data) > self._MAX_SIZE or len(associated_data) > self._MAX_SIZE:
             # This is OverflowError to match what cffi would raise
-            raise OverflowError(
-                "Data or associated data too long. Max 2**32 bytes"
-            )
+            raise OverflowError("Data or associated data too long. Max 2**32 bytes")
 
         self._check_params(nonce, data, associated_data)
         return aead._encrypt(backend, self, nonce, data, associated_data, 16)
@@ -118,9 +116,7 @@ class AESCCM(object):
 
         if len(data) > self._MAX_SIZE or len(associated_data) > self._MAX_SIZE:
             # This is OverflowError to match what cffi would raise
-            raise OverflowError(
-                "Data or associated data too long. Max 2**32 bytes"
-            )
+            raise OverflowError("Data or associated data too long. Max 2**32 bytes")
 
         self._check_params(nonce, data, associated_data)
         self._validate_lengths(nonce, len(data))
@@ -149,9 +145,7 @@ class AESCCM(object):
         if 2 ** (8 * l_val) < data_len:
             raise ValueError("Data too long for nonce")
 
-    def _check_params(
-        self, nonce: bytes, data: bytes, associated_data: bytes
-    ) -> None:
+    def _check_params(self, nonce: bytes, data: bytes, associated_data: bytes) -> None:
         utils._check_byteslike("nonce", nonce)
         utils._check_bytes("data", data)
         utils._check_bytes("associated_data", associated_data)
@@ -190,9 +184,7 @@ class AESGCM(object):
 
         if len(data) > self._MAX_SIZE or len(associated_data) > self._MAX_SIZE:
             # This is OverflowError to match what cffi would raise
-            raise OverflowError(
-                "Data or associated data too long. Max 2**32 bytes"
-            )
+            raise OverflowError("Data or associated data too long. Max 2**32 bytes")
 
         self._check_params(nonce, data, associated_data)
         return aead._encrypt(backend, self, nonce, data, associated_data, 16)
@@ -259,9 +251,7 @@ class AESOCB3(object):
 
         if len(data) > self._MAX_SIZE or len(associated_data) > self._MAX_SIZE:
             # This is OverflowError to match what cffi would raise
-            raise OverflowError(
-                "Data or associated data too long. Max 2**32 bytes"
-            )
+            raise OverflowError("Data or associated data too long. Max 2**32 bytes")
 
         self._check_params(nonce, data, associated_data)
         return aead._encrypt(backend, self, nonce, data, associated_data, 16)

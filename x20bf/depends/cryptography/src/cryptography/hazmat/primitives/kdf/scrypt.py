@@ -7,14 +7,9 @@ import sys
 import typing
 
 from cryptography import utils
-from cryptography.exceptions import (
-    AlreadyFinalized,
-    InvalidKey,
-    UnsupportedAlgorithm,
-)
+from cryptography.exceptions import AlreadyFinalized, InvalidKey, UnsupportedAlgorithm
 from cryptography.hazmat.primitives import constant_time
 from cryptography.hazmat.primitives.kdf import KeyDerivationFunction
-
 
 # This is used by the scrypt tests to skip tests that require more memory
 # than the MEM_LIMIT
@@ -31,9 +26,7 @@ class Scrypt(KeyDerivationFunction):
         p: int,
         backend: typing.Any = None,
     ):
-        from cryptography.hazmat.backends.openssl.backend import (
-            backend as ossl,
-        )
+        from cryptography.hazmat.backends.openssl.backend import backend as ossl
 
         if not ossl.scrypt_supported():
             raise UnsupportedAlgorithm(

@@ -7,15 +7,11 @@ import binascii
 import os
 
 import pytest
-
 from cryptography.exceptions import AlreadyFinalized, InvalidKey
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF, HKDFExpand
 
-from ...utils import (
-    load_nist_vectors,
-    load_vectors_from_file,
-)
+from ...utils import load_nist_vectors, load_vectors_from_file
 
 
 class TestHKDF(object):
@@ -79,23 +75,17 @@ class TestHKDF(object):
             )
 
         with pytest.raises(TypeError):
-            hkdf = HKDF(
-                hashes.SHA256(), 16, salt=None, info=None, backend=backend
-            )
+            hkdf = HKDF(hashes.SHA256(), 16, salt=None, info=None, backend=backend)
 
             hkdf.derive("foo")  # type: ignore[arg-type]
 
         with pytest.raises(TypeError):
-            hkdf = HKDF(
-                hashes.SHA256(), 16, salt=None, info=None, backend=backend
-            )
+            hkdf = HKDF(hashes.SHA256(), 16, salt=None, info=None, backend=backend)
 
             hkdf.verify("foo", b"bar")  # type: ignore[arg-type]
 
         with pytest.raises(TypeError):
-            hkdf = HKDF(
-                hashes.SHA256(), 16, salt=None, info=None, backend=backend
-            )
+            hkdf = HKDF(hashes.SHA256(), 16, salt=None, info=None, backend=backend)
 
             hkdf.verify(b"foo", "bar")  # type: ignore[arg-type]
 
@@ -154,8 +144,7 @@ class TestHKDFExpand(object):
     def test_buffer_protocol(self, backend):
         prk = bytearray(
             binascii.unhexlify(
-                b"077709362c2e32df0ddc3f0dc47bba6390b6c73bb50f9c3122ec844ad7c2"
-                b"b3e5"
+                b"077709362c2e32df0ddc3f0dc47bba6390b6c73bb50f9c3122ec844ad7c2" b"b3e5"
             )
         )
 

@@ -6,23 +6,21 @@
 import datetime
 
 import pytest
-
 import pytz
-
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.asymmetric import ec, ed25519, ed448
+from cryptography.hazmat.primitives.asymmetric import ec, ed448, ed25519
 from cryptography.x509.oid import (
     AuthorityInformationAccessOID,
     NameOID,
     SignatureAlgorithmOID,
 )
 
-from .test_x509 import DummyExtension
 from ..hazmat.primitives.fixtures_dsa import DSA_KEY_2048
 from ..hazmat.primitives.fixtures_ec import EC_KEY_SECP256R1
-from ..hazmat.primitives.fixtures_rsa import RSA_KEY_2048, RSA_KEY_512
+from ..hazmat.primitives.fixtures_rsa import RSA_KEY_512, RSA_KEY_2048
 from ..hazmat.primitives.test_ec import _skip_curve_unsupported
+from .test_x509 import DummyExtension
 
 
 class TestCertificateRevocationListBuilder(object):
@@ -51,11 +49,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_time)
@@ -93,11 +87,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_time)
@@ -173,9 +163,7 @@ class TestCertificateRevocationListBuilder(object):
         private_key = RSA_KEY_2048.private_key(backend)
         builder = (
             x509.CertificateRevocationListBuilder()
-            .issuer_name(
-                x509.Name([x509.NameAttribute(NameOID.COUNTRY_NAME, "US")])
-            )
+            .issuer_name(x509.Name([x509.NameAttribute(NameOID.COUNTRY_NAME, "US")]))
             .next_update(datetime.datetime(2030, 1, 1, 12, 1))
         )
 
@@ -186,9 +174,7 @@ class TestCertificateRevocationListBuilder(object):
         private_key = RSA_KEY_2048.private_key(backend)
         builder = (
             x509.CertificateRevocationListBuilder()
-            .issuer_name(
-                x509.Name([x509.NameAttribute(NameOID.COUNTRY_NAME, "US")])
-            )
+            .issuer_name(x509.Name([x509.NameAttribute(NameOID.COUNTRY_NAME, "US")]))
             .last_update(datetime.datetime(2030, 1, 1, 12, 1))
         )
 
@@ -203,11 +189,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_update)
@@ -225,8 +207,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CRLNumber(13),
             x509.DeltaCRLIndicator(12345678901234567890),
             x509.AuthorityKeyIdentifier(
-                b"\xc3\x9c\xf3\xfc\xd3F\x084\xbb\xceF\x7f\xa0|[\xf3\xe2\x08"
-                b"\xcbY",
+                b"\xc3\x9c\xf3\xfc\xd3F\x084\xbb\xceF\x7f\xa0|[\xf3\xe2\x08" b"\xcbY",
                 None,
                 None,
             ),
@@ -251,11 +232,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_update)
@@ -282,11 +259,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_update)
@@ -301,9 +274,7 @@ class TestCertificateRevocationListBuilder(object):
         ext1 = crl.extensions.get_extension_for_class(x509.CRLNumber)
         assert ext1.critical is False
         assert ext1.value == crl_number
-        ext2 = crl.extensions.get_extension_for_class(
-            x509.IssuerAlternativeName
-        )
+        ext2 = crl.extensions.get_extension_for_class(x509.IssuerAlternativeName)
         assert ext2.critical is True
         assert ext2.value == ian
 
@@ -325,11 +296,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_update)
@@ -357,11 +324,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_update)
@@ -379,11 +342,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_update)
@@ -407,11 +366,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_update)
@@ -429,11 +384,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_update)
@@ -441,9 +392,7 @@ class TestCertificateRevocationListBuilder(object):
         )
 
         with pytest.raises(TypeError):
-            builder.sign(
-                private_key, object(), backend  # type: ignore[arg-type]
-            )
+            builder.sign(private_key, object(), backend)  # type: ignore[arg-type]
 
     @pytest.mark.supported(
         only_if=lambda backend: backend.ed25519_supported(),
@@ -457,11 +406,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_update)
@@ -489,11 +434,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_update)
@@ -511,9 +452,7 @@ class TestCertificateRevocationListBuilder(object):
 
     def test_sign_dsa_key(self, backend):
         private_key = DSA_KEY_2048.private_key(backend)
-        invalidity_date = x509.InvalidityDate(
-            datetime.datetime(2002, 1, 1, 0, 0)
-        )
+        invalidity_date = x509.InvalidityDate(datetime.datetime(2002, 1, 1, 0, 0))
         ian = x509.IssuerAlternativeName(
             [x509.UniformResourceIdentifier("https://cryptography.io")]
         )
@@ -530,11 +469,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_update)
@@ -545,9 +480,7 @@ class TestCertificateRevocationListBuilder(object):
 
         crl = builder.sign(private_key, hashes.SHA256(), backend)
         assert (
-            crl.extensions.get_extension_for_class(
-                x509.IssuerAlternativeName
-            ).value
+            crl.extensions.get_extension_for_class(x509.IssuerAlternativeName).value
             == ian
         )
         assert crl[0].serial_number == revoked_cert0.serial_number
@@ -560,9 +493,7 @@ class TestCertificateRevocationListBuilder(object):
     def test_sign_ec_key(self, backend):
         _skip_curve_unsupported(backend, ec.SECP256R1())
         private_key = ec.generate_private_key(ec.SECP256R1(), backend)
-        invalidity_date = x509.InvalidityDate(
-            datetime.datetime(2002, 1, 1, 0, 0)
-        )
+        invalidity_date = x509.InvalidityDate(datetime.datetime(2002, 1, 1, 0, 0))
         ian = x509.IssuerAlternativeName(
             [x509.UniformResourceIdentifier("https://cryptography.io")]
         )
@@ -579,11 +510,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_update)
@@ -594,9 +521,7 @@ class TestCertificateRevocationListBuilder(object):
 
         crl = builder.sign(private_key, hashes.SHA256(), backend)
         assert (
-            crl.extensions.get_extension_for_class(
-                x509.IssuerAlternativeName
-            ).value
+            crl.extensions.get_extension_for_class(x509.IssuerAlternativeName).value
             == ian
         )
         assert crl[0].serial_number == revoked_cert0.serial_number
@@ -612,9 +537,7 @@ class TestCertificateRevocationListBuilder(object):
     )
     def test_sign_ed25519_key(self, backend):
         private_key = ed25519.Ed25519PrivateKey.generate()
-        invalidity_date = x509.InvalidityDate(
-            datetime.datetime(2002, 1, 1, 0, 0)
-        )
+        invalidity_date = x509.InvalidityDate(datetime.datetime(2002, 1, 1, 0, 0))
         ian = x509.IssuerAlternativeName(
             [x509.UniformResourceIdentifier("https://cryptography.io")]
         )
@@ -631,11 +554,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_update)
@@ -648,9 +567,7 @@ class TestCertificateRevocationListBuilder(object):
         assert crl.signature_hash_algorithm is None
         assert crl.signature_algorithm_oid == SignatureAlgorithmOID.ED25519
         assert (
-            crl.extensions.get_extension_for_class(
-                x509.IssuerAlternativeName
-            ).value
+            crl.extensions.get_extension_for_class(x509.IssuerAlternativeName).value
             == ian
         )
         assert crl[0].serial_number == revoked_cert0.serial_number
@@ -666,9 +583,7 @@ class TestCertificateRevocationListBuilder(object):
     )
     def test_sign_ed448_key(self, backend):
         private_key = ed448.Ed448PrivateKey.generate()
-        invalidity_date = x509.InvalidityDate(
-            datetime.datetime(2002, 1, 1, 0, 0)
-        )
+        invalidity_date = x509.InvalidityDate(datetime.datetime(2002, 1, 1, 0, 0))
         ian = x509.IssuerAlternativeName(
             [x509.UniformResourceIdentifier("https://cryptography.io")]
         )
@@ -685,11 +600,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_update)
@@ -702,9 +613,7 @@ class TestCertificateRevocationListBuilder(object):
         assert crl.signature_hash_algorithm is None
         assert crl.signature_algorithm_oid == SignatureAlgorithmOID.ED448
         assert (
-            crl.extensions.get_extension_for_class(
-                x509.IssuerAlternativeName
-            ).value
+            crl.extensions.get_extension_for_class(x509.IssuerAlternativeName).value
             == ian
         )
         assert crl[0].serial_number == revoked_cert0.serial_number
@@ -722,11 +631,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_time)
@@ -745,11 +650,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_time)
@@ -763,9 +664,7 @@ class TestCertificateRevocationListBuilder(object):
         private_key = RSA_KEY_2048.private_key(backend)
         last_update = datetime.datetime(2002, 1, 1, 12, 1)
         next_update = datetime.datetime(2030, 1, 1, 12, 1)
-        invalidity_date = x509.InvalidityDate(
-            datetime.datetime(2002, 1, 1, 0, 0)
-        )
+        invalidity_date = x509.InvalidityDate(datetime.datetime(2002, 1, 1, 0, 0))
         revoked_cert0 = (
             x509.RevokedCertificateBuilder()
             .serial_number(38)
@@ -777,9 +676,7 @@ class TestCertificateRevocationListBuilder(object):
             .serial_number(2)
             .revocation_date(datetime.datetime(2012, 1, 1, 1, 1))
             .add_extension(invalidity_date, False)
-            .add_extension(
-                x509.CRLReason(x509.ReasonFlags.ca_compromise), False
-            )
+            .add_extension(x509.CRLReason(x509.ReasonFlags.ca_compromise), False)
             .build(backend)
         )
         ci = x509.CertificateIssuer([x509.DNSName("cryptography.io")])
@@ -794,11 +691,7 @@ class TestCertificateRevocationListBuilder(object):
             x509.CertificateRevocationListBuilder()
             .issuer_name(
                 x509.Name(
-                    [
-                        x509.NameAttribute(
-                            NameOID.COMMON_NAME, "cryptography.io CA"
-                        )
-                    ]
+                    [x509.NameAttribute(NameOID.COMMON_NAME, "cryptography.io CA")]
                 )
             )
             .last_update(last_update)
@@ -822,8 +715,6 @@ class TestCertificateRevocationListBuilder(object):
         assert ext.critical is False
         assert ext.value == invalidity_date
         assert (
-            crl[2]
-            .extensions.get_extension_for_class(x509.CertificateIssuer)
-            .value
+            crl[2].extensions.get_extension_for_class(x509.CertificateIssuer).value
             == ci
         )

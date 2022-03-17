@@ -4,7 +4,6 @@
 
 
 import pytest
-
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric.utils import (
     Prehashed,

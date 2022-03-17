@@ -2,10 +2,9 @@
 # 2.0, and the BSD License. See the LICENSE file in the root of this repository
 # for complete details.
 
+from cryptography.fernet import Fernet
 from hypothesis import HealthCheck, given, settings
 from hypothesis.strategies import binary
-
-from cryptography.fernet import Fernet
 
 
 @settings(suppress_health_check=[HealthCheck.too_slow], deadline=None)

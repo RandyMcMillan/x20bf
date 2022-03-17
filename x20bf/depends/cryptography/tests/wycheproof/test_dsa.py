@@ -6,13 +6,11 @@
 import binascii
 
 import pytest
-
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import dsa
 
 from .utils import wycheproof_tests
-
 
 _DIGESTS = {
     "SHA-1": hashes.SHA1(),

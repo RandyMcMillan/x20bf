@@ -7,7 +7,6 @@ import binascii
 import os
 
 import pytest
-
 from cryptography.exceptions import _Reasons
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.x25519 import (
@@ -60,20 +59,16 @@ class TestX25519Exchange(object):
 
     def test_rfc7748_1000_iteration(self, backend):
         old_private = private = public = binascii.unhexlify(
-            b"090000000000000000000000000000000000000000000000000000000000"
-            b"0000"
+            b"090000000000000000000000000000000000000000000000000000000000" b"0000"
         )
         shared_key = binascii.unhexlify(
-            b"684cf59ba83309552800ef566f2f4d3c1c3887c49360e3875f2eb94d9953"
-            b"2c51"
+            b"684cf59ba83309552800ef566f2f4d3c1c3887c49360e3875f2eb94d9953" b"2c51"
         )
         private_key = X25519PrivateKey.from_private_bytes(private)
         public_key = X25519PublicKey.from_public_bytes(public)
         for _ in range(1000):
             computed_shared_key = private_key.exchange(public_key)
-            private_key = X25519PrivateKey.from_private_bytes(
-                computed_shared_key
-            )
+            private_key = X25519PrivateKey.from_private_bytes(computed_shared_key)
             public_key = X25519PublicKey.from_public_bytes(old_private)
             old_private = computed_shared_key
 
@@ -101,9 +96,7 @@ class TestX25519Exchange(object):
                 None, serialization.PublicFormat.Raw  # type: ignore[arg-type]
             )
         with pytest.raises(TypeError):
-            key.public_bytes(
-                serialization.Encoding.Raw  # type: ignore[call-arg]
-            )
+            key.public_bytes(serialization.Encoding.Raw)  # type: ignore[call-arg]
 
     # These vectors are also from RFC 7748
     # https://tools.ietf.org/html/rfc7748#section-6.1
@@ -217,9 +210,7 @@ class TestX25519Exchange(object):
             )
 
         with pytest.raises(ValueError):
-            key.public_bytes(
-                serialization.Encoding.PEM, serialization.PublicFormat.Raw
-            )
+            key.public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.Raw)
 
     @pytest.mark.parametrize(
         ("encoding", "fmt", "encryption", "passwd", "load_func"),

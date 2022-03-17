@@ -4,7 +4,6 @@
 
 
 import pytest
-
 from cryptography.hazmat._oid import ObjectIdentifier
 
 

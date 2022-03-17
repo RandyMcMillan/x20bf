@@ -6,14 +6,13 @@
 import binascii
 
 import pytest
-
 from cryptography.exceptions import InvalidTag
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.ciphers.aead import AESCCM, AESGCM
 
-from .utils import wycheproof_tests
 from ..hazmat.primitives.test_aead import _aead_supported
+from .utils import wycheproof_tests
 
 
 @wycheproof_tests("aes_cbc_pkcs5_test.json")
@@ -27,9 +26,7 @@ def test_aes_cbc_pkcs5(backend, wycheproof):
 
     cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend)
     enc = cipher.encryptor()
-    computed_ct = (
-        enc.update(padder.update(msg) + padder.finalize()) + enc.finalize()
-    )
+    computed_ct = enc.update(padder.update(msg) + padder.finalize()) + enc.finalize()
     dec = cipher.decryptor()
     padded_msg = dec.update(ct) + dec.finalize()
     unpadder = padding.PKCS7(128).unpadder()
@@ -129,10 +126,7 @@ def test_aes_ccm_aead_api(backend, wycheproof):
     ct = binascii.unhexlify(wycheproof.testcase["ct"])
     tag = binascii.unhexlify(wycheproof.testcase["tag"])
 
-    if (
-        wycheproof.invalid
-        and wycheproof.testcase["comment"] == "Invalid tag size"
-    ):
+    if wycheproof.invalid and wycheproof.testcase["comment"] == "Invalid tag size":
         with pytest.raises(ValueError):
             AESCCM(key, tag_length=wycheproof.testgroup["tagSize"] // 8)
         return

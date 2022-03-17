@@ -10,7 +10,6 @@ import sys
 import textwrap
 
 import pytest
-
 from cryptography import utils, x509
 from cryptography.exceptions import InternalError, _Reasons
 from cryptography.hazmat.backends import default_backend
@@ -22,7 +21,6 @@ from cryptography.hazmat.primitives.ciphers import Cipher
 from cryptography.hazmat.primitives.ciphers.algorithms import AES
 from cryptography.hazmat.primitives.ciphers.modes import CBC
 
-from ..primitives.fixtures_rsa import RSA_KEY_2048, RSA_KEY_512
 from ...doubles import (
     DummyAsymmetricPadding,
     DummyCipherAlgorithm,
@@ -35,6 +33,7 @@ from ...utils import (
     raises_unsupported_algorithm,
 )
 from ...x509.test_x509 import _load_cert
+from ..primitives.fixtures_rsa import RSA_KEY_512, RSA_KEY_2048
 
 
 def skip_if_libre_ssl(openssl_version):
@@ -337,21 +336,15 @@ class TestOpenSSLRSA(object):
 
     def test_cant_generate_insecure_tiny_key(self):
         with pytest.raises(ValueError):
-            backend.generate_rsa_private_key(
-                public_exponent=65537, key_size=511
-            )
+            backend.generate_rsa_private_key(public_exponent=65537, key_size=511)
 
         with pytest.raises(ValueError):
-            backend.generate_rsa_private_key(
-                public_exponent=65537, key_size=256
-            )
+            backend.generate_rsa_private_key(public_exponent=65537, key_size=256)
 
     def test_rsa_padding_unsupported_pss_mgf1_hash(self):
         assert (
             backend.rsa_padding_supported(
-                padding.PSS(
-                    mgf=padding.MGF1(DummyHashAlgorithm()), salt_length=0
-                )
+                padding.PSS(mgf=padding.MGF1(DummyHashAlgorithm()), salt_length=0)
             )
             is False
         )
@@ -419,9 +412,7 @@ class TestOpenSSLRSA(object):
         )
 
         assert (
-            backend.rsa_padding_supported(
-                padding.PSS(mgf=DummyMGF(), salt_length=0)
-            )
+            backend.rsa_padding_supported(padding.PSS(mgf=DummyMGF(), salt_length=0))
             is False
         )
 
@@ -485,9 +476,7 @@ class TestOpenSSLSerializationWithOpenSSL(object):
         userdata.length = len(pw)
         buflen = 10
         buf = backend._ffi.new("char []", buflen)
-        res = backend._lib.Cryptography_pem_password_cb(
-            buf, buflen, 0, userdata
-        )
+        res = backend._lib.Cryptography_pem_password_cb(buf, buflen, 0, userdata)
         assert res == len(pw)
         assert userdata.called == 1
         assert backend._ffi.buffer(buf, len(pw))[:] == pw
@@ -498,9 +487,7 @@ class TestOpenSSLSerializationWithOpenSSL(object):
         userdata = backend._ffi.new("CRYPTOGRAPHY_PASSWORD_DATA *")
         buflen = 10
         buf = backend._ffi.new("char []", buflen)
-        res = backend._lib.Cryptography_pem_password_cb(
-            buf, buflen, 0, userdata
-        )
+        res = backend._lib.Cryptography_pem_password_cb(buf, buflen, 0, userdata)
         assert res == 0
         assert userdata.error == -1
 
@@ -522,9 +509,7 @@ class TestOpenSSLSerializationWithOpenSSL(object):
                     "key1.pem",
                 ),
                 lambda pemfile: (
-                    backend.load_pem_private_key(
-                        pemfile.read().encode(), password
-                    )
+                    backend.load_pem_private_key(pemfile.read().encode(), password)
                 ),
             )
 
@@ -599,9 +584,7 @@ class TestOpenSSLDHSerialization(object):
             ),
         ],
     )
-    def test_private_load_dhx_unsupported(
-        self, key_path, loader_func, backend
-    ):
+    def test_private_load_dhx_unsupported(self, key_path, loader_func, backend):
         key_bytes = load_vectors_from_file(
             key_path, lambda pemfile: pemfile.read(), mode="rb"
         )
@@ -655,9 +638,7 @@ def test_pyopenssl_csr_fallback():
         req_ossl = cert._x509_req  # type:ignore[attr-defined]
     assert req_ossl is not None
 
-    from cryptography.hazmat.backends.openssl.x509 import (
-        _CertificateSigningRequest,
-    )
+    from cryptography.hazmat.backends.openssl.x509 import _CertificateSigningRequest
 
     with pytest.warns(utils.CryptographyDeprecationWarning):
         _CertificateSigningRequest(backend, req_ossl)
@@ -673,9 +654,7 @@ def test_pyopenssl_crl_fallback():
         req_crl = cert._x509_crl  # type:ignore[attr-defined]
     assert req_crl is not None
 
-    from cryptography.hazmat.backends.openssl.x509 import (
-        _CertificateRevocationList,
-    )
+    from cryptography.hazmat.backends.openssl.x509 import _CertificateRevocationList
 
     with pytest.warns(utils.CryptographyDeprecationWarning):
         _CertificateRevocationList(backend, req_crl)

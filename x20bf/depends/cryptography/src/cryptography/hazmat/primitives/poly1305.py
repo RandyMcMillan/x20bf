@@ -4,11 +4,7 @@
 
 
 from cryptography import utils
-from cryptography.exceptions import (
-    AlreadyFinalized,
-    UnsupportedAlgorithm,
-    _Reasons,
-)
+from cryptography.exceptions import AlreadyFinalized, UnsupportedAlgorithm, _Reasons
 
 
 class Poly1305(object):

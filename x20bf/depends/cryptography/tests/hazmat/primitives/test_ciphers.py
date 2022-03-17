@@ -7,18 +7,17 @@ import binascii
 import os
 
 import pytest
-
 from cryptography.exceptions import AlreadyFinalized, _Reasons
 from cryptography.hazmat.primitives import ciphers
 from cryptography.hazmat.primitives.ciphers import modes
 from cryptography.hazmat.primitives.ciphers.algorithms import (
     AES,
     ARC4,
-    Blowfish,
     CAST5,
-    Camellia,
     IDEA,
     SEED,
+    Blowfish,
+    Camellia,
     TripleDES,
 )
 
@@ -207,9 +206,7 @@ def test_invalid_gcm_algorithm():
 
 
 @pytest.mark.supported(
-    only_if=lambda backend: backend.cipher_supported(
-        AES(b"\x00" * 16), modes.ECB()
-    ),
+    only_if=lambda backend: backend.cipher_supported(AES(b"\x00" * 16), modes.ECB()),
     skip_message="Does not support AES ECB",
 )
 class TestCipherUpdateInto(object):
@@ -265,9 +262,7 @@ class TestCipherUpdateInto(object):
     def test_finalize_with_tag_already_finalized(self, backend):
         key = binascii.unhexlify(b"e98b72a9881a84ca6b76e0f43e68647a")
         iv = binascii.unhexlify(b"8b23299fde174053f3d652ba")
-        encryptor = ciphers.Cipher(
-            AES(key), modes.GCM(iv), backend
-        ).encryptor()
+        encryptor = ciphers.Cipher(AES(key), modes.GCM(iv), backend).encryptor()
         ciphertext = encryptor.update(b"abc") + encryptor.finalize()
 
         decryptor = ciphers.Cipher(

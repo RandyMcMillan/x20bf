@@ -8,28 +8,17 @@ from cryptography.hazmat.primitives.asymmetric.rsa import (
     RSAPublicNumbers,
 )
 
-
 RSA_KEY_512 = RSAPrivateNumbers(
-    p=int(
-        "d57846898d5c0de249c08467586cb458fa9bc417cdf297f73cfc52281b787cd9", 16
-    ),
-    q=int(
-        "d10f71229e87e010eb363db6a85fd07df72d985b73c42786191f2ce9134afb2d", 16
-    ),
+    p=int("d57846898d5c0de249c08467586cb458fa9bc417cdf297f73cfc52281b787cd9", 16),
+    q=int("d10f71229e87e010eb363db6a85fd07df72d985b73c42786191f2ce9134afb2d", 16),
     d=int(
         "272869352cacf9c866c4e107acc95d4c608ca91460a93d28588d51cfccc07f449"
         "18bbe7660f9f16adc2b4ed36ca310ef3d63b79bd447456e3505736a45a6ed21",
         16,
     ),
-    dmp1=int(
-        "addff2ec7564c6b64bc670d250b6f24b0b8db6b2810099813b7e7658cecf5c39", 16
-    ),
-    dmq1=int(
-        "463ae9c6b77aedcac1397781e50e4afc060d4b216dc2778494ebe42a6850c81", 16
-    ),
-    iqmp=int(
-        "54deef8548f65cad1d411527a32dcb8e712d3e128e4e0ff118663fae82a758f4", 16
-    ),
+    dmp1=int("addff2ec7564c6b64bc670d250b6f24b0b8db6b2810099813b7e7658cecf5c39", 16),
+    dmq1=int("463ae9c6b77aedcac1397781e50e4afc060d4b216dc2778494ebe42a6850c81", 16),
+    iqmp=int("54deef8548f65cad1d411527a32dcb8e712d3e128e4e0ff118663fae82a758f4", 16),
     public_numbers=RSAPublicNumbers(
         e=65537,
         n=int(
@@ -54,16 +43,12 @@ RSA_KEY_522 = RSAPrivateNumbers(
         "4370c159015c7219e3806a01bbafaffdd46f86e3da1e2d1fe80a0369ccd745",
         16,
     ),
-    dmp1=int(
-        "3eb6277f66e6e2dcf89f1b8529431f730839dbd9a3e49555159bc8470eee886e5", 16
-    ),
+    dmp1=int("3eb6277f66e6e2dcf89f1b8529431f730839dbd9a3e49555159bc8470eee886e5", 16),
     dmq1=int(
         "184b4d74aa54c361e51eb23fee4eae5e4786b37b11b6e0447af9c0b9c4e4953c5b",
         16,
     ),
-    iqmp=int(
-        "f80e9ab4fa7b35d0d232ef51c4736d1f2dcf2c7b1dd8716211b1bf1337e74f8ae", 16
-    ),
+    iqmp=int("f80e9ab4fa7b35d0d232ef51c4736d1f2dcf2c7b1dd8716211b1bf1337e74f8ae", 16),
     public_numbers=RSAPublicNumbers(
         e=65537,
         n=int(
@@ -98,8 +83,7 @@ RSA_KEY_599 = RSAPrivateNumbers(
         16,
     ),
     dmq1=int(
-        "40d570e08611e6b1da94b95d46f8e7fe80be48f7a5ff8838375b08039514a399b11c2"
-        "80735",
+        "40d570e08611e6b1da94b95d46f8e7fe80be48f7a5ff8838375b08039514a399b11c2" "80735",
         16,
     ),
     iqmp=int(

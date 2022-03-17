@@ -6,17 +6,12 @@
 import binascii
 
 import pytest
-
-from cryptography.exceptions import (
-    AlreadyFinalized,
-    InvalidSignature,
-    _Reasons,
-)
+from cryptography.exceptions import AlreadyFinalized, InvalidSignature, _Reasons
 from cryptography.hazmat.primitives import hashes, hmac
 
-from .utils import generate_base_hmac_test
 from ...doubles import DummyHashAlgorithm
 from ...utils import raises_unsupported_algorithm
+from .utils import generate_base_hmac_test
 
 
 @pytest.mark.supported(
@@ -37,9 +32,7 @@ class TestHMAC(object):
 
     def test_hmac_algorithm_instance(self, backend):
         with pytest.raises(TypeError):
-            hmac.HMAC(
-                b"key", hashes.SHA1, backend=backend  # type: ignore[arg-type]
-            )
+            hmac.HMAC(b"key", hashes.SHA1, backend=backend)  # type: ignore[arg-type]
 
     def test_raises_after_finalize(self, backend):
         h = hmac.HMAC(b"key", hashes.SHA1(), backend=backend)

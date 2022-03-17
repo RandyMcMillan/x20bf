@@ -7,11 +7,10 @@ import binascii
 import os
 
 import pytest
-
 from cryptography.hazmat.primitives.ciphers import algorithms, base, modes
 
-from .utils import generate_aead_test
 from ...utils import load_nist_vectors
+from .utils import generate_aead_test
 
 
 @pytest.mark.supported(
@@ -42,9 +41,7 @@ class TestAESModeGCM(object):
         aad = binascii.unhexlify(b"b6d729aab8e6416d7002b9faa794c410d8d2f193")
         tag = binascii.unhexlify(b"0f247e7f9c2505de374006738018493b")
 
-        cipher = base.Cipher(
-            algorithms.AES(key), modes.GCM(iv), backend=backend
-        )
+        cipher = base.Cipher(algorithms.AES(key), modes.GCM(iv), backend=backend)
         encryptor = cipher.encryptor()
         encryptor.authenticate_additional_data(aad)
         encryptor.finalize()
@@ -57,9 +54,7 @@ class TestAESModeGCM(object):
         tag = binascii.unhexlify(b"23c7ab0f952b7091cd324835043b5eb5")
         pt = binascii.unhexlify(b"28286a321293253c3e0aa2704a278032")
 
-        cipher = base.Cipher(
-            algorithms.AES(key), modes.GCM(iv), backend=backend
-        )
+        cipher = base.Cipher(algorithms.AES(key), modes.GCM(iv), backend=backend)
         encryptor = cipher.encryptor()
         computed_ct = encryptor.update(pt) + encryptor.finalize()
         assert computed_ct == ct

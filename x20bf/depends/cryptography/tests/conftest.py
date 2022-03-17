@@ -4,7 +4,6 @@
 
 
 import pytest
-
 from cryptography.hazmat.backends.openssl import backend as openssl_backend
 
 from .utils import check_backend_support

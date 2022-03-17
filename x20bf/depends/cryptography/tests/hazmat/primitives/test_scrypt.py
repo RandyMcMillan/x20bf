@@ -7,19 +7,12 @@ import binascii
 import os
 
 import pytest
-
-from cryptography.exceptions import (
-    AlreadyFinalized,
-    InvalidKey,
-    UnsupportedAlgorithm,
-)
-from cryptography.hazmat.primitives.kdf.scrypt import Scrypt, _MEM_LIMIT
+from cryptography.exceptions import AlreadyFinalized, InvalidKey, UnsupportedAlgorithm
+from cryptography.hazmat.primitives.kdf.scrypt import _MEM_LIMIT, Scrypt
 
 from tests.utils import load_nist_vectors, load_vectors_from_file
 
-vectors = load_vectors_from_file(
-    os.path.join("KDF", "scrypt.txt"), load_nist_vectors
-)
+vectors = load_vectors_from_file(os.path.join("KDF", "scrypt.txt"), load_nist_vectors)
 
 
 def _skip_if_memory_limited(memory_limit, params):
@@ -31,8 +24,7 @@ def _skip_if_memory_limited(memory_limit, params):
     memory_required = blen + vlen
     if memory_limit < memory_required:
         pytest.skip(
-            "Test exceeds Scrypt memory limit. "
-            "This is likely a 32-bit platform."
+            "Test exceeds Scrypt memory limit. " "This is likely a 32-bit platform."
         )
 
 

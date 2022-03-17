@@ -3,10 +3,9 @@ import os
 from binascii import hexlify
 from collections import defaultdict
 
+from cryptography_vectors import open_vector_file
 from ecdsa import SECP256k1, SigningKey
 from ecdsa.util import sigdecode_der, sigencode_der
-
-from cryptography_vectors import open_vector_file
 
 from tests.utils import load_fips_ecdsa_signing_vectors, load_vectors_from_file
 
@@ -75,9 +74,7 @@ def write_file(lines, dest):
 source_path = os.path.join("asymmetric", "ECDSA", "FIPS_186-3", "SigGen.txt")
 dest_path = os.path.join("asymmetric", "ECDSA", "SECP256K1", "SigGen.txt")
 
-fips_vectors = load_vectors_from_file(
-    source_path, load_fips_ecdsa_signing_vectors
-)
+fips_vectors = load_vectors_from_file(source_path, load_fips_ecdsa_signing_vectors)
 
 with open_vector_file(dest_path, "w") as dest_file:
     write_file(build_vectors(fips_vectors), dest_file)

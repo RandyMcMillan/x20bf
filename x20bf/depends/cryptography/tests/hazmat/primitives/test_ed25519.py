@@ -7,7 +7,6 @@ import binascii
 import os
 
 import pytest
-
 from cryptography.exceptions import InvalidSignature, _Reasons
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import (
@@ -47,19 +46,13 @@ def load_ed25519_vectors(vector_data):
     skip_message="Requires OpenSSL without Ed25519 support",
 )
 def test_ed25519_unsupported(backend):
-    with raises_unsupported_algorithm(
-        _Reasons.UNSUPPORTED_PUBLIC_KEY_ALGORITHM
-    ):
+    with raises_unsupported_algorithm(_Reasons.UNSUPPORTED_PUBLIC_KEY_ALGORITHM):
         Ed25519PublicKey.from_public_bytes(b"0" * 32)
 
-    with raises_unsupported_algorithm(
-        _Reasons.UNSUPPORTED_PUBLIC_KEY_ALGORITHM
-    ):
+    with raises_unsupported_algorithm(_Reasons.UNSUPPORTED_PUBLIC_KEY_ALGORITHM):
         Ed25519PrivateKey.from_private_bytes(b"0" * 32)
 
-    with raises_unsupported_algorithm(
-        _Reasons.UNSUPPORTED_PUBLIC_KEY_ALGORITHM
-    ):
+    with raises_unsupported_algorithm(_Reasons.UNSUPPORTED_PUBLIC_KEY_ALGORITHM):
         Ed25519PrivateKey.generate()
 
 
@@ -118,15 +111,11 @@ class TestEd25519Signing(object):
 
     def test_invalid_type_public_bytes(self, backend):
         with pytest.raises(TypeError):
-            Ed25519PublicKey.from_public_bytes(
-                object()  # type: ignore[arg-type]
-            )
+            Ed25519PublicKey.from_public_bytes(object())  # type: ignore[arg-type]
 
     def test_invalid_type_private_bytes(self, backend):
         with pytest.raises(TypeError):
-            Ed25519PrivateKey.from_private_bytes(
-                object()  # type: ignore[arg-type]
-            )
+            Ed25519PrivateKey.from_private_bytes(object())  # type: ignore[arg-type]
 
     def test_invalid_length_from_public_bytes(self, backend):
         with pytest.raises(ValueError):
@@ -177,9 +166,7 @@ class TestEd25519Signing(object):
             )
 
         with pytest.raises(ValueError):
-            key.public_bytes(
-                serialization.Encoding.PEM, serialization.PublicFormat.Raw
-            )
+            key.public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.Raw)
 
     @pytest.mark.parametrize(
         ("encoding", "fmt", "encryption", "passwd", "load_func"),

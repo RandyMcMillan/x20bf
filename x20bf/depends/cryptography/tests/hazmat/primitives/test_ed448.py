@@ -7,7 +7,6 @@ import binascii
 import os
 
 import pytest
-
 from cryptography.exceptions import InvalidSignature, _Reasons
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed448 import (
@@ -27,19 +26,13 @@ from ...utils import (
     skip_message="Requires OpenSSL without Ed448 support",
 )
 def test_ed448_unsupported(backend):
-    with raises_unsupported_algorithm(
-        _Reasons.UNSUPPORTED_PUBLIC_KEY_ALGORITHM
-    ):
+    with raises_unsupported_algorithm(_Reasons.UNSUPPORTED_PUBLIC_KEY_ALGORITHM):
         Ed448PublicKey.from_public_bytes(b"0" * 57)
 
-    with raises_unsupported_algorithm(
-        _Reasons.UNSUPPORTED_PUBLIC_KEY_ALGORITHM
-    ):
+    with raises_unsupported_algorithm(_Reasons.UNSUPPORTED_PUBLIC_KEY_ALGORITHM):
         Ed448PrivateKey.from_private_bytes(b"0" * 57)
 
-    with raises_unsupported_algorithm(
-        _Reasons.UNSUPPORTED_PUBLIC_KEY_ALGORITHM
-    ):
+    with raises_unsupported_algorithm(_Reasons.UNSUPPORTED_PUBLIC_KEY_ALGORITHM):
         Ed448PrivateKey.generate()
 
 
@@ -165,15 +158,11 @@ class TestEd448Signing(object):
 
     def test_invalid_type_public_bytes(self, backend):
         with pytest.raises(TypeError):
-            Ed448PublicKey.from_public_bytes(
-                object()  # type: ignore[arg-type]
-            )
+            Ed448PublicKey.from_public_bytes(object())  # type: ignore[arg-type]
 
     def test_invalid_type_private_bytes(self, backend):
         with pytest.raises(TypeError):
-            Ed448PrivateKey.from_private_bytes(
-                object()  # type: ignore[arg-type]
-            )
+            Ed448PrivateKey.from_private_bytes(object())  # type: ignore[arg-type]
 
     def test_invalid_length_from_public_bytes(self, backend):
         with pytest.raises(ValueError):
@@ -224,9 +213,7 @@ class TestEd448Signing(object):
             )
 
         with pytest.raises(ValueError):
-            key.public_bytes(
-                serialization.Encoding.PEM, serialization.PublicFormat.Raw
-            )
+            key.public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.Raw)
 
     def test_buffer_protocol(self, backend):
         private_bytes = os.urandom(57)

@@ -5,7 +5,6 @@
 
 from cryptography.exceptions import InvalidTag
 
-
 _ENCRYPT = 1
 _DECRYPT = 0
 

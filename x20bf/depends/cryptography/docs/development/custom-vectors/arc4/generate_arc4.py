@@ -7,7 +7,6 @@ import binascii
 from cryptography.hazmat.primitives import ciphers
 from cryptography.hazmat.primitives.ciphers import algorithms
 
-
 _RFC6229_KEY_MATERIALS = [
     (
         True,
@@ -70,9 +69,7 @@ def _build_vectors():
             for offset in _RFC6229_OFFSETS:
                 if offset % 16 != 0:
                     raise ValueError(
-                        "Offset {} is not evenly divisible by 16".format(
-                            offset
-                        )
+                        "Offset {} is not evenly divisible by 16".format(offset)
                     )
                 while current_offset < offset:
                     encryptor.update(plaintext)
@@ -81,9 +78,7 @@ def _build_vectors():
                 count += 1
                 output.append("KEY = {}".format(key))
                 output.append("OFFSET = {}".format(offset))
-                output.append(
-                    "PLAINTEXT = {}".format(binascii.hexlify(plaintext))
-                )
+                output.append("PLAINTEXT = {}".format(binascii.hexlify(plaintext)))
                 output.append(
                     "CIPHERTEXT = {}".format(
                         binascii.hexlify(encryptor.update(plaintext))

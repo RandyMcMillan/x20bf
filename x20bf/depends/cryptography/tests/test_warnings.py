@@ -9,7 +9,6 @@ import typing
 import warnings
 
 import pytest
-
 from cryptography.utils import deprecated
 
 

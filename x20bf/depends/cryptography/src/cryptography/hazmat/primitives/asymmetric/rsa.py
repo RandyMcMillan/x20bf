@@ -12,8 +12,8 @@ from cryptography.hazmat.primitives._asymmetric import AsymmetricPadding
 from cryptography.hazmat.primitives.asymmetric import (
     AsymmetricSignatureContext,
     AsymmetricVerificationContext,
-    utils as asym_utils,
 )
+from cryptography.hazmat.primitives.asymmetric import utils as asym_utils
 
 
 class RSAPrivateKey(metaclass=abc.ABCMeta):
@@ -264,9 +264,7 @@ def rsa_crt_dmq1(private_exponent: int, q: int) -> int:
 _MAX_RECOVERY_ATTEMPTS = 1000
 
 
-def rsa_recover_prime_factors(
-    n: int, e: int, d: int
-) -> typing.Tuple[int, int]:
+def rsa_recover_prime_factors(n: int, e: int, d: int) -> typing.Tuple[int, int]:
     """
     Compute factors p and q from the private exponent d. We assume that n has
     no more than two factors. This function is adapted from code in PyCrypto.
@@ -356,9 +354,7 @@ class RSAPrivateNumbers(object):
     public_numbers = property(lambda self: self._public_numbers)
 
     def private_key(self, backend: typing.Any = None) -> RSAPrivateKey:
-        from cryptography.hazmat.backends.openssl.backend import (
-            backend as ossl,
-        )
+        from cryptography.hazmat.backends.openssl.backend import backend as ossl
 
         return ossl.load_rsa_private_numbers(self)
 
@@ -405,9 +401,7 @@ class RSAPublicNumbers(object):
     n = property(lambda self: self._n)
 
     def public_key(self, backend: typing.Any = None) -> RSAPublicKey:
-        from cryptography.hazmat.backends.openssl.backend import (
-            backend as ossl,
-        )
+        from cryptography.hazmat.backends.openssl.backend import backend as ossl
 
         return ossl.load_rsa_public_numbers(self)
 

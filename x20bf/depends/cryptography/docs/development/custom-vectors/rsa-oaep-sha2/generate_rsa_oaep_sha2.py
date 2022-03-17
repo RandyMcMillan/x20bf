@@ -101,9 +101,7 @@ def write_file(data, filename):
         f.write(data)
 
 
-oaep_path = os.path.join(
-    "asymmetric", "RSA", "pkcs-1v2-1d2-vec", "oaep-vect.txt"
-)
+oaep_path = os.path.join("asymmetric", "RSA", "pkcs-1v2-1d2-vec", "oaep-vect.txt")
 hashalgs = [
     hashes.SHA1(),
     hashes.SHA224(),
@@ -112,9 +110,7 @@ hashalgs = [
     hashes.SHA512(),
 ]
 for hashtuple in itertools.product(hashalgs, hashalgs):
-    if isinstance(hashtuple[0], hashes.SHA1) and isinstance(
-        hashtuple[1], hashes.SHA1
-    ):
+    if isinstance(hashtuple[0], hashes.SHA1) and isinstance(hashtuple[1], hashes.SHA1):
         continue
 
     write_file(

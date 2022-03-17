@@ -13,8 +13,8 @@ from cryptography.hazmat.primitives import _serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import (
     AsymmetricSignatureContext,
     AsymmetricVerificationContext,
-    utils as asym_utils,
 )
+from cryptography.hazmat.primitives.asymmetric import utils as asym_utils
 
 
 class EllipticCurveOID(object):
@@ -378,9 +378,7 @@ class EllipticCurvePublicNumbers(object):
         self._curve = curve
 
     def public_key(self, backend: typing.Any = None) -> EllipticCurvePublicKey:
-        from cryptography.hazmat.backends.openssl.backend import (
-            backend as ossl,
-        )
+        from cryptography.hazmat.backends.openssl.backend import backend as ossl
 
         return ossl.load_elliptic_curve_public_numbers(self)
 
@@ -457,27 +455,20 @@ class EllipticCurvePublicNumbers(object):
 
 
 class EllipticCurvePrivateNumbers(object):
-    def __init__(
-        self, private_value: int, public_numbers: EllipticCurvePublicNumbers
-    ):
+    def __init__(self, private_value: int, public_numbers: EllipticCurvePublicNumbers):
         if not isinstance(private_value, int):
             raise TypeError("private_value must be an integer.")
 
         if not isinstance(public_numbers, EllipticCurvePublicNumbers):
             raise TypeError(
-                "public_numbers must be an EllipticCurvePublicNumbers "
-                "instance."
+                "public_numbers must be an EllipticCurvePublicNumbers " "instance."
             )
 
         self._private_value = private_value
         self._public_numbers = public_numbers
 
-    def private_key(
-        self, backend: typing.Any = None
-    ) -> EllipticCurvePrivateKey:
-        from cryptography.hazmat.backends.openssl.backend import (
-            backend as ossl,
-        )
+    def private_key(self, backend: typing.Any = None) -> EllipticCurvePrivateKey:
+        from cryptography.hazmat.backends.openssl.backend import backend as ossl
 
         return ossl.load_elliptic_curve_private_numbers(self)
 
@@ -532,6 +523,5 @@ def get_curve_for_oid(oid: ObjectIdentifier) -> typing.Type[EllipticCurve]:
         return _OID_TO_CURVE[oid]
     except KeyError:
         raise LookupError(
-            "The provided object identifier has no matching elliptic "
-            "curve class"
+            "The provided object identifier has no matching elliptic " "curve class"
         )
