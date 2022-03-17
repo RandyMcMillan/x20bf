@@ -12,8 +12,9 @@ import time
 
 sys.path.insert(0, "..")  # Import the files where the modules are located
 
-import ping as p
 from p2pnetwork.node import Node
+
+import ping as p
 from time_functions import btc_time
 
 
