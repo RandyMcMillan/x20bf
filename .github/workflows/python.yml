@@ -60,9 +60,9 @@ jobs:
           cd $GITHUB_WORKSPACE
           python3 -c "import sys; print(sys.version)"
           make
-      - name: make reqs
+      - name: make init reqs
         run: |
-          make reqs
+          make init reqs
       - name: make depends
         run: |
           make depends
