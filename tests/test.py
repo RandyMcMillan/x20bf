@@ -2,7 +2,7 @@
 import getopt as G
 import sys as S
 
-import x20bf.node_interface as ni
+import node_interface as ni
 
 
 def main(argv):
