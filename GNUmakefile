@@ -289,11 +289,13 @@ report:
 ##:	install-gnupg        install python gnupg on host
 gnupg: install-gnupg
 install-gnupg:
+	pushd $(DEPENDSPATH)/gnupg && $(PYTHON3) -m $(PIP) check . && popd
 	pushd $(DEPENDSPATH)/gnupg && $(PYTHON3) $(DEPENDSPATH)/gnupg/setup.py install && popd
 .PHONY: install-p2p
 ##:	install-p2p          install python p2p-network
 p2p: install-p2p
 install-p2p:
+	pushd $(DEPENDSPATH)/p2p && $(PYTHON3) -m $(PIP) check . && popd
 	pushd $(DEPENDSPATH)/p2p && $(PYTHON3) $(DEPENDSPATH)/p2p/setup.py install && popd
 .PHONY: install-fastapi fastapi
 ##:	install-fastapi      install python fastapi
@@ -306,9 +308,14 @@ install-fastapi:
 install-git:
 	pushd $(DEPENDSPATH)/git && $(PYTHON3) -m $(PIP) check . && popd
 	pushd $(DEPENDSPATH)/git && $(PYTHON3) -m $(PIP) install . && popd
+.PHONY: install-tor
+##:	install-tor          install python torpy
+install-tor:
+	pushd $(DEPENDSPATH)/tor && $(PYTHON3) -m $(PIP) check . && popd
+	pushd $(DEPENDSPATH)/tor && $(PYTHON3) -m $(PIP) install . && popd
 .PHONY: depends
 ##
-depends: install-gnupg  install-fastapi install-p2p install-git
+depends: install-gnupg  install-fastapi install-p2p install-git install-tor
 
 .PHONY: git-add
 
