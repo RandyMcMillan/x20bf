@@ -41,7 +41,7 @@ else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S),Linux)
 	# ifeq ($(CFLAGS),)
-	CFLAGS='-stdlib=c++11'
+	CFLAGS='-std=c++11'
 	export CFLAGS
 	# endif
 	endif
