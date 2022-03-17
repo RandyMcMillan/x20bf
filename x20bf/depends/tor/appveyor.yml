@@ -1,0 +1,15 @@
+---
+environment:
+  matrix:
+  - TOXENV: py36-unit
+  - TOXENV: py36-integration
+  - TOXENV: py37-unit
+  - TOXENV: py37-integration
+
+build: off
+
+install:
+- pip install tox
+
+test_script:
+- tox -v
