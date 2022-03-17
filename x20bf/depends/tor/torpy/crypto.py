@@ -13,10 +13,16 @@
 # limitations under the License.
 #
 
-import os
 import logging
+import os
 
-from torpy.crypto_common import sha1, aes_update, rsa_encrypt, rsa_load_der, aes_ctr_encryptor
+from torpy.crypto_common import (
+    aes_ctr_encryptor,
+    aes_update,
+    rsa_encrypt,
+    rsa_load_der,
+    sha1,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +38,7 @@ def kdf_tor(shared_secret):
     # tor ref: crypto_expand_key_material_TAP
     t = shared_secret + bytes([0])
     computed_auth = tor_digest(t)
-    key_material = b''
+    key_material = b""
     for i in range(1, 5):
         t = shared_secret + bytes([i])
         tsh = tor_digest(t)

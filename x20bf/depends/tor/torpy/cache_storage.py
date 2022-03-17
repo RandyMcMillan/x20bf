@@ -13,11 +13,11 @@
 # limitations under the License.
 #
 
-import os
 import logging
+import os
 
-from torpy.utils import user_data_dir
 from torpy.documents import TorDocument
+from torpy.utils import user_data_dir
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,12 @@ class TorCacheStorage:
         assert issubclass(doc_cls, TorDocument)
         ident, content = self.load(doc_cls.DOCUMENT_NAME)
         if content:
-            logger.info('Loading cached %s from %s: %s', doc_cls.__name__, self.__class__.__name__, ident)
+            logger.info(
+                "Loading cached %s from %s: %s",
+                doc_cls.__name__,
+                self.__class__.__name__,
+                ident,
+            )
             return doc_cls(content, **kwargs)
         else:
             return None
@@ -45,20 +50,20 @@ class TorCacheStorage:
 
 class TorCacheDirStorage(TorCacheStorage):
     def __init__(self, base_dir=None):
-        self._base_dir = base_dir or user_data_dir('torpy')
+        self._base_dir = base_dir or user_data_dir("torpy")
         if not os.path.isdir(self._base_dir):
             os.makedirs(self._base_dir)
 
     def load(self, key):
         file_path = os.path.join(self._base_dir, key)
         if os.path.isfile(file_path):
-            with open(os.path.join(self._base_dir, key), 'r') as f:
+            with open(os.path.join(self._base_dir, key), "r") as f:
                 return file_path, f.read()
         else:
             return file_path, None
 
     def save(self, key, content):
-        with open(os.path.join(self._base_dir, key), 'w') as f:
+        with open(os.path.join(self._base_dir, key), "w") as f:
             f.write(content)
 
 

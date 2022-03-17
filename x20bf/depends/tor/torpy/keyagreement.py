@@ -13,26 +13,26 @@
 # limitations under the License.
 #
 
-import os
 import logging
+import os
 from abc import ABCMeta, abstractmethod
 
-from torpy.utils import cached_property
 from torpy.crypto import TOR_DIGEST_LEN, kdf_tor
 from torpy.crypto_common import (
-    hmac,
-    dh_public,
-    dh_shared,
-    dh_private,
-    hkdf_sha256,
-    curve25519_private,
-    dh_public_to_bytes,
-    curve25519_to_bytes,
-    dh_public_from_bytes,
     curve25519_get_shared,
+    curve25519_private,
     curve25519_public_from_bytes,
     curve25519_public_from_private,
+    curve25519_to_bytes,
+    dh_private,
+    dh_public,
+    dh_public_from_bytes,
+    dh_public_to_bytes,
+    dh_shared,
+    hkdf_sha256,
+    hmac,
 )
+from torpy.utils import cached_property
 
 logger = logging.getLogger(__name__)
 
@@ -128,16 +128,16 @@ class TapKeyAgreement(KeyAgreement):
     def complete_handshake(self, handshake_response):
         peer_pub_key_bytes = handshake_response[:128]
         auth = handshake_response[128:]  # tap auth is SHA1, 20 in bytes?
-        assert len(auth) == TOR_DIGEST_LEN, 'received wrong sha1 len'
+        assert len(auth) == TOR_DIGEST_LEN, "received wrong sha1 len"
 
         peer_pub_key = dh_public_from_bytes(peer_pub_key_bytes)
         shared_secret = dh_shared(self._private_key, peer_pub_key)
         computed_auth, key_material = kdf_tor(shared_secret)
         if computed_auth != auth:
-            raise KeyAgreementError('Auth input does not match.')
+            raise KeyAgreementError("Auth input does not match.")
 
         # Cut unused bytes
-        return key_material[:KeyAgreement.KEY_MATERIAL_LENGTH]
+        return key_material[: KeyAgreement.KEY_MATERIAL_LENGTH]
 
 
 class FastKeyAgreement(KeyAgreement):
@@ -158,8 +158,8 @@ class FastKeyAgreement(KeyAgreement):
         shared_secret = self.handshake + peer_value
         computed_auth, key_material = kdf_tor(shared_secret)
         if computed_auth != key_hash:
-            raise KeyAgreementError('Auth input does not match.')
-        return key_material[:KeyAgreement.KEY_MATERIAL_LENGTH]
+            raise KeyAgreementError("Auth input does not match.")
+        return key_material[: KeyAgreement.KEY_MATERIAL_LENGTH]
 
 
 class NtorKeyAgreement(KeyAgreement):
@@ -198,11 +198,11 @@ class NtorKeyAgreement(KeyAgreement):
         # KEYGEN() is curve25519.Private()
         super().__init__(onion_router)
 
-        self.protoid = b'ntor-curve25519-sha256-1'
-        self.t_mac = self.protoid + b':mac'
-        self.t_key = self.protoid + b':key_extract'
-        self.t_verify = self.protoid + b':verify'
-        self.m_expand = self.protoid + b':key_expand'
+        self.protoid = b"ntor-curve25519-sha256-1"
+        self.t_mac = self.protoid + b":mac"
+        self.t_key = self.protoid + b":key_extract"
+        self.t_verify = self.protoid + b":verify"
+        self.m_expand = self.protoid + b":key_expand"
 
         # To perform the handshake, the client needs to know an identity key
         # digest for the server, and an ntor onion key (a curve25519 public
@@ -220,7 +220,9 @@ class NtorKeyAgreement(KeyAgreement):
 
     @cached_property
     def _B(self):  # noqa: N802
-        return curve25519_public_from_bytes(self._onion_router.descriptor.ntor_key)  # noqa: N802
+        return curve25519_public_from_bytes(
+            self._onion_router.descriptor.ntor_key
+        )  # noqa: N802
 
     @cached_property
     def handshake(self):
@@ -237,9 +239,11 @@ class NtorKeyAgreement(KeyAgreement):
         # The server's handshake reply is:
         # SERVER_PK   Y                       [G_LENGTH bytes]
         # AUTH        H(auth_input, t_mac)    [H_LENGTH bytes]
-        y = handshake_response[:32]     # ntor data curve25519::public_key::key_size_in_bytes
+        y = handshake_response[
+            :32
+        ]  # ntor data curve25519::public_key::key_size_in_bytes
         auth = handshake_response[32:]  # ntor auth is SHA256, 32 in bytes
-        assert len(auth) == 32          #
+        assert len(auth) == 32  #
 
         # The client then checks Y is in G^* [see NOTE below], and computes
 
@@ -250,7 +254,7 @@ class NtorKeyAgreement(KeyAgreement):
         si += curve25519_to_bytes(self._B)
         si += curve25519_to_bytes(self._X)
         si += y
-        si += b'ntor-curve25519-sha256-1'
+        si += b"ntor-curve25519-sha256-1"
 
         # KEY_SEED = H(secret_input, t_key)
         # verify = H(secret_input, t_verify)
@@ -264,11 +268,11 @@ class NtorKeyAgreement(KeyAgreement):
         ai += y
         ai += curve25519_to_bytes(self._X)
         ai += self.protoid
-        ai += b'Server'
+        ai += b"Server"
 
         # The client verifies that AUTH == H(auth_input, t_mac).
         if auth != hmac(self.t_mac, ai):
-            raise KeyAgreementError('Auth input does not match.')
+            raise KeyAgreementError("Auth input does not match.")
 
         # Both parties check that none of the EXP() operations produced the
         # point at infinity. [NOTE: This is an adequate replacement for
@@ -296,4 +300,6 @@ class NtorKeyAgreement(KeyAgreement):
         # salt == t_key, and IKM == secret_input.
         # WARN: length must be 92
         # 72 + byte_type rend_nonce     [20]; << ignored now
-        return hkdf_sha256(key_seed, length=KeyAgreement.KEY_MATERIAL_LENGTH, info=self.m_expand)
+        return hkdf_sha256(
+            key_seed, length=KeyAgreement.KEY_MATERIAL_LENGTH, info=self.m_expand
+        )

@@ -15,8 +15,8 @@
 
 import io
 
-from torpy.crypto_common import hash_stream, hash_update, hash_finalize
-from torpy.documents.items import ItemObject, ItemMask
+from torpy.crypto_common import hash_finalize, hash_stream, hash_update
+from torpy.documents.items import ItemMask, ItemObject
 
 
 class TorDocumentObject:
@@ -26,7 +26,7 @@ class TorDocumentObject:
 
     def __init__(self, check_start=False):
         if self.START_ITEM is None or self.ITEMS is None:
-            raise Exception('You must fill items for this object')
+            raise Exception("You must fill items for this object")
         self._check_start = check_start
         self._fields = {}
 
@@ -55,7 +55,9 @@ class TorDocumentObject:
 
 
 class TorDocumentReader:
-    def __init__(self, document_string, digests_names=None, digest_start=None, digest_end=None):
+    def __init__(
+        self, document_string, digests_names=None, digest_start=None, digest_end=None
+    ):
         self._f = io.StringIO(document_string)
         self._digests_names = digests_names or []
         self._digests = [hash_stream(digest) for digest in self._digests_names]
@@ -65,10 +67,13 @@ class TorDocumentReader:
 
     def _update_digests(self, data):
         for h in self._digests:
-            hash_update(h, data.encode('utf-8'))
+            hash_update(h, data.encode("utf-8"))
 
     def get_digests(self):
-        return {self._digests_names[i]: hash_finalize(h) for i, h in enumerate(self._digests)}
+        return {
+            self._digests_names[i]: hash_finalize(h)
+            for i, h in enumerate(self._digests)
+        }
 
     def lines_gen(self):
         for line in self._f:
@@ -81,20 +86,22 @@ class TorDocumentReader:
                 else:
                     i = line.find(self._digest_end)
                     if i >= 0:
-                        self._update_digests(line[:i + len(self._digest_end)])
+                        self._update_digests(line[: i + len(self._digest_end)])
                         self._digesting = False
                     else:
                         self._update_digests(line)
 
-            yield line.rstrip('\n')
+            yield line.rstrip("\n")
 
 
 class TorDocument(TorDocumentObject):
     DOCUMENT_NAME = None
 
-    def __init__(self, raw_string, digests_names=None, digest_start=None, digest_end=None):
+    def __init__(
+        self, raw_string, digests_names=None, digest_start=None, digest_end=None
+    ):
         if self.DOCUMENT_NAME is None:
-            raise Exception('You must fill document name field')
+            raise Exception("You must fill document name field")
         super().__init__(check_start=True)
         self._raw_string = raw_string
         self._digests = {}
@@ -103,7 +110,7 @@ class TorDocument(TorDocumentObject):
 
     @classmethod
     def check_start(cls, raw_string):
-        return raw_string.startswith(cls.START_ITEM.keyword + ' ')
+        return raw_string.startswith(cls.START_ITEM.keyword + " ")
 
     def get_digest(self, hash_name):
         return self._digests.get(hash_name, None)
@@ -118,7 +125,11 @@ class TorDocument(TorDocumentObject):
 
         for item in self.ITEMS:
             if type(item) is ItemObject:
-                items_obj[item.object_cls.START_ITEM.keyword] = item.object_cls.START_ITEM, item, True
+                items_obj[item.object_cls.START_ITEM.keyword] = (
+                    item.object_cls.START_ITEM,
+                    item,
+                    True,
+                )
                 for sub_item in item.object_cls.ITEMS:
                     items_obj[sub_item.keyword] = sub_item, item, False
             elif isinstance(item, ItemMask):
@@ -129,9 +140,9 @@ class TorDocument(TorDocumentObject):
         return items, items_obj, items_mask
 
     def check_items(self, line, lines):
-        t = line.split(' ', 1)
+        t = line.split(" ", 1)
         if len(t) < 2:
-            kw, rest = t[0], ''
+            kw, rest = t[0], ""
         else:
             kw, rest = t
 
@@ -190,12 +201,14 @@ class TorDocument(TorDocumentObject):
                     continue
                 obj_lst = getattr(self, oitem.out_name, None)
                 for i, obj in enumerate(obj_lst):
-                    if not hasattr(obj, 'CLASS'):
+                    if not hasattr(obj, "CLASS"):
                         break
                     obj_lst[i] = obj.CLASS(**obj._fields)
 
     def _read(self, digests_names, digest_start, digest_end):
-        reader = TorDocumentReader(self._raw_string, digests_names, digest_start, digest_end)
+        reader = TorDocumentReader(
+            self._raw_string, digests_names, digest_start, digest_end
+        )
         lines = reader.lines_gen()
         for line in lines:
             self.check_items(line, lines)

@@ -13,27 +13,32 @@
 # limitations under the License.
 #
 
+import functools
+import logging
+import random
 import re
 import socket
-import random
-import logging
-import functools
-from base64 import b32decode, b16encode
+from base64 import b16encode, b32decode
 from datetime import datetime, timedelta
-from enum import auto, Flag
+from enum import Flag, auto
 from threading import Lock
 from typing import List
 
-from torpy.utils import retry, log_retry
+from torpy.cache_storage import TorCacheDirStorage
+from torpy.crypto_common import rsa_load_der, rsa_verify
+from torpy.dirs import AUTHORITY_DIRS, FALLBACK_DIRS
 from torpy.documents import TorDocumentsFactory
+from torpy.documents.dir_key_certificate import DirKeyCertificateList
+from torpy.documents.network_status import (
+    FetchDescriptorError,
+    NetworkStatusDocument,
+    Router,
+    RouterFlags,
+)
+from torpy.documents.network_status_diff import NetworkStatusDiffDocument
 from torpy.guard import TorGuard
 from torpy.parsers import RouterDescriptorParser
-from torpy.cache_storage import TorCacheDirStorage
-from torpy.crypto_common import rsa_verify, rsa_load_der
-from torpy.documents.network_status import RouterFlags, NetworkStatusDocument, FetchDescriptorError, Router
-from torpy.documents.dir_key_certificate import DirKeyCertificateList
-from torpy.documents.network_status_diff import NetworkStatusDiffDocument
-from torpy.dirs import AUTHORITY_DIRS, FALLBACK_DIRS
+from torpy.utils import log_retry, retry
 
 logger = logging.getLogger(__name__)
 
@@ -63,17 +68,35 @@ class DirectoryServer(Router):
     """This class represents a directory authority."""
 
     HEX_DIGEST_LEN = 40
-    AUTH_FLAGS = DirectoryFlags.V3_DIRINFO | DirectoryFlags.EXTRAINFO_DIRINFO | DirectoryFlags.MICRODESC_DIRINFO
+    AUTH_FLAGS = (
+        DirectoryFlags.V3_DIRINFO
+        | DirectoryFlags.EXTRAINFO_DIRINFO
+        | DirectoryFlags.MICRODESC_DIRINFO
+    )
 
-    def __init__(self, nickname, ip, dir_port, or_port, fingerprint, v3ident=None, ipv6=None, bridge=False,
-                 dir_flags=DirectoryFlags.NO_DIRINFO, flags=None):
+    def __init__(
+        self,
+        nickname,
+        ip,
+        dir_port,
+        or_port,
+        fingerprint,
+        v3ident=None,
+        ipv6=None,
+        bridge=False,
+        dir_flags=DirectoryFlags.NO_DIRINFO,
+        flags=None,
+    ):
         flags = [RouterFlags.Authority] if flags is None else flags
-        super().__init__(nickname, bytes.fromhex(fingerprint),
-                         ip, int(or_port), int(dir_port), flags)
+        super().__init__(
+            nickname, bytes.fromhex(fingerprint), ip, int(or_port), int(dir_port), flags
+        )
         self._dir_flags = dir_flags
 
         if v3ident:
-            assert len(v3ident) == DirectoryServer.HEX_DIGEST_LEN, f'Bad v3 identity digest "{v3ident}"'
+            assert (
+                len(v3ident) == DirectoryServer.HEX_DIGEST_LEN
+            ), f'Bad v3 identity digest "{v3ident}"'
             # tor ref: parse_dir_authority_line
             self._dir_flags = DirectoryServer.AUTH_FLAGS
         self._v3ident = v3ident
@@ -89,8 +112,10 @@ class DirectoryServer(Router):
 
         # "185.225.17.3:80 orport=443 id=0338F9F55111FE8E3570E7DE117EF3AF999CC1D7 ipv6=[2a0a:c800:1:5::3]:443"
         m = re.match(
-            '\"(?P<ip>[0-9\\.]*):(?P<dir_port>[0-9]{1,5}) orport=(?P<or_port>[0-9]{1,5}) '
-            'id=(?P<fingerprint>[A-F0-9]*)( ipv6=(?P<ipv6>.*))?\"', string)
+            '"(?P<ip>[0-9\\.]*):(?P<dir_port>[0-9]{1,5}) orport=(?P<or_port>[0-9]{1,5}) '
+            'id=(?P<fingerprint>[A-F0-9]*)( ipv6=(?P<ipv6>.*))?"',
+            string,
+        )
         if not m:
             raise Exception("Can't parse fallback dir line: " + string)
 
@@ -100,9 +125,11 @@ class DirectoryServer(Router):
     def from_authority_str(cls, string):
         # tor ref: parse_dir_authority_line
         m = re.match(
-            '\"(?P<nickname>.+?) orport=(?P<or_port>[0-9]{2,5})( (?P<bridge>bridge))?'
-            '( v3ident=(?P<v3ident>[A-F0-9]+))?( ipv6=(?P<ipv6>[0-9a-f:\\[\\]]+))? '
-            '(?P<ip>[0-9\\.]+):(?P<dir_port>[0-9]{2,5}) (?P<fingerprint>[0-9A-F\\s]+)\"', string)
+            '"(?P<nickname>.+?) orport=(?P<or_port>[0-9]{2,5})( (?P<bridge>bridge))?'
+            "( v3ident=(?P<v3ident>[A-F0-9]+))?( ipv6=(?P<ipv6>[0-9a-f:\\[\\]]+))? "
+            '(?P<ip>[0-9\\.]+):(?P<dir_port>[0-9]{2,5}) (?P<fingerprint>[0-9A-F\\s]+)"',
+            string,
+        )
 
         if not m:
             raise Exception("Can't parse fallback dir line: " + string)
@@ -124,27 +151,36 @@ class DirectoryList:
 
     @classmethod
     def default_authorities(cls):
-        data = AUTHORITY_DIRS.replace('  ', ' ').replace('\n', '').replace('\" \"', '')
-        nodes_list_str = data.rstrip(',').split(',')
+        data = AUTHORITY_DIRS.replace("  ", " ").replace("\n", "").replace('" "', "")
+        nodes_list_str = data.rstrip(",").split(",")
         return cls(list(map(DirectoryServer.from_authority_str, nodes_list_str)))
 
     @classmethod
     def default_fallbacks(cls):
         def remove_comments(string):
-            string = re.sub(re.compile('/\\*.*?\\*/', re.DOTALL), '', string)
-            string = re.sub(re.compile('//.*?\\n'), '', string)
+            string = re.sub(re.compile("/\\*.*?\\*/", re.DOTALL), "", string)
+            string = re.sub(re.compile("//.*?\\n"), "", string)
             return string
 
         data = remove_comments(FALLBACK_DIRS)
-        data = data.replace('\n', '').replace('\"\"', '')
-        nodes_list_str = data.rstrip(',').split(',')
+        data = data.replace("\n", "").replace('""', "")
+        nodes_list_str = data.rstrip(",").split(",")
         return cls(list(map(DirectoryServer.from_fallback_str, nodes_list_str)))
 
     def find(self, identity):
-        return next((directory for directory in self._directories if directory.v3ident == identity), None)
+        return next(
+            (
+                directory
+                for directory in self._directories
+                if directory.v3ident == identity
+            ),
+            None,
+        )
 
     def filter(self, dir_flags):
-        return filter(lambda directory: directory.dir_flags & dir_flags, self._directories)
+        return filter(
+            lambda directory: directory.dir_flags & dir_flags, self._directories
+        )
 
     def count(self, dir_flags):
         return sum(1 for _ in self.filter(dir_flags))
@@ -196,16 +232,16 @@ class TorConsensus:
         self._lock = Lock()
 
         self._authorities = authorities or DirectoryList.default_authorities()
-        logger.debug('Loaded %i authorities dir', self._authorities.total)
+        logger.debug("Loaded %i authorities dir", self._authorities.total)
 
         self._fallbacks = fallbacks or DirectoryList.default_fallbacks()
-        logger.debug('Loaded %i fallbacks dir', self._fallbacks.total)
+        logger.debug("Loaded %i fallbacks dir", self._fallbacks.total)
 
         self._cache_storage = cache_storage or TorCacheDirStorage()
         self._document = self._cache_storage.load_document(NetworkStatusDocument)
         if self._document:
             self._document.link_consensus(self)
-            logger.debug('Loaded %i consensus routers', len(self._document.routers))
+            logger.debug("Loaded %i consensus routers", len(self._document.routers))
         self._certs = self._cache_storage.load_document(DirKeyCertificateList)
 
         self._dir_guard_ttl = self._dir_guard = self._dir_circuit = None
@@ -223,8 +259,17 @@ class TorConsensus:
         if self._dir_guard:
             self._dir_guard.close()
 
-    @retry(5, BaseException, delay=1, backoff=2,
-           log_func=functools.partial(log_retry, msg='Retry with another router...', no_traceback=(socket.timeout,)))
+    @retry(
+        5,
+        BaseException,
+        delay=1,
+        backoff=2,
+        log_func=functools.partial(
+            log_retry,
+            msg="Retry with another router...",
+            no_traceback=(socket.timeout,),
+        ),
+    )
     def renew(self, force=False):
         with self._lock:
             if not force and self._document and self._document.is_live:
@@ -235,9 +280,11 @@ class TorConsensus:
             raw_string = self.download_consensus(prev_hash)
 
             # Make sure it's parseable
-            new_doc = TorDocumentsFactory.parse(raw_string, possible=(NetworkStatusDocument, NetworkStatusDiffDocument))
+            new_doc = TorDocumentsFactory.parse(
+                raw_string, possible=(NetworkStatusDocument, NetworkStatusDiffDocument)
+            )
             if new_doc is None:
-                raise Exception('Unknown document has been received: ' + raw_string)
+                raise Exception("Unknown document has been received: " + raw_string)
 
             if type(new_doc) is NetworkStatusDiffDocument:
                 new_doc = self._document.apply_diff(new_doc)
@@ -251,7 +298,7 @@ class TorConsensus:
                 # Try verify again
                 verified, _ = self.verify(new_doc)
                 if not verified:
-                    raise Exception('Invalid consensus')
+                    raise Exception("Invalid consensus")
 
             # Use new consensus document
             self._document = new_doc
@@ -268,21 +315,21 @@ class TorConsensus:
         for voter in new_doc.voters:
             sign = new_doc.find_signature(voter.fingerprint)
             if not sign:
-                logger.debug('Not sign by %s (%s)', voter.nickname, voter.fingerprint)
+                logger.debug("Not sign by %s (%s)", voter.nickname, voter.fingerprint)
                 continue
 
-            trusted = self._authorities.find(sign['identity'])
+            trusted = self._authorities.find(sign["identity"])
             if not trusted:
-                logger.warning('Unknown voter present')
+                logger.warning("Unknown voter present")
                 continue
 
-            doc_digest = new_doc.get_digest(sign['algorithm'])
+            doc_digest = new_doc.get_digest(sign["algorithm"])
 
-            pubkey = self._get_pubkey(sign['identity'])
-            if pubkey and rsa_verify(pubkey, sign['signature'], doc_digest):
+            pubkey = self._get_pubkey(sign["identity"])
+            if pubkey and rsa_verify(pubkey, sign["signature"], doc_digest):
                 signed += 1
 
-            signing_idents.append((sign['identity'], sign['signing_key_digest']))
+            signing_idents.append((sign["identity"], sign["signing_key_digest"]))
 
         return signed > required, signing_idents
 
@@ -292,8 +339,11 @@ class TorConsensus:
             if cert:
                 return rsa_load_der(cert.dir_signing_key)
 
-    @retry(3, BaseException,
-           log_func=functools.partial(log_retry, msg='Retry with another router...'))
+    @retry(
+        3,
+        BaseException,
+        log_func=functools.partial(log_retry, msg="Retry with another router..."),
+    )
     def renew_certs(self, signing_idents):
         key_certificates_raw = self.download_public_keys(signing_idents)
         certs = DirKeyCertificateList(key_certificates_raw)
@@ -303,7 +353,11 @@ class TorConsensus:
     def get_router(self, fingerprint) -> Router:
         # TODO: make mapping with fingerprint as key?
         fingerprint_b = b32decode(fingerprint.upper())
-        return next(onion_router for onion_router in self.document.routers if onion_router.fingerprint == fingerprint_b)
+        return next(
+            onion_router
+            for onion_router in self.document.routers
+            if onion_router.fingerprint == fingerprint_b
+        )
 
     def get_routers(self, flags=None, has_dir_port=True, with_renew=True):
         """
@@ -342,7 +396,12 @@ class TorConsensus:
         return self.get_random_router(flags)
 
     def get_random_exit_node(self):
-        flags = [RouterFlags.Fast, RouterFlags.Running, RouterFlags.Valid, RouterFlags.Exit]
+        flags = [
+            RouterFlags.Fast,
+            RouterFlags.Running,
+            RouterFlags.Valid,
+            RouterFlags.Exit,
+        ]
         return self.get_random_router(flags)
 
     def get_random_middle_node(self):
@@ -357,7 +416,7 @@ class TorConsensus:
         if self._document and self._document.is_reasonably_live:
             router = self.get_random_router(flags=[RouterFlags.Guard], with_renew=False)
         else:
-            logger.debug('There is no reasonable live consensus... use fallback dirs')
+            logger.debug("There is no reasonable live consensus... use fallback dirs")
             router = self._fallbacks.get_random()
 
         # tor ref: directory_get_from_dirserver DIR_PURPOSE_FETCH_CONSENSUS
@@ -371,8 +430,10 @@ class TorConsensus:
             self._dir_guard_ttl = self._dir_guard = self._dir_circuit = None
 
         if not self._dir_circuit:
-            logger.debug('There is no internal dir circuit yet. Creating it...')
-            self._dir_guard, self._dir_circuit = self._create_dir_circuit(purpose='Internal dir client')
+            logger.debug("There is no internal dir circuit yet. Creating it...")
+            self._dir_guard, self._dir_circuit = self._create_dir_circuit(
+                purpose="Internal dir client"
+            )
             self._dir_guard_ttl = datetime.utcnow() + timedelta(hours=1)
 
         return self._dir_circuit.create_dir_client()
@@ -380,27 +441,34 @@ class TorConsensus:
     @property
     def consensus_url(self):
         # tor ref: directory_get_consensus_url
-        fpr_list_str = '+'.join([router.v3ident[:6] for router in self._authorities.filter(DirectoryFlags.V3_DIRINFO)])
-        return f'/tor/status-vote/current/consensus/{fpr_list_str}.z'
+        fpr_list_str = "+".join(
+            [
+                router.v3ident[:6]
+                for router in self._authorities.filter(DirectoryFlags.V3_DIRINFO)
+            ]
+        )
+        return f"/tor/status-vote/current/consensus/{fpr_list_str}.z"
 
     @expire_dir_guard_on_error()
     def download_consensus(self, prev_hash=None):
-        logger.info('Downloading new consensus...')
-        headers = {'X-Or-Diff-From-Consensus': prev_hash} if prev_hash else None
+        logger.info("Downloading new consensus...")
+        headers = {"X-Or-Diff-From-Consensus": prev_hash} if prev_hash else None
         with self._get_dir_client() as dir_client:
             _, body = dir_client.get(self.consensus_url, headers=headers)
             return body.decode()
 
     @property
     def fp_sk_url(self):
-        return '/tor/keys/fp-sk'
+        return "/tor/keys/fp-sk"
 
     @expire_dir_guard_on_error()
     def download_public_keys(self, signing_idents):
-        logger.info('Downloading public keys...')
+        logger.info("Downloading public keys...")
 
-        fp_sks = '+'.join([f'{identity}-{keyid}' for (identity, keyid) in signing_idents])
-        url = f'{self.fp_sk_url}/{fp_sks}.z'
+        fp_sks = "+".join(
+            [f"{identity}-{keyid}" for (identity, keyid) in signing_idents]
+        )
+        url = f"{self.fp_sk_url}/{fp_sks}.z"
 
         with self._get_dir_client() as dir_client:
             _, body = dir_client.get(url)
@@ -408,11 +476,17 @@ class TorConsensus:
 
     @staticmethod
     def _descriptor_url(fingerprint):
-        return f'/tor/server/fp/{b16encode(fingerprint).decode()}'
+        return f"/tor/server/fp/{b16encode(fingerprint).decode()}"
 
-    @retry(5, BaseException,
-           log_func=functools.partial(log_retry, msg='Retry with another router...',
-                                      no_traceback=(FetchDescriptorError,)))
+    @retry(
+        5,
+        BaseException,
+        log_func=functools.partial(
+            log_retry,
+            msg="Retry with another router...",
+            no_traceback=(FetchDescriptorError,),
+        ),
+    )
     @expire_dir_guard_on_error()
     def get_descriptor(self, fingerprint):
         """
@@ -426,8 +500,10 @@ class TorConsensus:
             with self._get_dir_client() as dir_client:
                 status, response = dir_client.get(url)
             if status != 200:
-                raise FetchDescriptorError(f"Can't fetch descriptor from {url}. Status = {status}")
-            logger.info('Got descriptor')
+                raise FetchDescriptorError(
+                    f"Can't fetch descriptor from {url}. Status = {status}"
+                )
+            logger.info("Got descriptor")
         except TimeoutError as e:
             logger.debug(e)
             raise FetchDescriptorError(f"Can't fetch descriptor from {url}")

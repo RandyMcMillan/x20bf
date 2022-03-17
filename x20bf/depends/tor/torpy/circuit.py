@@ -13,45 +13,49 @@
 # limitations under the License.
 #
 
+import logging
 import os
 import socket
-import logging
 import threading
-from enum import unique, Enum, auto
-from selectors import EVENT_READ, EVENT_WRITE, DefaultSelector
 from contextlib import contextmanager
+from enum import Enum, auto, unique
 from functools import partial
+from selectors import EVENT_READ, EVENT_WRITE, DefaultSelector
 from typing import Type
 
-from torpy.utils import cached_property
 from torpy.cells import (
-    CellRelay,
-    CellCreateFast,
     CellCreate2,
-    CellDestroy,
-    CellCreatedFast,
     CellCreated2,
-    CellRelayEnd,
-    CellRelayData,
-    CircuitReason,
-    CellRelayEarly,
-    RelayedTorCell,
-    CellRelaySendMe,
-    CellRelayExtend2,
+    CellCreatedFast,
+    CellCreateFast,
+    CellDestroy,
+    CellRelay,
     CellRelayConnected,
+    CellRelayData,
+    CellRelayEarly,
+    CellRelayEnd,
+    CellRelayEstablishRendezvous,
+    CellRelayExtend2,
     CellRelayExtended2,
-    CellRelayTruncated,
     CellRelayIntroduce1,
     CellRelayIntroduceAck,
-    CellRelayEstablishRendezvous,
     CellRelayRendezvousEstablished,
+    CellRelaySendMe,
+    CellRelayTruncated,
+    CircuitReason,
+    RelayedTorCell,
 )
-from torpy.utils import ignore
-from torpy.http.client import HttpStreamClient
-from torpy.stream import TorStream, TorWindow, StreamsList
 from torpy.crypto_state import CryptoState
-from torpy.keyagreement import KeyAgreement, TapKeyAgreement, NtorKeyAgreement, FastKeyAgreement
 from torpy.hiddenservice import DescriptorNotAvailable, HiddenServiceConnector
+from torpy.http.client import HttpStreamClient
+from torpy.keyagreement import (
+    FastKeyAgreement,
+    KeyAgreement,
+    NtorKeyAgreement,
+    TapKeyAgreement,
+)
+from torpy.stream import StreamsList, TorStream, TorWindow
+from torpy.utils import cached_property, ignore
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +69,9 @@ class CircuitExtendError(Exception):
 
 
 class CircuitNode:
-    def __init__(self, router, key_agreement_cls: Type[KeyAgreement] = NtorKeyAgreement):
+    def __init__(
+        self, router, key_agreement_cls: Type[KeyAgreement] = NtorKeyAgreement
+    ):
         self._router = router
 
         self._key_agreement_cls = key_agreement_cls
@@ -105,7 +111,7 @@ class CircuitNode:
 
 def cells_format(cell_types):
     if isinstance(cell_types, list):
-        return ' or '.join([c.__name__ for c in cell_types])
+        return " or ".join([c.__name__ for c in cell_types])
     else:
         return cell_types.__name__
 
@@ -130,7 +136,7 @@ class Waiter:
 
     def get(self, timeout=30):
         if not self._ev.wait(timeout):
-            raise CellTimeoutError('Timeout wait for ' + cells_format(self._cell_types))
+            raise CellTimeoutError("Timeout wait for " + cells_format(self._cell_types))
         if self._err_msg:
             raise Exception(self._err_msg)
         return self._read_cell
@@ -138,7 +144,7 @@ class Waiter:
 
 class TorReceiver(threading.Thread):
     def __init__(self, tor_socket, handler_mgr):
-        super().__init__(name='RecvLoop_{}'.format(tor_socket.ip_address[0:7]))
+        super().__init__(name="RecvLoop_{}".format(tor_socket.ip_address[0:7]))
 
         self._tor_socket = tor_socket
 
@@ -176,14 +182,14 @@ class TorReceiver(threading.Thread):
         super().start()
 
     def stop(self):
-        logger.debug('Stopping receiver thread...')
-        self._cntrl_w.send(b'\1')
+        logger.debug("Stopping receiver thread...")
+        self._cntrl_w.send(b"\1")
         self.join()
 
     def register(self, sock_or_stream, events, callback):
-        func = self._regs_funcs_map['reg'].get(type(sock_or_stream))
+        func = self._regs_funcs_map["reg"].get(type(sock_or_stream))
         if not func:
-            raise Exception('Unknown object for register')
+            raise Exception("Unknown object for register")
         return func(sock_or_stream, events, callback)
 
     def register_socket(self, sock, events, callback):
@@ -191,16 +197,16 @@ class TorReceiver(threading.Thread):
 
     def register_stream(self, stream: TorStream, events, callback):
         if events & EVENT_WRITE:
-            raise Exception('Write event not supported yet')
+            raise Exception("Write event not supported yet")
         stream.register(callback)
         if stream not in self._stream_to_callback:
             self._stream_to_callback[stream] = []
         self._stream_to_callback[stream].append(callback)
 
     def unregister(self, sock_or_stream):
-        func = self._regs_funcs_map['unreg'].get(type(sock_or_stream))
+        func = self._regs_funcs_map["unreg"].get(type(sock_or_stream))
         if not func:
-            raise Exception('Unknown object for unregister')
+            raise Exception("Unknown object for unregister")
         return func(sock_or_stream)
 
     def unregister_socket(self, sock):
@@ -209,7 +215,7 @@ class TorReceiver(threading.Thread):
     def unregister_stream(self, stream):
         callbacks = self._stream_to_callback.pop(stream, None)
         if not callbacks:
-            raise Exception('There is no such stream registered')
+            raise Exception("There is no such stream registered")
         for callback in callbacks:
             stream.unregister(callback)
 
@@ -218,14 +224,14 @@ class TorReceiver(threading.Thread):
 
     def _do_recv(self, raw_socket, mask):
         for cell in self._tor_socket.recv_cell_async():
-            logger.debug('Cell received: %r', cell)
+            logger.debug("Cell received: %r", cell)
             try:
                 self._handler_mgr.handle(cell)
             except BaseException:
-                logger.exception('Some handle errors')
+                logger.exception("Some handle errors")
 
     def run(self):
-        logger.debug('Starting...')
+        logger.debug("Starting...")
         while self._do_loop:
             events = self._selector.select()
             for key, mask in events:
@@ -233,7 +239,7 @@ class TorReceiver(threading.Thread):
                 callback(key.fileobj, mask)
 
         self._cleanup()
-        logger.debug('Stopped...')
+        logger.debug("Stopped...")
 
 
 @unique
@@ -259,7 +265,7 @@ class CellHandlerManager:
         handlers = self._handlers.get(cell_type, [])
 
         if not handlers:
-            logger.error('%s was received but no handlers for it', cell)
+            logger.error("%s was received but no handlers for it", cell)
             return
 
         # Iterate over the copy to remove one-time handlers from the original array
@@ -280,7 +286,7 @@ class CellHandlerManager:
 
     @contextmanager
     def create_waiter(self, cell_types):
-        logger.debug('Create waiter for %r', cells_format(cell_types))
+        logger.debug("Create waiter for %r", cells_format(cell_types))
         w = Waiter(cell_types)
         self.subscribe_for(cell_types, w)
         yield w
@@ -316,7 +322,9 @@ class CellHandlerManager:
 
 def check_connected(fn):
     def wrapped(self, *args, **kwargs):
-        assert self.connected, f'Circuit must be connected (state = {self._state.name}))'
+        assert (
+            self.connected
+        ), f"Circuit must be connected (state = {self._state.name}))"
         return fn(self, *args, **kwargs)
 
     return wrapped
@@ -345,21 +353,22 @@ class TorCircuit:
         self.close()
 
     def close(self):
-        logger.debug('Close circuit #%x', self.id)
+        logger.debug("Close circuit #%x", self.id)
         if self._guard is not None:
             self._guard.destroy_circuit(self)
 
     def create(self):
         with self._state_lock:
-            assert self._state == TorCircuitState.Unknown, 'Circuit already connected'
+            assert self._state == TorCircuitState.Unknown, "Circuit already connected"
             self._state = TorCircuitState.Connecting
             self._circuit_nodes = self._initialize(self._guard.router)
             self._handler_mgr.subscribe_for(CellRelayTruncated, self._on_truncated)
             self._handler_mgr.subscribe_for(
-                [CellRelayData, CellRelaySendMe, CellRelayConnected, CellRelayEnd], self._on_stream
+                [CellRelayData, CellRelaySendMe, CellRelayConnected, CellRelayEnd],
+                self._on_stream,
             )
             self._state = TorCircuitState.Connected
-            logger.debug('Circuit created')
+            logger.debug("Circuit created")
 
     def create_new_circuit(self, hops_count=0, extend_routers=None):
         return self._guard.create_circuit(hops_count, extend_routers)
@@ -371,13 +380,15 @@ class TorCircuit:
 
     def destroy(self, send_destroy=True):
         with self._state_lock:
-            logger.debug('#%x circuit: destroying (state: %s)...', self.id, self._state.name)
+            logger.debug(
+                "#%x circuit: destroying (state: %s)...", self.id, self._state.name
+            )
 
             if self._state == TorCircuitState.Unknown:
-                raise Exception('#{:x} circuit is not yet connected'.format(self.id))
+                raise Exception("#{:x} circuit is not yet connected".format(self.id))
 
             if self._state == TorCircuitState.Destroyed:
-                logger.warning('#%x circuit: has been destroyed already', self.id)
+                logger.warning("#%x circuit: has been destroyed already", self.id)
                 return
 
             if self._state == TorCircuitState.Connected:
@@ -404,7 +415,7 @@ class TorCircuit:
 
         tor-spec.txt 5.1. "CREATE and CREATED cells"
         """
-        logger.info('Creating new circuit #%x with %s router...', self.id, router)
+        logger.info("Creating new circuit #%x with %s router...", self.id, router)
 
         if self._guard.consensus:
             key_agreement_cls = NtorKeyAgreement
@@ -421,7 +432,7 @@ class TorCircuit:
         cell_create = create_cls(onion_skin, self.id)
         cell_created = self._send_wait(cell_create, created_cls)
 
-        logger.debug('Verifying response...')
+        logger.debug("Verifying response...")
         circuit_node.complete_handshake(cell_created.handshake_data)
 
         return [circuit_node]
@@ -453,7 +464,11 @@ class TorCircuit:
         # tor ref: circuit_receive_relay_cell
         # tor ref: connection_edge_process_relay_cell
         circuit_node, inner_cell = self._decrypt(cell)
-        logger.debug('Decrypted relay cell received from %s: %r', circuit_node.router.nickname, inner_cell)
+        logger.debug(
+            "Decrypted relay cell received from %s: %r",
+            circuit_node.router.nickname,
+            inner_cell,
+        )
         self._handler_mgr.handle(inner_cell, from_node=circuit_node, orig_cell=cell)
 
     def _on_stream(self, cell, from_node, orig_cell):
@@ -462,8 +477,11 @@ class TorCircuit:
 
         stream = self._streams.get_by_id(orig_cell.stream_id)
         if not stream:
-            logger.warning('Stream #%i is already closed or was never opened (but received %s)', orig_cell.stream_id,
-                           orig_cell)
+            logger.warning(
+                "Stream #%i is already closed or was never opened (but received %s)",
+                orig_cell.stream_id,
+                orig_cell,
+            )
             return
 
         stream.handle_cell(cell)
@@ -482,7 +500,9 @@ class TorCircuit:
 
     def _on_truncated(self, cell, from_node, orig_cell):
         # tor ref: circuit_truncated
-        logger.error('Circuit #%x was truncated by remote (%s)', self.id, cell.reason.name)
+        logger.error(
+            "Circuit #%x was truncated by remote (%s)", self.id, cell.reason.name
+        )
         self._state = TorCircuitState.Truncated
         # self._guard.destroy_circuit(self)?
 
@@ -507,9 +527,9 @@ class TorCircuit:
 
         from_node = None
         for i, circuit_node in enumerate(self._circuit_nodes):
-            logger.debug('Decrypting by [%i] %s...', i, circuit_node.router)
+            logger.debug("Decrypting by [%i] %s...", i, circuit_node.router)
             if not relay_cell.is_encrypted:
-                logger.warning('Decrypted earlier')
+                logger.warning("Decrypted earlier")
                 break
 
             # Continue decrypting...
@@ -543,7 +563,7 @@ class TorCircuit:
     def send_relay_wait(self, inner_cell, wait_cells, relay_type=None, stream_id=0):
         with self._handler_mgr.create_waiter(wait_cells) as w:
             self.send_relay(inner_cell, relay_type=relay_type, stream_id=stream_id)
-            logger.debug('Getting response...')
+            logger.debug("Getting response...")
             return w.get()
 
     @check_connected
@@ -558,31 +578,38 @@ class TorCircuit:
             3. When a relay EXTENDED/EXTENDED2 cell is received, verify KH,
                and calculate the shared keys.  The circuit is now extended.
         """
-        logger.info('Extending the circuit #%x with %s...', self.id, next_onion_router)
+        logger.info("Extending the circuit #%x with %s...", self.id, next_onion_router)
 
-        logger.debug('Sending Extend2...')
-        extend_node = CircuitNode(next_onion_router, key_agreement_cls=key_agreement_cls)
+        logger.debug("Sending Extend2...")
+        extend_node = CircuitNode(
+            next_onion_router, key_agreement_cls=key_agreement_cls
+        )
         skin = extend_node.create_onion_skin()
 
         inner_cell = CellRelayExtend2(
-            next_onion_router.ip, next_onion_router.or_port, next_onion_router.fingerprint, skin
+            next_onion_router.ip,
+            next_onion_router.or_port,
+            next_onion_router.fingerprint,
+            skin,
         )
 
         recv_cell = self.send_relay_wait(
-            inner_cell, [CellRelayExtended2, CellRelayTruncated], relay_type=CellRelayEarly
+            inner_cell,
+            [CellRelayExtended2, CellRelayTruncated],
+            relay_type=CellRelayEarly,
         )
 
         if isinstance(recv_cell, CellRelayTruncated):
-            raise CircuitExtendError('Extend error {}'.format(recv_cell.reason.name))
+            raise CircuitExtendError("Extend error {}".format(recv_cell.reason.name))
 
-        logger.debug('Verifying response...')
+        logger.debug("Verifying response...")
         extend_node.complete_handshake(recv_cell.handshake_data)
 
         self._circuit_nodes.append(extend_node)
 
     @check_connected
     def build_hops(self, hops_count):
-        logger.info('Building %i hops circuit...', hops_count)
+        logger.info("Building %i hops circuit...", hops_count)
         while self.nodes_count < hops_count:
             if self.nodes_count == hops_count - 1:
                 router = self._guard.consensus.get_random_exit_node()
@@ -590,7 +617,7 @@ class TorCircuit:
                 router = self._guard.consensus.get_random_middle_node()
 
             self.extend(router)
-        logger.debug('Circuit has been built')
+        logger.debug("Circuit has been built")
 
     @check_connected
     def create_stream(self, address=None):
@@ -604,12 +631,16 @@ class TorCircuit:
 
     def _rendezvous_establish(self, rendezvous_cookie):
         inner_cell = CellRelayEstablishRendezvous(rendezvous_cookie, self._id)
-        cell_established = self.send_relay_wait(inner_cell, CellRelayRendezvousEstablished)
+        cell_established = self.send_relay_wait(
+            inner_cell, CellRelayRendezvousEstablished
+        )
         # tor_ref: hs_client_receive_rendezvous_acked
 
-        logger.info('Rendezvous established (%r)', cell_established)
+        logger.info("Rendezvous established (%r)", cell_established)
 
-    def rendezvous_introduce(self, rendezvous_circuit, rendezvous_cookie, auth_type, descriptor_cookie):
+    def rendezvous_introduce(
+        self, rendezvous_circuit, rendezvous_cookie, auth_type, descriptor_cookie
+    ):
         # tor ref: rend_client_send_introduction
         # tor ref: hs_circ_send_introduce1
         # tor ref: hs_client_send_introduce1
@@ -623,23 +654,39 @@ class TorCircuit:
         public_key_bytes = extend_node.key_agreement.handshake
 
         inner_cell = CellRelayIntroduce1(
-            introduction_point, public_key_bytes, introducee, rendezvous_cookie, auth_type, descriptor_cookie, self._id
+            introduction_point,
+            public_key_bytes,
+            introducee,
+            rendezvous_cookie,
+            auth_type,
+            descriptor_cookie,
+            self._id,
         )
         cell_ack = self.send_relay_wait(inner_cell, CellRelayIntroduceAck)
-        logger.info('Introduced (%r)', cell_ack)
+        logger.info("Introduced (%r)", cell_ack)
 
         return extend_node
 
     @check_connected
     def extend_to_hidden(self, hidden_service):
-        logger.info('Extending #%x circuit for hidden service %s...', self.id, hidden_service.hostname)
+        logger.info(
+            "Extending #%x circuit for hidden service %s...",
+            self.id,
+            hidden_service.hostname,
+        )
 
         with self._extend_lock:
             if self._associated_hs:
                 if self._associated_hs.onion == hidden_service.onion:
-                    logger.debug('Circuit #%x already associated with %s', self.id, hidden_service.onion)
+                    logger.debug(
+                        "Circuit #%x already associated with %s",
+                        self.id,
+                        hidden_service.onion,
+                    )
                     return
-                raise Exception("It's not possible associate one circuit to more then one hidden service")
+                raise Exception(
+                    "It's not possible associate one circuit to more then one hidden service"
+                )
 
             # tor ref: hs_circ_send_establish_rendezvous
             rendezvous_cookie = os.urandom(20)
@@ -649,14 +696,23 @@ class TorCircuit:
             # keeping replicas of a descriptor
             connector = HiddenServiceConnector(self, self._guard.consensus)
 
-            logger.info('Iterate over responsible dirs of the hidden service')
+            logger.info("Iterate over responsible dirs of the hidden service")
             for responsible_dir in connector.get_responsibles_dir(hidden_service):
-                with ignore('Retry with next responsible dir', exceptions=(DescriptorNotAvailable,)):
-                    logger.info('Iterate over introduction points of the hidden service')
-                    for introduction in responsible_dir.get_introductions(hidden_service):
+                with ignore(
+                    "Retry with next responsible dir",
+                    exceptions=(DescriptorNotAvailable,),
+                ):
+                    logger.info(
+                        "Iterate over introduction points of the hidden service"
+                    )
+                    for introduction in responsible_dir.get_introductions(
+                        hidden_service
+                    ):
                         try:
                             # And finally try to agree to rendezvous with the hidden service
-                            extend_node = introduction.connect(hidden_service, rendezvous_cookie)
+                            extend_node = introduction.connect(
+                                hidden_service, rendezvous_cookie
+                            )
                             self._circuit_nodes.append(extend_node)
                             self._associated_hs = hidden_service
                             return
@@ -664,7 +720,7 @@ class TorCircuit:
                             logger.error(str(e))
                             continue
                         except BaseException:
-                            logger.exception('Some errors')
+                            logger.exception("Some errors")
                             continue
 
             raise Exception("Can't extend to hidden service")

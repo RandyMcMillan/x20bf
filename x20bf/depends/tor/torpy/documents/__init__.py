@@ -16,5 +16,4 @@
 from torpy.documents.basics import TorDocument
 from torpy.documents.factory import TorDocumentsFactory
 
-
-__all__ = ['TorDocument', 'TorDocumentsFactory']
+__all__ = ["TorDocument", "TorDocumentsFactory"]

@@ -66,7 +66,7 @@ class Item:
         self.keyword = keyword
         self.parse_func = parse_func
         self.parse_args = parse_args or []
-        self.out_name = out_name or keyword.replace('-', '_')
+        self.out_name = out_name or keyword.replace("-", "_")
         self.type = type
         self.as_list = as_list
 
@@ -76,13 +76,13 @@ class ItemMask(Item):
         return self._mask.match(kw)
 
     def __init__(self, mask, parse_func, out_name, as_list=False):
-        super().__init__('', parse_func=parse_func, out_name=out_name, as_list=as_list)
+        super().__init__("", parse_func=parse_func, out_name=out_name, as_list=as_list)
         self._mask = re.compile(mask)
 
 
 class ItemObject(Item):
     def __init__(self, object_cls, out_name):
-        super().__init__('', parse_func=None, out_name=out_name, as_list=True)
+        super().__init__("", parse_func=None, out_name=out_name, as_list=True)
         self.object_cls = object_cls
 
 
@@ -90,45 +90,60 @@ class ItemDate(Item):
     @staticmethod
     def _get_date(line, *_):
         # Get only two spaced parts
-        line = line.split(' ')[:2]
+        line = line.split(" ")[:2]
         # 2019-01-01 00:00:00
-        return datetime.strptime(' '.join(line), '%Y-%m-%d %H:%M:%S')
+        return datetime.strptime(" ".join(line), "%Y-%m-%d %H:%M:%S")
 
     def __init__(self, keyword, out_name=None, type=ItemType.ExactlyOnce):
-        super().__init__(keyword, parse_func=ItemDate._get_date, out_name=out_name, type=type)
+        super().__init__(
+            keyword, parse_func=ItemDate._get_date, out_name=out_name, type=type
+        )
 
 
 class ItemInt(Item):
     @staticmethod
     def _get_int(line, *_):
         # Get only one spaced part
-        line = line.split(' ')[0]
+        line = line.split(" ")[0]
         return int(line)
 
     def __init__(self, keyword, out_name=None, type=ItemType.ExactlyOnce):
-        super().__init__(keyword, parse_func=ItemInt._get_int, out_name=out_name, type=type)
+        super().__init__(
+            keyword, parse_func=ItemInt._get_int, out_name=out_name, type=type
+        )
 
 
 class ItemEnum(Item):
     def _parse_enum(self, line, *_):
-        flags = filter(lambda i: i in self._enum_values, line.split(' '))
+        flags = filter(lambda i: i in self._enum_values, line.split(" "))
         flags = map(lambda i: self._enum_cls[i], flags)
         # reduce(ior, flags)
         return list(flags)
 
     def __init__(self, keyword, enum_cls, out_name=None, type=ItemType.ExactlyOnce):
-        super().__init__(keyword, parse_func=self._parse_enum, out_name=out_name, type=type)
+        super().__init__(
+            keyword, parse_func=self._parse_enum, out_name=out_name, type=type
+        )
         self._enum_cls = enum_cls
         self._enum_values = dir(self._enum_cls)
 
 
 class ItemMulti(Item):
-    def __init__(self, keyword, ml_name, parse_func=ItemParsers.store_string, out_name=None, as_list=False):
-        super().__init__(keyword, parse_func=self._parse, out_name=out_name, as_list=as_list)
+    def __init__(
+        self,
+        keyword,
+        ml_name,
+        parse_func=ItemParsers.store_string,
+        out_name=None,
+        as_list=False,
+    ):
+        super().__init__(
+            keyword, parse_func=self._parse, out_name=out_name, as_list=as_list
+        )
         self._args_parse_func = parse_func
-        self._ml_name = ml_name.replace(' ', '_')
-        self._ml_start_line = f'-----BEGIN {ml_name.upper()}-----'
-        self._ml_end_line = f'-----END {ml_name.upper()}-----'
+        self._ml_name = ml_name.replace(" ", "_")
+        self._ml_start_line = f"-----BEGIN {ml_name.upper()}-----"
+        self._ml_end_line = f"-----END {ml_name.upper()}-----"
 
     def _parse(self, line, lines, *_):
         args = self._args_parse_func(line)
@@ -142,8 +157,8 @@ class ItemMulti(Item):
     def _read_ml(self, lines):
         line = next(lines)
         if line != self._ml_start_line:
-            raise Exception(f'Begin line for {self.keyword} not found')
-        ml = ''
+            raise Exception(f"Begin line for {self.keyword} not found")
+        ml = ""
         for line in lines:
             if line == self._ml_end_line:
                 break

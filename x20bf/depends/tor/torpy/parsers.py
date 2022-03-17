@@ -13,8 +13,8 @@
 # limitations under the License.
 #
 
-import re
 import logging
+import re
 
 from torpy.crypto_common import b64decode
 
@@ -86,7 +86,7 @@ service-key
 
     @staticmethod
     def _decode(d):
-        for k in ('onion_key', 'service_key'):
+        for k in ("onion_key", "service_key"):
             d[k] = b64decode(d[k])
         return d
 

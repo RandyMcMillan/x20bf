@@ -14,10 +14,10 @@
 #
 
 import gzip
-import zlib
 import logging
-from io import BytesIO
+import zlib
 from http.client import parse_headers
+from io import BytesIO
 
 from torpy.utils import recv_all
 
@@ -33,27 +33,27 @@ class HttpStreamClient:
         headers = headers or {}
         host = host or self._host
         if host:
-            headers['Host'] = host
-        headers_str = '\r\n'.join(f'{key}: {val}' for (key, val) in headers.items())
-        http_query = f'GET {path} HTTP/1.0\r\n{headers_str}\r\n\r\n'
+            headers["Host"] = host
+        headers_str = "\r\n".join(f"{key}: {val}" for (key, val) in headers.items())
+        http_query = f"GET {path} HTTP/1.0\r\n{headers_str}\r\n\r\n"
         self._stream.send(http_query.encode())
 
         raw_response = recv_all(self._stream)
-        header, body = raw_response.split(b'\r\n\r\n', 1)
+        header, body = raw_response.split(b"\r\n\r\n", 1)
 
         f = BytesIO(header)
-        request_line = f.readline().split(b' ')
+        request_line = f.readline().split(b" ")
         protocol, status = request_line[:2]
         status = int(status)
 
         headers = parse_headers(f)
-        if headers['Content-Encoding'] == 'deflate':
+        if headers["Content-Encoding"] == "deflate":
             body = zlib.decompress(body)
-        elif headers['Content-Encoding'] == 'gzip':
+        elif headers["Content-Encoding"] == "gzip":
             body = gzip.decompress(body)
 
         if status != 200:
-            logger.debug('raw_response = %s', raw_response)
+            logger.debug("raw_response = %s", raw_response)
 
         return status, body
 

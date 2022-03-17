@@ -13,20 +13,20 @@
 # limitations under the License.
 #
 
-import struct
 import logging
+import struct
 
 from torpy.cells import RelayedTorCell
-from torpy.utils import to_hex
 from torpy.crypto_common import (
-    aes_update,
-    sha1_stream,
     aes_ctr_decryptor,
     aes_ctr_encryptor,
+    aes_update,
+    sha1_stream,
     sha1_stream_clone,
-    sha1_stream_update,
     sha1_stream_finalize,
+    sha1_stream_update,
 )
+from torpy.utils import to_hex
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ class CryptoState:
 
         :type data: bytes
         """
-        (_fdig, _bdig, _ekey, _dkey) = struct.unpack('!20s20s16s16s', data)
+        (_fdig, _bdig, _ekey, _dkey) = struct.unpack("!20s20s16s16s", data)
 
         self._forward_digest = sha1_stream(_fdig)
         self._backward_digest = sha1_stream(_bdig)
@@ -66,7 +66,7 @@ class CryptoState:
         new_digest = sha1_stream_finalize(digest_clone)[:4]
         if new_digest != digest:
             logger.debug(
-                'received cell digest not equal ({!r} != {!r}); payload = {!r}'.format(
+                "received cell digest not equal ({!r} != {!r}); payload = {!r}".format(
                     to_hex(new_digest), to_hex(digest), to_hex(payload)
                 )
             )
@@ -90,11 +90,11 @@ class CryptoState:
 
         # Check if cell is recognized
         header = RelayedTorCell.parse_header(payload)
-        if header['is_recognized'] == 0:
-            payload_copy = RelayedTorCell.set_header_digest(payload, b'\0' * 4)
+        if header["is_recognized"] == 0:
+            payload_copy = RelayedTorCell.set_header_digest(payload, b"\0" * 4)
 
             # tor ref: relay_digest_matches
-            if self._digest_check_func(payload_copy, header['digest']):
+            if self._digest_check_func(payload_copy, header["digest"]):
                 relay_cell.set_decrypted(**header)
                 return
             # Treat as encrypted even if is_recognized flag is zero but digests are not equal:

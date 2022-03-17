@@ -13,13 +13,25 @@
 # limitations under the License.
 #
 
-import logging
 import functools
+import logging
 
-from torpy.cells import CellRelay, CellDestroy, CellCreatedFast, CellCreated2, CellRelayTruncated
-from torpy.utils import retry, log_retry
-from torpy.circuit import TorReceiver, CircuitsList, CellTimeoutError, CellHandlerManager, CircuitExtendError
 from torpy.cell_socket import TorCellSocket
+from torpy.cells import (
+    CellCreated2,
+    CellCreatedFast,
+    CellDestroy,
+    CellRelay,
+    CellRelayTruncated,
+)
+from torpy.circuit import (
+    CellHandlerManager,
+    CellTimeoutError,
+    CircuitExtendError,
+    CircuitsList,
+    TorReceiver,
+)
+from torpy.utils import log_retry, retry
 
 logger = logging.getLogger(__name__)
 
@@ -36,9 +48,9 @@ def cell_to_circuit(func):
         circuit = _self._circuits.get_by_id(cell.circuit_id)
         if not circuit:
             if _self._state != GuardState.Connected:
-                logger.debug('Ignore not found circuits on %r state', _self._state)
+                logger.debug("Ignore not found circuits on %r state", _self._state)
                 return
-            raise Exception('Circuit #{:x} not found'.format(cell.circuit_id))
+            raise Exception("Circuit #{:x} not found".format(cell.circuit_id))
         args_new = [_self, cell, circuit] + list(args)
         return func(*args_new, **kwargs)
 
@@ -61,7 +73,7 @@ class TorGuard:
         self._auth_data = auth_data
 
         self._state = GuardState.Connecting
-        logger.info('Connecting to guard node %s... (%s)', self._router, self._purpose)
+        logger.info("Connecting to guard node %s... (%s)", self._router, self._purpose)
         self.__tor_socket = TorCellSocket(self._router)
         self.__tor_socket.connect()
 
@@ -99,7 +111,7 @@ class TorGuard:
         self.close()
 
     def close(self):
-        logger.info('Closing guard connections (%s)...', self._purpose)
+        logger.info("Closing guard connections (%s)...", self._purpose)
         self._state = GuardState.Disconnecting
         self._destroy_all_circuits()
         self._receiver.stop()
@@ -107,14 +119,14 @@ class TorGuard:
         self._state = GuardState.Disconnected
 
     def _destroy_all_circuits(self):
-        logger.debug('Destroying all circuits...')
+        logger.debug("Destroying all circuits...")
         if self._circuits:
             for circuit in list(self._circuits.values()):
                 self.destroy_circuit(circuit)
 
     @cell_to_circuit
     def _on_destroy(self, cell, circuit):
-        logger.info('On destroy: circuit #%x', cell.circuit_id)
+        logger.info("On destroy: circuit #%x", cell.circuit_id)
         send_destroy = isinstance(cell, CellRelayTruncated)
         self.destroy_circuit(circuit, send_destroy=send_destroy)
 
@@ -130,11 +142,13 @@ class TorGuard:
         return self._sender.send(cell)
 
     @retry(
-        3, (CircuitExtendError, CellTimeoutError), log_func=functools.partial(log_retry, msg='Retry circuit creation')
+        3,
+        (CircuitExtendError, CellTimeoutError),
+        log_func=functools.partial(log_retry, msg="Retry circuit creation"),
     )
     def create_circuit(self, hops_count, extend_routers=None):
         if self._state != GuardState.Connected:
-            raise Exception('You must connect to guard node first')
+            raise Exception("You must connect to guard node first")
 
         circuit = self._circuits.create_new()
         try:
@@ -153,7 +167,7 @@ class TorGuard:
         return circuit
 
     def destroy_circuit(self, circuit, send_destroy=True):
-        logger.info('Destroy circuit #%x', circuit.id)
+        logger.info("Destroy circuit #%x", circuit.id)
         circuit.destroy(send_destroy=send_destroy)
         self._circuits.remove(circuit.id)
 

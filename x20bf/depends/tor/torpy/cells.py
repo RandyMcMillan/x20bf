@@ -13,14 +13,14 @@
 # limitations under the License.
 #
 
+import logging
 import socket
 import struct
-import logging
 from enum import IntEnum, unique
 
-from torpy.utils import AuthType, to_hex, fp_to_str
 from torpy.crypto import TOR_DIGEST_LEN, hybrid_encrypt
 from torpy.crypto_common import sha1
+from torpy.utils import AuthType, fp_to_str, to_hex
 
 logger = logging.getLogger(__name__)
 
@@ -51,21 +51,21 @@ class TorCell:
             return False
 
     def _serialize_payload(self):
-        raise NotImplementedError('Must be implemented in a subclass')
+        raise NotImplementedError("Must be implemented in a subclass")
 
     def serialize(self, proto_version):
         payload = self._serialize_payload()
 
         # Link protocol 4 increases circuit ID width to 4 bytes.
         if proto_version < 4:
-            buffer = struct.pack('!HB', self.circuit_id, self.NUM)
+            buffer = struct.pack("!HB", self.circuit_id, self.NUM)
         else:
-            buffer = struct.pack('!IB', self.circuit_id, self.NUM)
+            buffer = struct.pack("!IB", self.circuit_id, self.NUM)
 
         if self.is_var_len():
-            buffer += struct.pack('!H', len(payload)) + payload
+            buffer += struct.pack("!H", len(payload)) + payload
         else:
-            buffer += struct.pack('!509s', payload)
+            buffer += struct.pack("!509s", payload)
 
         return buffer
 
@@ -75,13 +75,19 @@ class TorCell:
         return cell_type(**kwargs, circuit_id=circuit_id)
 
     def _args_str(self):
-        return ''
+        return ""
 
     def __repr__(self):
         """Represent TorCell string."""
         args = self._args_str()
-        circ_str = 'circuit_id = {:x}'.format(self.circuit_id) if self.circuit_id else ''
-        return '{}({}{})'.format(type(self).__name__, args, ', ' + circ_str if args and circ_str else circ_str)
+        circ_str = (
+            "circuit_id = {:x}".format(self.circuit_id) if self.circuit_id else ""
+        )
+        return "{}({}{})".format(
+            type(self).__name__,
+            args,
+            ", " + circ_str if args and circ_str else circ_str,
+        )
 
 
 class TorCellEmpty(TorCell):
@@ -89,16 +95,20 @@ class TorCellEmpty(TorCell):
 
     def __init__(self, data=None, circuit_id=0):
         super().__init__(circuit_id)
-        self._data = data or b''
+        self._data = data or b""
         if len(self._data) > 0:
-            logger.warning('%s has some unnecessary data: %r', self.__class__.__qualname__, self._data)
+            logger.warning(
+                "%s has some unnecessary data: %r",
+                self.__class__.__qualname__,
+                self._data,
+            )
 
     def _serialize_payload(self):
         return self._data
 
     @staticmethod
     def _deserialize_payload(payload, proto_version):
-        return {'data': payload}
+        return {"data": payload}
 
 
 class CellVersions(TorCell):
@@ -111,18 +121,18 @@ class CellVersions(TorCell):
         self.versions = versions
 
     def _serialize_payload(self):
-        return struct.pack('!' + ('H' * len(self.versions)), *self.versions)
+        return struct.pack("!" + ("H" * len(self.versions)), *self.versions)
 
     @staticmethod
     def _deserialize_payload(payload, proto_version):
         versions = []
         while payload:
-            versions.append(struct.unpack('!H', payload[:2])[0])
+            versions.append(struct.unpack("!H", payload[:2])[0])
             payload = payload[2:]
-        return {'versions': versions}
+        return {"versions": versions}
 
     def _args_str(self):
-        return 'versions = {!r}'.format(self.versions)
+        return "versions = {!r}".format(self.versions)
 
 
 class CellNetInfo(TorCell):
@@ -159,18 +169,22 @@ class CellNetInfo(TorCell):
         self.this_or = this_or
 
     def _serialize_payload(self):
-        payload_bytes = struct.pack('!IBB', self.timestamp, 4, 4) + socket.inet_aton(self.other_or)
-        payload_bytes += struct.pack('!BBB', 1, 4, 4) + socket.inet_aton(self.this_or)
+        payload_bytes = struct.pack("!IBB", self.timestamp, 4, 4) + socket.inet_aton(
+            self.other_or
+        )
+        payload_bytes += struct.pack("!BBB", 1, 4, 4) + socket.inet_aton(self.this_or)
         return payload_bytes
 
     @staticmethod
     def _deserialize_payload(payload, proto_version):
-        our_address_length = int(struct.unpack('!B', payload[5:][:1])[0])
+        our_address_length = int(struct.unpack("!B", payload[5:][:1])[0])
         our_address = socket.inet_ntoa(payload[6:][:our_address_length])
-        return {'timestamp': '', 'other_or': '', 'this_or': our_address}
+        return {"timestamp": "", "other_or": "", "this_or": our_address}
 
     def _args_str(self):
-        return 'timestamp = {!r}, other_or = {!r}, this_or = {!r}'.format(self.timestamp, self.other_or, self.this_or)
+        return "timestamp = {!r}, other_or = {!r}, this_or = {!r}".format(
+            self.timestamp, self.other_or, self.this_or
+        )
 
 
 class CellDestroy(TorCell):
@@ -184,19 +198,19 @@ class CellDestroy(TorCell):
     NUM = 4
 
     def __init__(self, reason, circuit_id):
-        assert isinstance(reason, CircuitReason), 'reason must be CircuitReason enum'
+        assert isinstance(reason, CircuitReason), "reason must be CircuitReason enum"
         super().__init__(circuit_id)
         self.reason = reason
 
     @staticmethod
     def _deserialize_payload(payload, proto_version):
-        return {'reason': CircuitReason(struct.unpack('!B', payload[:1])[0])}
+        return {"reason": CircuitReason(struct.unpack("!B", payload[:1])[0])}
 
     def _serialize_payload(self):
-        return struct.pack('!B', self.reason)
+        return struct.pack("!B", self.reason)
 
     def _args_str(self):
-        return 'reason = {}'.format(self.reason.name)
+        return "reason = {}".format(self.reason.name)
 
 
 class RelayedTorCell(TorCell):
@@ -211,7 +225,7 @@ class RelayedTorCell(TorCell):
 
     def _set_inits(self, inner_cell, padding, stream_id, digest, **kwargs):
         self._inner_cell = inner_cell
-        self._padding = padding or b''
+        self._padding = padding or b""
         # if self._padding:
         #    logger.warn('Has some padding!!!')
         self._stream_id = stream_id
@@ -234,14 +248,14 @@ class RelayedTorCell(TorCell):
         return self._inner_cell
 
     def prepare(self, digesting_func):
-        assert not self.digest, 'already prepared'
+        assert not self.digest, "already prepared"
 
         payload = self._serialize_payload()
         self._digest = digesting_func(payload)
         assert len(self.digest) == 4
 
     def encrypt(self, encrypting_func):
-        assert self._digest, 'must be prepared already'
+        assert self._digest, "must be prepared already"
 
         payload = self._serialize_payload()
         # verbose: logger.debug('relay full cell: %s', to_hex(payload))
@@ -254,19 +268,27 @@ class RelayedTorCell(TorCell):
             relay_payload = self._inner_cell._serialize_payload()
             # logger.debug('relay_payload: %s', to_hex(relay_payload))
 
-            payload_bytes = struct.pack('!B', self._inner_cell.NUM)
-            payload_bytes += struct.pack('!H', 0)  # 'recognized'
-            payload_bytes += struct.pack('!H', self._stream_id)
-            payload_bytes += struct.pack('!4s', self._digest if self._digest else b'\x00' * 4)  # Digest placeholder
+            payload_bytes = struct.pack("!B", self._inner_cell.NUM)
+            payload_bytes += struct.pack("!H", 0)  # 'recognized'
+            payload_bytes += struct.pack("!H", self._stream_id)
+            payload_bytes += struct.pack(
+                "!4s", self._digest if self._digest else b"\x00" * 4
+            )  # Digest placeholder
             if len(relay_payload) > RelayedTorCell.MAX_PAYLOD_SIZE:
                 raise Exception(
-                    'relay payload length cannot be more than {} ({} got)'.format(
+                    "relay payload length cannot be more than {} ({} got)".format(
                         RelayedTorCell.MAX_PAYLOD_SIZE, len(relay_payload)
                     )
                 )
-            assert len(relay_payload) + len(self._padding) <= RelayedTorCell.MAX_PAYLOD_SIZE, 'wrong relay payload size'
-            payload_bytes += struct.pack('!H', len(relay_payload))
-            payload_bytes += struct.pack('!{}s'.format(RelayedTorCell.MAX_PAYLOD_SIZE), relay_payload + self._padding)
+            assert (
+                len(relay_payload) + len(self._padding)
+                <= RelayedTorCell.MAX_PAYLOD_SIZE
+            ), "wrong relay payload size"
+            payload_bytes += struct.pack("!H", len(relay_payload))
+            payload_bytes += struct.pack(
+                "!{}s".format(RelayedTorCell.MAX_PAYLOD_SIZE),
+                relay_payload + self._padding,
+            )
             return payload_bytes
 
     def get_encrypted(self):
@@ -281,8 +303,15 @@ class RelayedTorCell(TorCell):
     @staticmethod
     def parse_header(payload):
         try:
-            header = struct.unpack('!BHH4sH498s', payload)
-            fields = ['cell_num', 'is_recognized', 'stream_id', 'digest', 'relay_payload_len', 'relay_payload_raw']
+            header = struct.unpack("!BHH4sH498s", payload)
+            fields = [
+                "cell_num",
+                "is_recognized",
+                "stream_id",
+                "digest",
+                "relay_payload_len",
+                "relay_payload_raw",
+            ]
             return dict(zip(fields, header))
         except struct.error:
             logger.error("Can't unpack: %r", to_hex(payload))
@@ -290,21 +319,31 @@ class RelayedTorCell(TorCell):
 
     @staticmethod
     def set_header_digest(payload, new_digest):
-        assert len(new_digest) == 4, 'digest must be 4 bytes'
-        return payload[:5] + new_digest + payload[5 + 4:]
+        assert len(new_digest) == 4, "digest must be 4 bytes"
+        return payload[:5] + new_digest + payload[5 + 4 :]
 
-    def set_decrypted(self, cell_num, stream_id, digest, relay_payload_len, relay_payload_raw, **kwargs):
+    def set_decrypted(
+        self,
+        cell_num,
+        stream_id,
+        digest,
+        relay_payload_len,
+        relay_payload_raw,
+        **kwargs,
+    ):
         relay_payload = relay_payload_raw[:relay_payload_len]
         padding = relay_payload_raw[relay_payload_len:]
         if all([b == 0 for b in padding]):
-            padding = b''
+            padding = b""
 
         try:
             cell_type = TorCommands.get_relay_by_num(cell_num)
-            logger.debug('Deserialize %s relay cell', cell_type.__name__)
+            logger.debug("Deserialize %s relay cell", cell_type.__name__)
             inner_cell = TorCell.deserialize(cell_type, 0, relay_payload, 0)
         except BaseException:
-            logger.error("Can't deserialize %i cell: %r", cell_num, to_hex(relay_payload))
+            logger.error(
+                "Can't deserialize %i cell: %r", cell_num, to_hex(relay_payload)
+            )
             raise
 
         self._set_inits(inner_cell, padding, stream_id, digest)
@@ -316,17 +355,27 @@ class RelayedTorCell(TorCell):
         raise NotImplementedError("RelayedTorCell couldn't be deserialized")
 
     def _args_str(self):
-        inner_str = '<encrypted>' if self.is_encrypted and not self._inner_cell else self._inner_cell
-        stream_str = ', stream_id = {}'.format(self._stream_id or 0) if self._stream_id else ''
-        digest_str = ', digest = {!r}'.format(self._digest) if self._digest else ''
-        return 'inner_cell = {!r}{}{}'.format(inner_str, stream_str, digest_str)
+        inner_str = (
+            "<encrypted>"
+            if self.is_encrypted and not self._inner_cell
+            else self._inner_cell
+        )
+        stream_str = (
+            ", stream_id = {}".format(self._stream_id or 0) if self._stream_id else ""
+        )
+        digest_str = ", digest = {!r}".format(self._digest) if self._digest else ""
+        return "inner_cell = {!r}{}{}".format(inner_str, stream_str, digest_str)
 
 
 class CellRelayEarly(RelayedTorCell):
     NUM = 9
 
-    def __init__(self, inner_cell, stream_id=0, circuit_id=0, padding=None, encrypted=None):
-        super().__init__(inner_cell, stream_id, circuit_id, padding=padding, encrypted=encrypted)
+    def __init__(
+        self, inner_cell, stream_id=0, circuit_id=0, padding=None, encrypted=None
+    ):
+        super().__init__(
+            inner_cell, stream_id, circuit_id, padding=padding, encrypted=encrypted
+        )
 
 
 class CellPadding(TorCellEmpty):
@@ -336,12 +385,16 @@ class CellPadding(TorCellEmpty):
 class CellRelay(RelayedTorCell):
     NUM = 3
 
-    def __init__(self, inner_cell, stream_id=0, circuit_id=0, padding=None, encrypted=None):
-        super().__init__(inner_cell, stream_id, circuit_id, padding=padding, encrypted=encrypted)
+    def __init__(
+        self, inner_cell, stream_id=0, circuit_id=0, padding=None, encrypted=None
+    ):
+        super().__init__(
+            inner_cell, stream_id, circuit_id, padding=padding, encrypted=encrypted
+        )
 
     @staticmethod
     def _deserialize_payload(payload, proto_version):
-        return {'inner_cell': None, 'encrypted': payload}
+        return {"inner_cell": None, "encrypted": payload}
 
 
 class CellRelayExtend2(TorCell):
@@ -375,23 +428,29 @@ class CellRelayExtend2(TorCell):
         self.skin = skin
 
     def _serialize_payload(self):
-        payload_bytes = struct.pack('!B', self.nspec)
+        payload_bytes = struct.pack("!B", self.nspec)
         ip_port_len = 6
-        payload_bytes += struct.pack('!BB4sH', self.link_type, ip_port_len, socket.inet_aton(self.ip), self.port)
+        payload_bytes += struct.pack(
+            "!BB4sH", self.link_type, ip_port_len, socket.inet_aton(self.ip), self.port
+        )
 
         assert len(self.fingerprint) == 20
-        payload_bytes += struct.pack('!BB20s', self.finger_type, len(self.fingerprint), self.fingerprint)
+        payload_bytes += struct.pack(
+            "!BB20s", self.finger_type, len(self.fingerprint), self.fingerprint
+        )
 
         assert len(self.skin) == 84
-        payload_bytes += struct.pack('!HH', 2, len(self.skin)) + self.skin
+        payload_bytes += struct.pack("!HH", 2, len(self.skin)) + self.skin
         return payload_bytes
 
     @staticmethod
     def _deserialize_payload(payload, proto_version):
-        raise NotImplementedError('CellRelayExtend2 deserialization not implemented')
+        raise NotImplementedError("CellRelayExtend2 deserialization not implemented")
 
     def _args_str(self):
-        return 'ip = {}, port = {}, fingerprint = {}'.format(self.ip, self.port, fp_to_str(self.fingerprint))
+        return "ip = {}, port = {}, fingerprint = {}".format(
+            self.ip, self.port, fp_to_str(self.fingerprint)
+        )
 
 
 class CellCreate(TorCell):
@@ -421,7 +480,10 @@ class CellCreate2(TorCell):
         self.onion_skin = onion_skin
 
     def _serialize_payload(self):
-        return struct.pack('!HH', self.handshake_type, len(self.onion_skin)) + self.onion_skin
+        return (
+            struct.pack("!HH", self.handshake_type, len(self.onion_skin))
+            + self.onion_skin
+        )
 
     def _args_str(self):
         return "type = {!r}, onion_skin = b'...'".format(self.handshake_type)
@@ -443,17 +505,17 @@ class CellCreated2(TorCell):
         self.handshake_data = handshake_data
 
     def _serialize_payload(self):
-        return struct.pack('!H', len(self.handshake_data)) + self.handshake_data
+        return struct.pack("!H", len(self.handshake_data)) + self.handshake_data
 
     @staticmethod
     def _deserialize_payload(payload, proto_version):
         # tor ref: created_cell_parse
-        length = struct.unpack('!H', payload[:2])[0]
-        handshake_data = payload[2:length + 2]
-        return {'handshake_data': handshake_data}
+        length = struct.unpack("!H", payload[:2])[0]
+        handshake_data = payload[2 : length + 2]
+        return {"handshake_data": handshake_data}
 
     def _args_str(self):
-        return 'handshake_data = ...'
+        return "handshake_data = ..."
 
 
 class CellCreatedFast(TorCell):
@@ -470,10 +532,10 @@ class CellCreatedFast(TorCell):
     @staticmethod
     def _deserialize_payload(payload, proto_version):
         # tor ref: created_cell_parse
-        return {'handshake_data': payload[:TOR_DIGEST_LEN * 2]}
+        return {"handshake_data": payload[: TOR_DIGEST_LEN * 2]}
 
     def _args_str(self):
-        return 'handshake_data = ...'
+        return "handshake_data = ..."
 
 
 class CellRelayBegin(TorCell):
@@ -498,15 +560,17 @@ class CellRelayBegin(TorCell):
         self.port = port
 
     def _serialize_payload(self):
-        addr_port = '{}:{}'.format(self.address, self.port).encode()
-        return addr_port + struct.pack('!BI', 0, 0)
+        addr_port = "{}:{}".format(self.address, self.port).encode()
+        return addr_port + struct.pack("!BI", 0, 0)
 
     @staticmethod
     def _deserialize_payload(payload, proto_version):
-        raise NotImplementedError('CellRelayBegin deserialization not implemented')
+        raise NotImplementedError("CellRelayBegin deserialization not implemented")
 
     def _args_str(self):
-        return 'address = {!r}, port = {!r}, flags = {!r}'.format(self.address, self.port, self.flags)
+        return "address = {!r}, port = {!r}, flags = {!r}".format(
+            self.address, self.port, self.flags
+        )
 
 
 class CellRelayBeginDir(TorCellEmpty):
@@ -525,10 +589,10 @@ class CellRelayData(TorCell):
 
     @staticmethod
     def _deserialize_payload(payload, proto_version):
-        return {'data': payload}
+        return {"data": payload}
 
     def _args_str(self):
-        return 'data = ... ({} bytes)'.format(len(self.data))
+        return "data = ... ({} bytes)".format(len(self.data))
 
 
 class CellRelayEnd(TorCell):
@@ -547,7 +611,7 @@ class CellRelayEnd(TorCell):
     NUM = 3
 
     def __init__(self, reason, circuit_id, address=None, ttl=None):
-        assert isinstance(reason, StreamReason), 'reason must be StreamReason enum'
+        assert isinstance(reason, StreamReason), "reason must be StreamReason enum"
         super().__init__(circuit_id)
         self.reason = reason
         self.address = address
@@ -555,27 +619,27 @@ class CellRelayEnd(TorCell):
 
     def _serialize_payload(self):
         if self.reason == StreamReason.EXIT_POLICY:
-            ip_int = struct.unpack('!I', socket.inet_aton(self.address))[0]
-            return struct.pack('!BII', self.reason, ip_int, self.ttl)
+            ip_int = struct.unpack("!I", socket.inet_aton(self.address))[0]
+            return struct.pack("!BII", self.reason, ip_int, self.ttl)
         else:
-            return struct.pack('!B', self.reason)
+            return struct.pack("!B", self.reason)
 
     @staticmethod
     def _deserialize_payload(payload, proto_version):
         payload_reason = payload[:1]
-        reason = StreamReason(struct.unpack('!B', payload_reason)[0])
+        reason = StreamReason(struct.unpack("!B", payload_reason)[0])
         ttl = None
         address = None
         if reason == StreamReason.EXIT_POLICY:
             # (With REASON_EXITPOLICY, the 4-byte IPv4 address or 16-byte IPv6 address
             # forms the optional data, along with a 4-byte TTL; no other reason
             # currently has extra data.)
-            ip_int, ttl = struct.unpack('!II', payload[1:])
-            address = socket.inet_ntoa(struct.pack('!I', ip_int))
-        return {'reason': reason, 'address': address, 'ttl': ttl}
+            ip_int, ttl = struct.unpack("!II", payload[1:])
+            address = socket.inet_ntoa(struct.pack("!I", ip_int))
+        return {"reason": reason, "address": address, "ttl": ttl}
 
     def _args_str(self):
-        return 'reason = {!r}'.format(self.reason.name)
+        return "reason = {!r}".format(self.reason.name)
 
 
 class CellRelayConnected(TorCell):
@@ -602,27 +666,27 @@ class CellRelayConnected(TorCell):
 
     def _serialize_payload(self):
         if self.address and self.ttl:
-            ip_int = struct.unpack('!I', socket.inet_aton(self.address))[0]
-            return struct.pack('!II', ip_int, self.ttl)
+            ip_int = struct.unpack("!I", socket.inet_aton(self.address))[0]
+            return struct.pack("!II", ip_int, self.ttl)
         else:
-            return b''
+            return b""
 
     @staticmethod
     def _deserialize_payload(payload, proto_version):
         if payload:
             # logger.debug(to_hex(payload))
-            ip_int, ttl = struct.unpack('!II', payload)
-            address = socket.inet_ntoa(struct.pack('!I', ip_int))
-            return {'address': address, 'ttl': ttl}
+            ip_int, ttl = struct.unpack("!II", payload)
+            address = socket.inet_ntoa(struct.pack("!I", ip_int))
+            return {"address": address, "ttl": ttl}
         else:
             # for dir begin?
-            return {'address': '', 'ttl': 0}
+            return {"address": "", "ttl": 0}
 
     def _args_str(self):
         if self.address and self.ttl:
-            return 'address = {}, ttl = {}'.format(self.address, self.ttl)
+            return "address = {}, ttl = {}".format(self.address, self.ttl)
         else:
-            return ''
+            return ""
 
 
 class CellRelaySendMe(TorCell):
@@ -635,22 +699,22 @@ class CellRelaySendMe(TorCell):
 
     def _serialize_payload(self):
         if self._version and self._digest:
-            return struct.pack('!BH', self._version, len(self._digest)) + self._digest
+            return struct.pack("!BH", self._version, len(self._digest)) + self._digest
         else:
-            return b''
+            return b""
 
     @staticmethod
     def _deserialize_payload(payload, proto_version):
         version = None
         digest = None
         if len(payload) > 0:
-            version, data_len = struct.unpack('!BH', payload[:3])
+            version, data_len = struct.unpack("!BH", payload[:3])
             if version != 0 and version != 1:
-                logger.error('wrong sendme call version')
-            digest = payload[3:3 + data_len]
-            if len(payload[3 + data_len:]) > 0:
-                logger.error('has some extra data: %r', payload[3 + data_len:])
-        return {'version': version, 'digest': digest}
+                logger.error("wrong sendme call version")
+            digest = payload[3 : 3 + data_len]
+            if len(payload[3 + data_len :]) > 0:
+                logger.error("has some extra data: %r", payload[3 + data_len :])
+        return {"version": version, "digest": digest}
 
 
 class CellRelayTruncated(CellDestroy):
@@ -676,7 +740,9 @@ class CellRelayEstablishRendezvous(TorCell):
 
     @staticmethod
     def _deserialize_payload(payload, proto_version):
-        raise NotImplementedError('CellRelayEstablishRendezvous deserialization not implemented')
+        raise NotImplementedError(
+            "CellRelayEstablishRendezvous deserialization not implemented"
+        )
 
 
 class CellRelayIntroduce1(TorCell):
@@ -695,9 +761,13 @@ class CellRelayIntroduce1(TorCell):
         super().__init__(circuit_id)
         self.introduction_point = introduction_point
         self.introduction_point_key = introduction_point_key
-        self.handshake_encrypted = self._create_handshake(introducee, rendezvous_cookie, auth_type, descriptor_cookie)
+        self.handshake_encrypted = self._create_handshake(
+            introducee, rendezvous_cookie, auth_type, descriptor_cookie
+        )
 
-    def _create_handshake(self, introducee, rendezvous_cookie, auth_type, descriptor_cookie):
+    def _create_handshake(
+        self, introducee, rendezvous_cookie, auth_type, descriptor_cookie
+    ):
         #
         # payload of the RELAY_COMMAND_INTRODUCE1
         # command:
@@ -726,16 +796,21 @@ class CellRelayIntroduce1(TorCell):
         #  RC     Rendezvous cookie            [20 octets]
         #  g^x    Diffie-Hellman data, part 1 [128 octets]
 
-        handshake = struct.pack('!BB', 3, auth_type)
+        handshake = struct.pack("!BB", 3, auth_type)
         if auth_type != AuthType.No:
             assert len(descriptor_cookie) == 16
-            handshake += struct.pack('!H16s', len(descriptor_cookie), descriptor_cookie)
-        handshake += struct.pack('!I', 0)  # timestamp
-        handshake += struct.pack('!4sH', socket.inet_aton(introducee.ip), introducee.or_port)
+            handshake += struct.pack("!H16s", len(descriptor_cookie), descriptor_cookie)
+        handshake += struct.pack("!I", 0)  # timestamp
+        handshake += struct.pack(
+            "!4sH", socket.inet_aton(introducee.ip), introducee.or_port
+        )
         assert len(introducee.fingerprint) == 20
-        handshake += struct.pack('!20s', introducee.fingerprint)
-        handshake += struct.pack('!H', len(introducee.descriptor.onion_key)) + introducee.descriptor.onion_key
-        handshake += struct.pack('!20s', rendezvous_cookie)
+        handshake += struct.pack("!20s", introducee.fingerprint)
+        handshake += (
+            struct.pack("!H", len(introducee.descriptor.onion_key))
+            + introducee.descriptor.onion_key
+        )
+        handshake += struct.pack("!20s", rendezvous_cookie)
         assert len(self.introduction_point_key) == 128
         handshake += self.introduction_point_key
 
@@ -743,11 +818,16 @@ class CellRelayIntroduce1(TorCell):
 
     def _serialize_payload(self):
         #  PK_ID  Identifier for Bob's PK      [20 octets]
-        return struct.pack('!20s', sha1(self.introduction_point.service_key)) + self.handshake_encrypted
+        return (
+            struct.pack("!20s", sha1(self.introduction_point.service_key))
+            + self.handshake_encrypted
+        )
 
     @staticmethod
     def _deserialize_payload(payload, proto_version):
-        raise NotImplementedError('CellRelayEstablishRendezvous deserialization not implemented')
+        raise NotImplementedError(
+            "CellRelayEstablishRendezvous deserialization not implemented"
+        )
 
 
 class CellRelayRendezvous2(TorCell):
@@ -762,10 +842,10 @@ class CellRelayRendezvous2(TorCell):
 
     @staticmethod
     def _deserialize_payload(payload, proto_version):
-        return {'handshake_data': payload}
+        return {"handshake_data": payload}
 
     def _args_str(self):
-        return 'handshake_data = ...'
+        return "handshake_data = ..."
 
 
 class CellRelayRendezvousEstablished(TorCellEmpty):
@@ -784,12 +864,12 @@ class CellCerts(TorCell):
         self.certs = certs
 
     def _serialize_payload(self):
-        raise NotImplementedError('CellCerts serialization not implemented')
+        raise NotImplementedError("CellCerts serialization not implemented")
 
     @staticmethod
     def _deserialize_payload(payload, proto_version):
         # TODO: implement parse
-        return {'certs': payload}
+        return {"certs": payload}
 
 
 class CellAuthChallenge(TorCell):
@@ -800,12 +880,12 @@ class CellAuthChallenge(TorCell):
         self.auth = auth
 
     def _serialize_payload(self):
-        raise NotImplementedError('CellAuthChallenge serialization not implemented')
+        raise NotImplementedError("CellAuthChallenge serialization not implemented")
 
     @staticmethod
     def _deserialize_payload(payload, proto_version):
         # TODO: implement parse
-        return {'auth': payload}
+        return {"auth": payload}
 
 
 class TorCommands:
@@ -834,7 +914,8 @@ class TorCommands:
         CellVersions.NUM: CellVersions,             # 7
         # CellVPadding.NUM: CellVPadding,            # 128
         CellCerts.NUM: CellCerts,                   # 129
-        CellAuthChallenge.NUM: CellAuthChallenge,   # 130
+        CellAuthChallenge.NUM: CellAuthChallenge,
+        # 130
         # CellAuthenticate.NUM: CellAuthenticate,    # 131
         # fmt: on
     }
@@ -843,7 +924,7 @@ class TorCommands:
     def get_by_num(cls, num):
         cell_type = cls._map.get(num, None)
         if not cell_type:
-            raise Exception('Cell type ({}) not found'.format(num))
+            raise Exception("Cell type ({}) not found".format(num))
         return cell_type
 
     # The relay commands.
@@ -876,7 +957,8 @@ class TorCommands:
         CellRelayRendezvous2.NUM: CellRelayRendezvous2,                         # 37
         # ...
         CellRelayRendezvousEstablished.NUM: CellRelayRendezvousEstablished,     # 39
-        CellRelayIntroduceAck.NUM: CellRelayIntroduceAck,                       # 40
+        CellRelayIntroduceAck.NUM: CellRelayIntroduceAck,
+        # 40
         # fmt: on
     }
 
@@ -884,7 +966,7 @@ class TorCommands:
     def get_relay_by_num(cls, num):
         cell_type = cls._map2.get(num, None)
         if not cell_type:
-            raise Exception('Cell type ({}) not found'.format(num))
+            raise Exception("Cell type ({}) not found".format(num))
         return cell_type
 
 

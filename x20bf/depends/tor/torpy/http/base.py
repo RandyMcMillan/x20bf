@@ -1,5 +1,5 @@
-import threading
 import logging
+import threading
 
 from torpy.utils import hostname_key
 
@@ -30,7 +30,7 @@ class SocketProxy:
         return self._tor_stream
 
     def close(self):
-        logger.debug('[SocketProxy] close')
+        logger.debug("[SocketProxy] close")
         self.close_tor_stream()
         self._sock.close()
 
@@ -47,20 +47,22 @@ class TorInfo:
 
     def get_circuit(self, hostname):
         host_key = hostname_key(hostname)
-        logger.debug('[TorInfo] Waiting lock...')
+        logger.debug("[TorInfo] Waiting lock...")
         with self._lock:
-            logger.debug('[TorInfo] Got lock...')
+            logger.debug("[TorInfo] Got lock...")
             circuit = self._circuits.get(host_key)
             if not circuit:
-                logger.debug('[TorInfo] Create new circuit for %s (key %s)', hostname, host_key)
+                logger.debug(
+                    "[TorInfo] Create new circuit for %s (key %s)", hostname, host_key
+                )
                 circuit = self._guard.create_circuit(self._hops_count)
                 self._circuits[host_key] = circuit
             else:
-                logger.debug('[TorInfo] Use existing...')
+                logger.debug("[TorInfo] Use existing...")
             return circuit
 
     def connect(self, address, timeout=30, source_address=None):
         circuit = self.get_circuit(address[0])
         tor_stream = circuit.create_stream(address)
-        logger.debug('[TorHTTPConnection] tor_stream create_socket')
+        logger.debug("[TorHTTPConnection] tor_stream create_socket")
         return SocketProxy(tor_stream.create_socket(), tor_stream)

@@ -23,32 +23,32 @@ logger = logging.getLogger(__name__)
 
 class DirKeyCertificateObject(TorDocumentObject):
 
-    START_ITEM = ItemInt('dir-key-certificate-version')
+    START_ITEM = ItemInt("dir-key-certificate-version")
 
     ITEMS = [
         # fingerprint 14C131DFC5C6F93646BE72FA1401C02A8DF2E8B4
-        Item('fingerprint'),
+        Item("fingerprint"),
         # dir-key-published 2019-06-01 00:00:00
-        ItemDate('dir-key-published'),
+        ItemDate("dir-key-published"),
         # dir-key-expires 2019-11-01 00:00:00
-        ItemDate('dir-key-expires'),
-        ItemMulti('dir-identity-key', 'rsa public key'),
-        ItemMulti('dir-signing-key', 'rsa public key'),
-        ItemMulti('dir-key-crosscert', 'id signature'),
-        ItemMulti('dir-key-certification', 'signature'),
+        ItemDate("dir-key-expires"),
+        ItemMulti("dir-identity-key", "rsa public key"),
+        ItemMulti("dir-signing-key", "rsa public key"),
+        ItemMulti("dir-key-crosscert", "id signature"),
+        ItemMulti("dir-key-certification", "signature"),
     ]
 
 
 class DirKeyCertificate(TorDocument, DirKeyCertificateObject):
-    DOCUMENT_NAME = 'dir_key_certificate'
+    DOCUMENT_NAME = "dir_key_certificate"
 
 
 class DirKeyCertificateList(TorDocument):
-    DOCUMENT_NAME = 'dir_key_certificates'
+    DOCUMENT_NAME = "dir_key_certificates"
 
-    START_ITEM = ''
+    START_ITEM = ""
 
-    ITEMS = [ItemObject(DirKeyCertificateObject, out_name='certs')]
+    ITEMS = [ItemObject(DirKeyCertificateObject, out_name="certs")]
 
     def find(self, identity):
         return next((cert for cert in self.certs if cert.fingerprint == identity), None)

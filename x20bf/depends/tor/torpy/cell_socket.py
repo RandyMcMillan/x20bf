@@ -13,14 +13,21 @@
 # limitations under the License.
 #
 
-import ssl
-import time
-import socket
-import struct
 import logging
+import socket
+import ssl
+import struct
 import threading
+import time
 
-from torpy.cells import TorCell, CellCerts, CellNetInfo, TorCommands, CellVersions, CellAuthChallenge
+from torpy.cells import (
+    CellAuthChallenge,
+    CellCerts,
+    CellNetInfo,
+    CellVersions,
+    TorCell,
+    TorCommands,
+)
 from torpy.utils import coro_recv_exact
 
 logger = logging.getLogger(__name__)
@@ -39,7 +46,7 @@ class TorCellSocket:
         self._router = router
         self._socket = None
         self._protocol = TorProtocol()
-        self._our_public_ip = '0'
+        self._our_public_ip = "0"
         self._send_close_lock = threading.Lock()
 
         self._cells_builder = self._cells_builder_gen()
@@ -52,12 +59,13 @@ class TorCellSocket:
 
     def connect(self):
         if self._socket:
-            raise Exception('Already connected')
+            raise Exception("Already connected")
 
         self._socket = ssl.wrap_socket(
-            socket.socket(socket.AF_INET, socket.SOCK_STREAM), ssl_version=ssl.PROTOCOL_TLSv1_2
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM),
+            ssl_version=ssl.PROTOCOL_TLSv1_2,
         )
-        logger.debug('Connecting socket to %s relay...', self._router)
+        logger.debug("Connecting socket to %s relay...", self._router)
         try:
             self._socket.settimeout(15.0)
             self._socket.connect((self._router.ip, self._router.or_port))
@@ -73,20 +81,20 @@ class TorCellSocket:
         return self._router.ip
 
     def close(self):
-        logger.debug('Close TorCellSocket to %s relay...', self._router)
+        logger.debug("Close TorCellSocket to %s relay...", self._router)
         with self._send_close_lock:
             self._socket.close()
             self._socket = None
 
     def send_cell(self, cell):
-        logger.debug('Cell send: %r', cell)
+        logger.debug("Cell send: %r", cell)
         buffer = self._protocol.serialize(cell)
         with self._send_close_lock:
             # verbose: logger.debug('send to socket: %s', to_hex(buffer))
             if self._socket:
                 self._socket.write(buffer)
             else:
-                logger.warning('socket already closed')
+                logger.warning("socket already closed")
 
     def recv_cell(self):
         while self._socket:
@@ -108,8 +116,8 @@ class TorCellSocket:
 
     def _build_next_cell(self):
         while len(self._data) >= self._next_len:
-            send_buff = self._data[:self._next_len]
-            self._data = self._data[self._next_len:]
+            send_buff = self._data[: self._next_len]
+            self._data = self._data[self._next_len :]
 
             self._next_len = self._cells_builder.send(send_buff)
             if self._next_len is None:
@@ -117,11 +125,15 @@ class TorCellSocket:
                 cell = next(self._cells_builder)
                 yield cell
                 self._next_len = next(self._cells_builder)
-        logger.debug('Need more data (%i bytes, has %i bytes)', self._next_len, len(self._data))
+        logger.debug(
+            "Need more data (%i bytes, has %i bytes)", self._next_len, len(self._data)
+        )
 
     def _cells_builder_gen(self):
         while self._socket:
-            circuit_id, command_num = yield from self._read_by_format(self._protocol.header_format)
+            circuit_id, command_num = yield from self._read_by_format(
+                self._protocol.header_format
+            )
             cell_type = TorCommands.get_by_num(command_num)
             payload = yield from self._read_command_payload(cell_type)
             # logger.debug("recv from socket: circuit_id = %x, command = %s,\n"
@@ -132,7 +144,7 @@ class TorCellSocket:
 
     def _read_command_payload(self, cell_type):
         if cell_type.is_var_len():
-            length, = yield from self._read_by_format(self._protocol.length_format)
+            (length,) = yield from self._read_by_format(self._protocol.length_format)
         else:
             length = TorCell.MAX_PAYLOAD_SIZE
         cell_buff = yield from coro_recv_exact(length)
@@ -170,15 +182,15 @@ class TorProtocol:
         #    CircuitID                          [CIRCUIT_ID_LEN octets]
         #    Command                            [1 byte]
         if self.version < 4:
-            return '!HB'
+            return "!HB"
         else:
             # Link protocol 4 increases circuit ID width to 4 bytes.
-            return '!IB'
+            return "!IB"
 
     @property
     def length_format(self):
         #    Length                             [2 octets; big-endian integer]
-        return '!H'
+        return "!H"
 
     def deserialize(self, command, payload, circuit_id=0):
         # parse depending on version
@@ -237,28 +249,30 @@ class TorHandshake:
         cell = self.tor_socket.recv_cell()
         assert isinstance(cell, CellVersions)
 
-        logger.debug('Remote protocol versions: %s', cell.versions)
+        logger.debug("Remote protocol versions: %s", cell.versions)
         # Choose maximum supported by both
         return min(max(self.tor_protocol.SUPPORTED_VERSION), max(cell.versions))
 
     def _retrieve_certs(self):
-        logger.debug('Retrieving CERTS cell...')
+        logger.debug("Retrieving CERTS cell...")
         cell_certs = self.tor_socket.recv_cell()
 
         assert isinstance(cell_certs, CellCerts)
         # TODO: check certs validity
 
-        logger.debug('Retrieving AUTH_CHALLENGE cell...')
+        logger.debug("Retrieving AUTH_CHALLENGE cell...")
         cell_auth = self.tor_socket.recv_cell()
         assert isinstance(cell_auth, CellAuthChallenge)
 
     def _retrieve_net_info(self):
-        logger.debug('Retrieving NET_INFO cell...')
+        logger.debug("Retrieving NET_INFO cell...")
         cell = self.tor_socket.recv_cell()
         assert isinstance(cell, CellNetInfo)
-        logger.debug('Our public IP address: %s', cell.this_or)
+        logger.debug("Our public IP address: %s", cell.this_or)
 
     def _send_net_info(self):
         """If version 2 or higher is negotiated, each party sends the other a NETINFO cell."""
-        logger.debug('Sending NET_INFO cell...')
-        self.tor_socket.send_cell(CellNetInfo(int(time.time()), self.tor_socket.ip_address, '0'))
+        logger.debug("Sending NET_INFO cell...")
+        self.tor_socket.send_cell(
+            CellNetInfo(int(time.time()), self.tor_socket.ip_address, "0")
+        )

@@ -56,8 +56,8 @@ class TorRequests:
         adapter = TorHttpAdapter(self._guard, self._hops_count, retries=retries)
         with Session() as s:
             s.headers.update(self._headers)
-            s.mount('http://', adapter)
-            s.mount('https://', adapter)
+            s.mount("http://", adapter)
+            s.mount("https://", adapter)
             yield s
 
 
@@ -68,15 +68,23 @@ def tor_requests_session(hops_count=3, headers=None, auth_data=None, retries=0):
             yield s
 
 
-def do_request(url, method='GET', data=None, headers=None, hops=3, auth_data=None, verbose=0, retries=0):
+def do_request(
+    url,
+    method="GET",
+    data=None,
+    headers=None,
+    hops=3,
+    auth_data=None,
+    verbose=0,
+    retries=0,
+):
     with tor_requests_session(hops, auth_data, retries=retries) as s:
         headers = dict(headers or [])
         # WARN: https://github.com/urllib3/urllib3/pull/1750
-        if SKIP_HEADER and \
-                'user-agent' not in (k.lower() for k in headers.keys()):
-            headers['User-Agent'] = SKIP_HEADER
+        if SKIP_HEADER and "user-agent" not in (k.lower() for k in headers.keys()):
+            headers["User-Agent"] = SKIP_HEADER
         request = Request(method, url, data=data, headers=headers)
-        logger.warning('Sending: %s %s', request.method, request.url)
+        logger.warning("Sending: %s %s", request.method, request.url)
         response = s.send(request.prepare())
-        logger.warning('Response status: %r', response.status_code)
+        logger.warning("Response status: %r", response.status_code)
         return response.text

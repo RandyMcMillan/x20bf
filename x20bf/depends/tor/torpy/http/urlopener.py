@@ -15,31 +15,31 @@
 
 import logging
 import socket
-from typing import ContextManager
 from contextlib import contextmanager
-from http.client import HTTPConnection, HTTPSConnection, HTTPResponse
+from http.client import HTTPConnection, HTTPResponse, HTTPSConnection
+from typing import ContextManager
 from urllib.error import URLError
 from urllib.request import (
-    Request,
-    OpenerDirector,
-    ProxyHandler,
-    UnknownHandler,
-    HTTPRedirectHandler,
     HTTPDefaultErrorHandler,
     HTTPErrorProcessor,
     HTTPHandler,
+    HTTPRedirectHandler,
     HTTPSHandler,
+    OpenerDirector,
+    ProxyHandler,
+    Request,
+    UnknownHandler,
 )
 
-from torpy.http.base import TorInfo, SocketProxy
 from torpy import TorClient
+from torpy.http.base import SocketProxy, TorInfo
 
 logger = logging.getLogger(__name__)
 
 
 class TorHTTPResponse(HTTPResponse):
     def __init__(self, sock, debuglevel=0, method=None, url=None):
-        logger.debug('[TorHTTPResponse] init')
+        logger.debug("[TorHTTPResponse] init")
         super().__init__(sock, debuglevel=debuglevel, method=method, url=url)
         self._sock = sock
 
@@ -53,18 +53,20 @@ class TorHTTPConnection(HTTPConnection):
     # debuglevel = 1
 
     def __init__(self, *args, **kwargs):
-        self._tor_info = kwargs.pop('tor_info')
+        self._tor_info = kwargs.pop("tor_info")
         super().__init__(*args, **kwargs)
 
     def connect(self):
         """Connect to the host and port specified in __init__."""
-        self.sock = self._tor_info.connect((self.host, self.port), self.timeout, self.source_address)
+        self.sock = self._tor_info.connect(
+            (self.host, self.port), self.timeout, self.source_address
+        )
 
         if self._tunnel_host:
             self._tunnel()
 
     def close(self):
-        logger.debug('[TorHTTPConnection] close')
+        logger.debug("[TorHTTPConnection] close")
         super().close()
 
 
@@ -80,7 +82,9 @@ class TorHTTPSConnection(TorHTTPConnection, HTTPSConnection):
         else:
             server_hostname = self.host
 
-        ssl_sock = self._context.wrap_socket(self.sock.wrapped_sock, server_hostname=server_hostname)
+        ssl_sock = self._context.wrap_socket(
+            self.sock.wrapped_sock, server_hostname=server_hostname
+        )
         self.sock = SocketProxy.rewrap(self.sock, ssl_sock)
 
 
@@ -94,13 +98,22 @@ class TorHTTPHandler(HTTPHandler):
 
 
 class TorHTTPSHandler(HTTPSHandler):
-    def __init__(self, guard, hops_count, debuglevel=0, context=None, check_hostname=None):
-        super().__init__(debuglevel=debuglevel, context=context, check_hostname=check_hostname)
+    def __init__(
+        self, guard, hops_count, debuglevel=0, context=None, check_hostname=None
+    ):
+        super().__init__(
+            debuglevel=debuglevel, context=context, check_hostname=check_hostname
+        )
         self._tor_info = TorInfo(guard, hops_count)
 
     def https_open(self, req):
-        return self.do_open(TorHTTPSConnection, req,
-                            context=self._context, check_hostname=self._check_hostname, tor_info=self._tor_info)
+        return self.do_open(
+            TorHTTPSConnection,
+            req,
+            context=self._context,
+            check_hostname=self._check_hostname,
+            tor_info=self._tor_info,
+        )
 
 
 class RetryOpenerDirector(OpenerDirector):
@@ -120,9 +133,13 @@ class RetryOpenerDirector(OpenerDirector):
 
 def build_tor_opener(guard, hops_count=3, debuglevel=0):
     opener = RetryOpenerDirector()
-    default_classes = [ProxyHandler, UnknownHandler,
-                       HTTPDefaultErrorHandler, HTTPRedirectHandler,
-                       HTTPErrorProcessor]
+    default_classes = [
+        ProxyHandler,
+        UnknownHandler,
+        HTTPDefaultErrorHandler,
+        HTTPRedirectHandler,
+        HTTPErrorProcessor,
+    ]
     for cls in default_classes:
         opener.add_handler(cls())
     opener.add_handler(TorHTTPHandler(guard, hops_count, debuglevel=debuglevel))
@@ -132,18 +149,29 @@ def build_tor_opener(guard, hops_count=3, debuglevel=0):
 
 
 @contextmanager
-def tor_opener(hops_count=3, debuglevel=0, auth_data=None) -> ContextManager[RetryOpenerDirector]:
+def tor_opener(
+    hops_count=3, debuglevel=0, auth_data=None
+) -> ContextManager[RetryOpenerDirector]:
     with TorClient(auth_data=auth_data) as tor:
         with tor.get_guard() as guard:
             yield build_tor_opener(guard, hops_count=hops_count, debuglevel=debuglevel)
 
 
-def do_request(url, method='GET', data=None, headers=None, hops=3, auth_data=None, verbose=0, retries=3):
+def do_request(
+    url,
+    method="GET",
+    data=None,
+    headers=None,
+    hops=3,
+    auth_data=None,
+    verbose=0,
+    retries=3,
+):
     with tor_opener(hops_count=hops, auth_data=auth_data, debuglevel=verbose) as opener:
         request = Request(url, data, method=method, headers=dict(headers or []))
 
-        logger.warning('Sending: %s %s', request.get_method(), request.full_url)
+        logger.warning("Sending: %s %s", request.get_method(), request.full_url)
         with opener.open(request, retries=retries) as response:
-            logger.warning('Response status: %r', response.status)
-            logger.debug('Reading...')
-            return response.read().decode('utf-8')
+            logger.warning("Response status: %r", response.status)
+            logger.debug("Reading...")
+            return response.read().decode("utf-8")

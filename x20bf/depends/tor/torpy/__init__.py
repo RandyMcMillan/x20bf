@@ -15,4 +15,4 @@
 
 from torpy.client import TorClient
 
-__all__ = ['TorClient']
+__all__ = ["TorClient"]

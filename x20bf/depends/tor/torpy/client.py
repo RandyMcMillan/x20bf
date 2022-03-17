@@ -13,18 +13,18 @@
 # limitations under the License.
 #
 
-import socket
-import logging
 import functools
-from typing import TYPE_CHECKING
+import logging
+import socket
 from contextlib import contextmanager
+from typing import TYPE_CHECKING
 
-from torpy.guard import TorGuard
-from torpy.utils import retry, log_retry
-from torpy.circuit import TorCircuit
-from torpy.cell_socket import TorSocketConnectError
-from torpy.consesus import TorConsensus
 from torpy.cache_storage import TorCacheDirStorage
+from torpy.cell_socket import TorSocketConnectError
+from torpy.circuit import TorCircuit
+from torpy.consesus import TorConsensus
+from torpy.guard import TorGuard
+from torpy.utils import log_retry, retry
 
 if TYPE_CHECKING:
     from typing import ContextManager
@@ -38,23 +38,42 @@ class TorClient:
         self._auth_data = auth_data or {}
 
     @classmethod
-    def create(cls, authorities=None, cache_class=None, cache_kwargs=None, auth_data=None):
+    def create(
+        cls, authorities=None, cache_class=None, cache_kwargs=None, auth_data=None
+    ):
         cache_class = cache_class or TorCacheDirStorage
         cache_kwargs = cache_kwargs or {}
-        consensus = TorConsensus(authorities=authorities, cache_storage=cache_class(**cache_kwargs))
+        consensus = TorConsensus(
+            authorities=authorities, cache_storage=cache_class(**cache_kwargs)
+        )
         return cls(consensus, auth_data)
 
-    @retry(3, BaseException, log_func=functools.partial(log_retry,
-                                                        msg='Retry with another guard...',
-                                                        no_traceback=(socket.timeout, TorSocketConnectError,))
-           )
+    @retry(
+        3,
+        BaseException,
+        log_func=functools.partial(
+            log_retry,
+            msg="Retry with another guard...",
+            no_traceback=(
+                socket.timeout,
+                TorSocketConnectError,
+            ),
+        ),
+    )
     def get_guard(self, by_flags=None):
         # TODO: add another stuff to filter guards
         guard_router = self._consensus.get_random_guard_node(by_flags)
-        return TorGuard(guard_router, purpose='TorClient', consensus=self._consensus, auth_data=self._auth_data)
+        return TorGuard(
+            guard_router,
+            purpose="TorClient",
+            consensus=self._consensus,
+            auth_data=self._auth_data,
+        )
 
     @contextmanager
-    def create_circuit(self, hops_count=3, guard_by_flags=None) -> 'ContextManager[TorCircuit]':
+    def create_circuit(
+        self, hops_count=3, guard_by_flags=None
+    ) -> "ContextManager[TorCircuit]":
         with self.get_guard(guard_by_flags) as guard:
             yield guard.create_circuit(hops_count)
 

@@ -19,19 +19,22 @@ from hmac import compare_digest
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.hmac import HMAC
-from cryptography.hazmat.primitives.ciphers import Cipher
-from cryptography.hazmat.primitives.kdf.hkdf import HKDFExpand
 from cryptography.hazmat.primitives.asymmetric import dh, padding
-from cryptography.hazmat.primitives.ciphers.modes import CTR
-from cryptography.hazmat.primitives.asymmetric.x25519 import X25519PublicKey, X25519PrivateKey
+from cryptography.hazmat.primitives.asymmetric.x25519 import (
+    X25519PrivateKey,
+    X25519PublicKey,
+)
+from cryptography.hazmat.primitives.ciphers import Cipher
 from cryptography.hazmat.primitives.ciphers.algorithms import AES
+from cryptography.hazmat.primitives.ciphers.modes import CTR
+from cryptography.hazmat.primitives.hmac import HMAC
+from cryptography.hazmat.primitives.kdf.hkdf import HKDFExpand
 
 bend = default_backend()
 
 
 def b64decode(data):
-    return base64.b64decode(data + '=' * (len(data) % 4))
+    return base64.b64decode(data + "=" * (len(data) % 4))
 
 
 def sha1(msg):
@@ -84,7 +87,7 @@ def hmac(key, msg):
     return hmac.finalize()
 
 
-def hkdf_sha256(key, length=16, info=''):
+def hkdf_sha256(key, length=16, info=""):
     hkdf = HKDFExpand(algorithm=hashes.SHA256(), length=length, info=info, backend=bend)
     return hkdf.derive(key)
 
@@ -107,10 +110,14 @@ def curve25519_public_from_bytes(data):
 
 def curve25519_to_bytes(key):
     if isinstance(key, X25519PublicKey):
-        return key.public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw)
+        return key.public_bytes(
+            serialization.Encoding.Raw, serialization.PublicFormat.Raw
+        )
     else:
         return key.private_bytes(
-            serialization.Encoding.Raw, serialization.PrivateFormat.Raw, serialization.NoEncryption()
+            serialization.Encoding.Raw,
+            serialization.PrivateFormat.Raw,
+            serialization.NoEncryption(),
         )
 
 
@@ -129,11 +136,11 @@ def dh_public(private):
 
 
 def dh_public_to_bytes(key):
-    return key.public_numbers().y.to_bytes(128, 'big')
+    return key.public_numbers().y.to_bytes(128, "big")
 
 
 def dh_public_from_bytes(public_bytes):
-    y = int.from_bytes(public_bytes, byteorder='big')
+    y = int.from_bytes(public_bytes, byteorder="big")
     peer_public_numbers = dh.DHPublicNumbers(y, _DH_PARAMETERS.parameter_numbers())
     return peer_public_numbers.public_key(default_backend())
 
@@ -155,29 +162,34 @@ def rsa_verify(pubkey, sig, dig):
     sig_int = int(sig.hex(), 16)
     pn = pubkey.public_numbers()
     decoded = pow(sig_int, pn.e, pn.n)
-    buf = '%x' % decoded
+    buf = "%x" % decoded
     if len(buf) % 2:
-        buf = '0' + buf
-    buf = '00' + buf
+        buf = "0" + buf
+    buf = "00" + buf
     hash_buf = bytes.fromhex(buf)
 
-    pad_type = b'\0\1'
+    pad_type = b"\0\1"
     pad_len = len(hash_buf) - 2 - 1 - dig_size
-    cmp_dig = pad_type + b'\xff' * pad_len + b'\0' + dig
+    cmp_dig = pad_type + b"\xff" * pad_len + b"\0" + dig
     return compare_digest(hash_buf, cmp_dig)
 
 
 def rsa_encrypt(key, data):
     return key.encrypt(
-        data, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA1()), algorithm=hashes.SHA1(), label=None)
+        data,
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA1()),
+            algorithm=hashes.SHA1(),
+            label=None,
+        ),
     )
 
 
-def aes_ctr_encryptor(key, iv=b'\0' * 16):
+def aes_ctr_encryptor(key, iv=b"\0" * 16):
     return Cipher(AES(key), CTR(iv), backend=bend).encryptor()
 
 
-def aes_ctr_decryptor(key, iv=b'\0' * 16):
+def aes_ctr_decryptor(key, iv=b"\0" * 16):
     return Cipher(AES(key), CTR(iv), backend=bend).decryptor()
 
 

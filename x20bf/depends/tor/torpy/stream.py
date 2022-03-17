@@ -13,26 +13,26 @@
 # limitations under the License.
 #
 
-import time
-import socket
 import logging
+import socket
 import threading
-from enum import unique, Enum, auto
-from selectors import EVENT_READ, DefaultSelector
+import time
 from contextlib import contextmanager
+from enum import Enum, auto, unique
+from selectors import EVENT_READ, DefaultSelector
 
 from torpy.cells import (
-    CellRelayEnd,
-    StreamReason,
-    CellRelayData,
     CellRelayBegin,
-    RelayedTorCell,
-    CellRelaySendMe,
     CellRelayBeginDir,
     CellRelayConnected,
+    CellRelayData,
+    CellRelayEnd,
+    CellRelaySendMe,
+    RelayedTorCell,
+    StreamReason,
 )
-from torpy.utils import chunks, hostname_key
 from torpy.hiddenservice import HiddenService
+from torpy.utils import chunks, hostname_key
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +66,7 @@ class TorWindow:
 
 class TorSocketLoop(threading.Thread):
     def __init__(self, our_sock, send_func):
-        super().__init__(name='SocketLoop{:x}'.format(our_sock.fileno()))
+        super().__init__(name="SocketLoop{:x}".format(our_sock.fileno()))
         self._our_sock = our_sock
         self._send_func = send_func
         self._do_loop = True
@@ -83,14 +83,14 @@ class TorSocketLoop(threading.Thread):
             data = sock.recv(1024)
             self._send_func(data)
         except ConnectionResetError:
-            logger.debug('Client was badly disconnected...')
+            logger.debug("Client was badly disconnected...")
 
     def _do_stop(self, sock):
         self._do_loop = False
 
     def _cleanup(self):
         with self._cntrl_l:
-            logger.debug('Cleanup')
+            logger.debug("Cleanup")
             self._selector.unregister(self._cntrl_r)
             self._cntrl_w.close()
             self._cntrl_r.close()
@@ -113,11 +113,11 @@ class TorSocketLoop(threading.Thread):
     def stop(self):
         #  Because stop could be called twice
         with self._cntrl_l:
-            logger.debug('Stopping...')
-            self._cntrl_w.send(b'\1')
+            logger.debug("Stopping...")
+            self._cntrl_w.send(b"\1")
 
     def run(self):
-        logger.debug('Starting...')
+        logger.debug("Starting...")
         while self._do_loop:
             events = self._selector.select()
             for key, _ in events:
@@ -125,7 +125,7 @@ class TorSocketLoop(threading.Thread):
                 callback(key.fileobj)
 
         self._cleanup()
-        logger.debug('Stopped!')
+        logger.debug("Stopped!")
 
     def append(self, data):
         self._our_sock.send(data)
@@ -143,7 +143,7 @@ class TorStream:
     """This tor stream object implements socket-like interface."""
 
     def __init__(self, id, circuit, auth_data=None):
-        logger.info('Stream #%i: creating attached to #%x circuit...', id, circuit.id)
+        logger.info("Stream #%i: creating attached to #%x circuit...", id, circuit.id)
         self._id = id
         self._circuit = circuit
         self._auth_data = auth_data or {}
@@ -197,10 +197,10 @@ class TorStream:
                 self.send_relay(CellRelaySendMe(circuit_id=cell.circuit_id))
             self._call_received()
         elif isinstance(cell, CellRelaySendMe):
-            logger.debug('Stream #%i: sendme received', self.id)
+            logger.debug("Stream #%i: sendme received", self.id)
             self._window.package_inc()
         else:
-            raise Exception('Unknown stream cell received: %r', type(cell))
+            raise Exception("Unknown stream cell received: %r", type(cell))
 
     def register(self, callback):
         self._received_callbacks.append(callback)
@@ -218,23 +218,28 @@ class TorStream:
     def _append(self, data):
         with self._close_lock, self._data_lock:
             if self._state == StreamState.Closed:
-                logger.warning('Stream #%i: closed (but received %r)', self.id, data)
+                logger.warning("Stream #%i: closed (but received %r)", self.id, data)
                 return
 
             if self.has_socket_loop:
-                logger.debug('Stream #%i: append %i (to sock #%r)', self.id, len(data), self._loop.fileno)
+                logger.debug(
+                    "Stream #%i: append %i (to sock #%r)",
+                    self.id,
+                    len(data),
+                    self._loop.fileno,
+                )
                 self._loop.append(data)
             else:
-                logger.debug('Stream #%i: append %i (to buffer)', self.id, len(data))
+                logger.debug("Stream #%i: append %i (to buffer)", self.id, len(data))
                 self._buffer.extend(data)
                 self._has_data.set()
 
     def close(self):
-        logger.info('Stream #%i: closing (state = %s)...', self.id, self._state.name)
+        logger.info("Stream #%i: closing (state = %s)...", self.id, self._state.name)
 
         with self._close_lock:
             if self._state == StreamState.Closed:
-                logger.warning('Stream #%i: closed already', self.id)
+                logger.warning("Stream #%i: closed already", self.id)
                 return
 
             if self._state == StreamState.Connected:
@@ -246,20 +251,22 @@ class TorStream:
             self._circuit.remove_stream(self)
 
             self._state = StreamState.Closed
-            logger.debug('Stream #%i: closed', self.id)
+            logger.debug("Stream #%i: closed", self.id)
 
     def _prepare_address(self, address):
         if isinstance(address[0], HiddenService):
             return address[0], (address[0].onion, address[1])
-        elif address[0].endswith('.onion'):
+        elif address[0].endswith(".onion"):
             host_key = hostname_key(address[0])
-            descriptor_cookie, auth_type = self._auth_data.get(host_key, HiddenService.HS_NO_AUTH)
+            descriptor_cookie, auth_type = self._auth_data.get(
+                host_key, HiddenService.HS_NO_AUTH
+            )
             return HiddenService(address[0], descriptor_cookie, auth_type), address
         else:
             return None, address
 
     def connect(self, address):
-        logger.info('Stream #%i: connecting to %r', self.id, address)
+        logger.info("Stream #%i: connecting to %r", self.id, address)
         assert self._state == StreamState.Closed
         self._state = StreamState.Connecting
 
@@ -274,23 +281,23 @@ class TorStream:
         start_time = time.time()
         while True:
             if time.time() - start_time > timeout:
-                raise TimeoutError('Could not connect to %r' % (address,))
+                raise TimeoutError("Could not connect to %r" % (address,))
 
             if self._state == StreamState.Connected:
                 return
             elif self._state == StreamState.Closed:
-                raise ConnectionError('Could not connect to %r' % (address,))
+                raise ConnectionError("Could not connect to %r" % (address,))
 
             time.sleep(0.2)
 
     def connect_dir(self):
-        logger.info('Stream #%i: connecting to hsdir', self.id)
+        logger.info("Stream #%i: connecting to hsdir", self.id)
         assert self._state == StreamState.Closed
         self._state = StreamState.Connecting
 
         inner_cell = CellRelayBeginDir()
         self.send_relay(inner_cell)
-        self._wait_connected('hsdir', self._conn_timeout)
+        self._wait_connected("hsdir", self._conn_timeout)
 
     def _connect(self, address):
         inner_cell = CellRelayBegin(address[0], address[1])
@@ -299,7 +306,9 @@ class TorStream:
 
     def _connected(self, cell_connected):
         self._state = StreamState.Connected
-        logger.info('Stream #%i: connected (remote ip %r)', self.id, cell_connected.address)
+        logger.info(
+            "Stream #%i: connected (remote ip %r)", self.id, cell_connected.address
+        )
 
     def send(self, data):
         for chunk in chunks(data, RelayedTorCell.MAX_PAYLOD_SIZE):
@@ -313,26 +322,34 @@ class TorStream:
         self.send_relay(CellRelaySendMe(circuit_id=self._circuit.id))
 
     def _end(self, cell_end):
-        logger.info('Stream #%i: remote disconnected (reason = %s)', self.id, cell_end.reason.name)
+        logger.info(
+            "Stream #%i: remote disconnected (reason = %s)",
+            self.id,
+            cell_end.reason.name,
+        )
         with self._close_lock, self._data_lock:
             # For case when _end arrived later than we close
             if self._state == StreamState.Connected:
                 self._state = StreamState.Disconnected
 
             if self.has_socket_loop:
-                logger.debug('Close our sock...')
+                logger.debug("Close our sock...")
                 self._loop.close_sock()
             else:
                 self._has_data.set()
 
     def _create_socket_loop(self):
         our_sock, client_sock = socket.socketpair()
-        logger.debug('Created sock pair: our_sock = %x, client_sock = %x', our_sock.fileno(), client_sock.fileno())
+        logger.debug(
+            "Created sock pair: our_sock = %x, client_sock = %x",
+            our_sock.fileno(),
+            client_sock.fileno(),
+        )
 
         # Flush data
         with self._data_lock:
             if len(self._buffer):
-                logger.debug('Flush buffer')
+                logger.debug("Flush buffer")
                 our_sock.send(self._buffer)
                 self._buffer.clear()
 
@@ -341,12 +358,12 @@ class TorStream:
 
     @contextmanager
     def as_socket(self):
-        logger.debug('[as_socket] start')
+        logger.debug("[as_socket] start")
         client_socket = self.create_socket()
         try:
             yield client_socket
         finally:
-            logger.debug('[as_socket] finally')
+            logger.debug("[as_socket] finally")
             client_socket.close()
             self.close_socket()
 
@@ -364,19 +381,19 @@ class TorStream:
 
     def recv(self, bufsize):
         if self.has_socket_loop:
-            raise Exception('You must use socket')
+            raise Exception("You must use socket")
 
         if self._state == StreamState.Closed:
             raise Exception("You can't recv closed stream")
 
         signaled = self._has_data.wait(self._recv_timeout)
         if not signaled:
-            raise Exception('recv timeout')
+            raise Exception("recv timeout")
 
         # If remote side already send 'end cell' but we still
         # has some data - we keep receiving
         if self._state == StreamState.Disconnected and not self._buffer:
-            return b''
+            return b""
 
         with self._data_lock:
             if bufsize == -1:
@@ -385,7 +402,9 @@ class TorStream:
                 to_read = min(len(self._buffer), bufsize)
             result = self._buffer[:to_read]
             self._buffer = self._buffer[to_read:]
-            logger.debug('Stream #%i: read %i (left %i)', self.id, to_read, len(self._buffer))
+            logger.debug(
+                "Stream #%i: read %i (left %i)", self.id, to_read, len(self._buffer)
+            )
 
             # Clear 'has_data' flag only if we don't have more data and not disconnected
             if not self._buffer and self._state != StreamState.Disconnected:
@@ -420,7 +439,7 @@ class StreamsList:
     def remove(self, tor_stream):
         stream = self._stream_map.pop(tor_stream.id, None)
         if not stream:
-            logger.debug('Stream #%i: not found in stream map', tor_stream.id)
+            logger.debug("Stream #%i: not found in stream map", tor_stream.id)
 
     def get_by_id(self, stream_id):
         return self._stream_map.get(stream_id, None)

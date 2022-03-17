@@ -13,23 +13,22 @@
 # limitations under the License.
 #
 
-import os
-import json
 import datetime
+import json
+import os
 from enum import Enum
 from functools import reduce
 from operator import ior
 
 import pytest
-
 from torpy.documents.basics import TorDocumentObject
+from torpy.documents.dir_key_certificate import DirKeyCertificate, DirKeyCertificateList
 from torpy.documents.network_status import NetworkStatusDocument, RouterFlags
 from torpy.documents.network_status_diff import NetworkStatusDiffDocument
-from torpy.documents.dir_key_certificate import DirKeyCertificate, DirKeyCertificateList
 
 
 def load_text(file_name):
-    fpath = os.path.join(os.path.dirname(__file__), 'data', file_name)
+    fpath = os.path.join(os.path.dirname(__file__), "data", file_name)
     if not os.path.isfile(fpath):
         raise FileNotFoundError(fpath)
     with open(fpath) as f:
@@ -44,22 +43,22 @@ def load_json(file_name):
 
 
 def object_hook(obj):
-    _isoformat = obj.get('_isoformat')
+    _isoformat = obj.get("_isoformat")
     if _isoformat is not None:
         return datetime.datetime.fromisoformat(_isoformat)
-    _bytes = obj.get('_bytes')
+    _bytes = obj.get("_bytes")
     if _bytes is not None:
         return bytes.fromhex(_bytes)
-    _enum = obj.get('_enum')
+    _enum = obj.get("_enum")
     if _enum is not None:
-        cls, flags = _enum.split('.')
-        flags = map(lambda i: RouterFlags[i], flags.split('|'))
+        cls, flags = _enum.split(".")
+        flags = map(lambda i: RouterFlags[i], flags.split("|"))
         return reduce(ior, flags)
     return obj
 
 
 class DocumentEncoder(json.JSONEncoder):
-    _excludes = ['_consensus', '_service_key']
+    _excludes = ["_consensus", "_service_key"]
 
     def default(self, obj):
         if isinstance(obj, dict):
@@ -70,11 +69,11 @@ class DocumentEncoder(json.JSONEncoder):
             }
             return flt_dict
         elif isinstance(obj, bytes):
-            return {'_bytes': obj.hex()}
+            return {"_bytes": obj.hex()}
         elif isinstance(obj, Enum):
-            return {'_enum': str(obj)}
+            return {"_enum": str(obj)}
         elif isinstance(obj, (datetime.date, datetime.datetime)):
-            return {'_isoformat': obj.isoformat()}
+            return {"_isoformat": obj.isoformat()}
         elif isinstance(obj, TorDocumentObject):
             return self.default(obj._fields)
         else:
@@ -109,40 +108,38 @@ def _compare(o, expected_fields):
 
 
 @pytest.mark.parametrize(
-    'network_status_raw,expected_fields,digest',
+    "network_status_raw,expected_fields,digest",
     [
         # Small simple example
         (
-            load_text('network_status/consensus'),
-            load_json('network_status/consensus.json'),
-            '270d2e02d8e6ad83dd87bd56cf8b7874f75063a9',
+            load_text("network_status/consensus"),
+            load_json("network_status/consensus.json"),
+            "270d2e02d8e6ad83dd87bd56cf8b7874f75063a9",
         ),
         # The same but with extra fields
         (
-            load_text('network_status/consensus_extra'),
-            load_json('network_status/consensus_extra.json'),
-            '38fd029621ca6d3bea5314d8d87c1b374c39a43e',
+            load_text("network_status/consensus_extra"),
+            load_json("network_status/consensus_extra.json"),
+            "38fd029621ca6d3bea5314d8d87c1b374c39a43e",
         ),
         # Real network status example
         (
-            load_text('network_status/consensus_real'),
-            load_json('network_status/consensus_real.json'),
-            '8f4a710a7228ee3ecda56a59a0232a7f8698f514',
+            load_text("network_status/consensus_real"),
+            load_json("network_status/consensus_real.json"),
+            "8f4a710a7228ee3ecda56a59a0232a7f8698f514",
         ),
     ],
-    ids=['consensus',
-         'consensus_extra',
-         'consensus_real'],
+    ids=["consensus", "consensus_extra", "consensus_real"],
 )
 def test_network_status_parse(network_status_raw, expected_fields, digest):
     doc = NetworkStatusDocument(network_status_raw)
     assert doc.raw_string == network_status_raw
 
     if digest:
-        assert doc.get_digest('sha1').hex() == digest
+        assert doc.get_digest("sha1").hex() == digest
 
-    filename = digest + '.json'
-    with open(filename, 'w+') as f:
+    filename = digest + ".json"
+    with open(filename, "w+") as f:
         json.dump(doc, f, cls=DocumentEncoder, indent=4)
     os.remove(filename)
 
@@ -151,11 +148,14 @@ def test_network_status_parse(network_status_raw, expected_fields, digest):
 
 
 @pytest.mark.parametrize(
-    'doc_raw, diff_raw',
+    "doc_raw, diff_raw",
     [
-        (load_text('network_status/consensus_real'), load_text('network_status_diff/network-status-diff'))
+        (
+            load_text("network_status/consensus_real"),
+            load_text("network_status_diff/network-status-diff"),
+        )
     ],
-    ids=['diff1'],
+    ids=["diff1"],
 )
 def test_network_status_diff_parse(doc_raw, diff_raw):
     doc = NetworkStatusDocument(doc_raw)
@@ -165,14 +165,12 @@ def test_network_status_diff_parse(doc_raw, diff_raw):
 
 
 @pytest.mark.parametrize(
-    'doc_raw, cls',
+    "doc_raw, cls",
     [
-        (load_text('dir_certs/dir_cert_real'), DirKeyCertificate),
-        (load_text('dir_certs/cached-certs'), DirKeyCertificateList)
+        (load_text("dir_certs/dir_cert_real"), DirKeyCertificate),
+        (load_text("dir_certs/cached-certs"), DirKeyCertificateList),
     ],
-    ids=[
-        'dir_cert',
-        'multiple_certs']
+    ids=["dir_cert", "multiple_certs"],
 )
 def test_dir_cert_parse(doc_raw, cls):
     doc = cls(doc_raw)
