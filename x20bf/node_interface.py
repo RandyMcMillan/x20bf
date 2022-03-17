@@ -1,8 +1,9 @@
 import asyncio
 
+from p2pnetwork.node import Node
+
 import logger as logger
 import version as version
-from p2pnetwork.node import Node
 from time_functions import (
     blockcypher_height,
     btc_time,
