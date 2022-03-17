@@ -126,6 +126,7 @@ fi
     if ! hash flake8 2>/dev/null; then
         brew install isort
     fi
+    brew install openssl@1.1 glib-openssl
 
 else
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
@@ -164,6 +165,7 @@ if [[ "$OSTYPE" == "linux"* ]]; then
             sudo apt install python3
             sudo apt-get install python3-pip
             sudo apt install containerd docker.io docker-compose
+            sudo apt install libssl-dev
 
             initialize-report
             initialize-use-apt
@@ -194,20 +196,27 @@ if [[ "$OSTYPE" == "linux"* ]]; then
         fi
     fi
 elif [[ "$OSTYPE" == "darwin"* ]]; then
+    chown :admin $HOME/Library/Caches/pip
     initialize-report
     initialize-checkbrew
 elif [[ "$OSTYPE" == "cygwin" ]]; then
-    echo TODO add support for $OSTYPE
+    echo TODO add support for "$OSTYPE"
 elif [[ "$OSTYPE" == "msys" ]]; then
-    echo TODO add support for $OSTYPE
+    echo TODO add support for "$OSTYPE"
 elif [[ "$OSTYPE" == "win32" ]]; then
-    echo TODO add support for $OSTYPE
+    echo TODO add support for "$OSTYPE"
 elif [[ "$OSTYPE" == "freebsd"* ]]; then
-    echo TODO add support for $OSTYPE
+    echo TODO add support for "$OSTYPE"
 else
-    echo TODO add support for $OSTYPE
+    echo TODO add support for "$OSTYPE"
 fi
 # catch all for poetry
 if ! hash poetry 2>/dev/null; then
     curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
 fi
+echo 'export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> /Users/git/.bash_profile
+export CFLAGS='-stdlib=libc++'
+export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
+export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
+export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
+export PKG_CONFIG_PATH="/usr/local/opt/openssl@3/lib/pkgconfig"

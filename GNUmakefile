@@ -1,3 +1,9 @@
+export CFLAGS='-stdlib=libc++'
+export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
+export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
+export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
+export PKG_CONFIG_PATH="/usr/local/opt/openssl@3/lib/pkgconfig"
+
 SHELL                                   := /bin/bash
 PWD                                     ?= pwd_unknown
 TIME                                    := $(shell date +%s)
@@ -153,7 +159,7 @@ init: initialize requirements
 .PHONY: initialize
 ##:	initialize           run 0x020bf/scripts/initialize
 initialize:
-	bash -c "./$(PROJECT_NAME)/scripts/initialize"
+	./$(PROJECT_NAME)/scripts/initialize
 .PHONY: requirements reqs
 
 reqs: requirements
@@ -284,15 +290,16 @@ report:
 
 ##:	SUB-PACKAGES
 ##	:
-##:	depends              install packages
+##:	        depends
+##:	install-depends      install python <packages>
 .PHONY: install-gnupg
-##:	install-gnupg        install python gnupg on host
+##:	install-gnupg        install python gnupg
 gnupg: install-gnupg
 install-gnupg:
 	pushd $(DEPENDSPATH)/gnupg && $(PYTHON3) -m $(PIP) check . && popd
 	pushd $(DEPENDSPATH)/gnupg && $(PYTHON3) $(DEPENDSPATH)/gnupg/setup.py install && popd
 .PHONY: install-p2p
-##:	install-p2p          install python p2p-network
+##:	install-p2p          install python p2pnetwork
 p2p: install-p2p
 install-p2p:
 	pushd $(DEPENDSPATH)/p2p && $(PYTHON3) -m $(PIP) check . && popd
@@ -313,9 +320,16 @@ install-git:
 install-tor:
 	pushd $(DEPENDSPATH)/tor && $(PYTHON3) -m $(PIP) check . && popd
 	pushd $(DEPENDSPATH)/tor && $(PYTHON3) -m $(PIP) install . && popd
+.PHONY: install-cryptography
+##:	install-cryptography install python cryptography
+install-crypto: install-cryptography
+install-cryptography:
+	pushd $(DEPENDSPATH)/cryptography && $(PYTHON3) -m $(PIP) check . && popd
+	#REF: --global-option=build_ext --global-option="-L/usr/local/opt/openssl/lib" --global-option="-I/usr/local/opt/openssl/include"
+	pushd $(DEPENDSPATH)/cryptography && $(PYTHON3) -m $(PIP) install . --global-option=build_ext --global-option="-L/usr/local/opt/openssl/lib" --global-option="-I/usr/local/opt/openssl/include" && popd
 .PHONY: depends
 ##
-depends: install-gnupg  install-fastapi install-p2p install-git install-tor
+depends: install-gnupg install-fastapi install-p2p install-git install-tor install-crypto
 
 .PHONY: git-add
 
@@ -341,9 +355,20 @@ git-add: remove
 	#git add --ignore-errors TIME
 
 .PHONY: pre-commit
+## :
 ##:	pre-commit           pre-commit run -a
 ##:	                     install .git/hooks/pre-commit
+## :
 pre-commit:
+	@echo "If fail use:"
+	@echo "black ."
+	@echo "git commit (--amend) --no-verify"
+	@echo "isort ."
+	@echo "git commit (--amend) --no-verify"
+	@echo "then:"
+	@echo "git commit (--amend) --no-verify"
+	@echo "to manually commit files."
+	@echo "NOTE: make docs products are whitespace dependent for output formatting."
 	cat x20bf/scripts/pre-commit > .git/hooks/pre-commit
 	pre-commit run -a
 

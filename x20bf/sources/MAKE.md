@@ -24,13 +24,18 @@
    
  	SUB-PACKAGES
  	
- 	depends              install packages
- 	install-gnupg        install python gnupg on host
- 	install-p2p          install python p2p-network
+ 	        depends
+ 	install-depends      install python <packages>
+ 	install-gnupg        install python gnupg
+ 	install-p2p          install python p2pnetwork
  	install-fastapi      install python fastapi
  	install-git          install python GitPython
+ 	install-tor          install python torpy
+ 	install-cryptography install python cryptography
+  
  	pre-commit           pre-commit run -a
  	                     install .git/hooks/pre-commit
+  
  	docs                 build docs from sources/*.md
  	clean                rm -rf build
  	serve                serve repo on $(PORT)
