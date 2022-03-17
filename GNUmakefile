@@ -40,14 +40,16 @@ ifeq ($(OS),Windows_NT)
 else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S),Linux)
-	ifeq ($(CFLAGS),)
-	export CFLAGS='-stdlib=c++11'
-	endif
+	# ifeq ($(CFLAGS),)
+	CFLAGS='-stdlib=c++11'
+	export CFLAGS
+	# endif
 	endif
 	ifeq ($(UNAME_S),Darwin)
-	ifeq ($(CFLAGS),)
-	export CFLAGS='-stdlib=libc++'
-	endif
+	# ifeq ($(CFLAGS),)
+	CFLAGS:='-stdlib=libc++'
+	export CFLAGS
+	# endif
 	endif
 	UNAME_P := $(shell uname -p)
 	ifeq ($(UNAME_P),x86_64)

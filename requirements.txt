@@ -15,3 +15,6 @@ gnupg
 configparser
 p2pnetwork
 GitPython
+cffi
+cryptography
+setuptools_rust
