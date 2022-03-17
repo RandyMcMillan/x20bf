@@ -1,4 +1,5 @@
-export CFLAGS='-stdlib=libc++'
+# export CFLAGS='-stdlib=libc++'
+# export CFLAGS='-stdlib=c++11'
 export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
 export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
@@ -39,10 +40,14 @@ ifeq ($(OS),Windows_NT)
 else
 	UNAME_S := $(shell uname -s)
 	ifeq ($(UNAME_S),Linux)
-
+	ifeq ($(CFLAGS),)
+	export CFLAGS='-stdlib=c++11'
+	endif
 	endif
 	ifeq ($(UNAME_S),Darwin)
-
+	ifeq ($(CFLAGS),)
+	export CFLAGS='-stdlib=libc++'
+	endif
 	endif
 	UNAME_P := $(shell uname -p)
 	ifeq ($(UNAME_P),x86_64)
