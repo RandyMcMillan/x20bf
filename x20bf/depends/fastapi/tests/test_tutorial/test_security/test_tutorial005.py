@@ -1,5 +1,3 @@
-from fastapi.testclient import TestClient
-
 from docs_src.security.tutorial005 import (
     app,
     create_access_token,
@@ -7,6 +5,7 @@ from docs_src.security.tutorial005 import (
     get_password_hash,
     verify_password,
 )
+from fastapi.testclient import TestClient
 
 client = TestClient(app)
 

@@ -1,8 +1,7 @@
 import importlib
 
-from fastapi.testclient import TestClient
-
 from docs_src.conditional_openapi import tutorial001
+from fastapi.testclient import TestClient
 
 openapi_schema = {
     "openapi": "3.0.2",

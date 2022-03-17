@@ -3,9 +3,9 @@ from typing import AsyncGenerator, ContextManager, TypeVar
 
 from starlette.concurrency import iterate_in_threadpool as iterate_in_threadpool  # noqa
 from starlette.concurrency import run_in_threadpool as run_in_threadpool  # noqa
-from starlette.concurrency import (  # noqa
+from starlette.concurrency import (
     run_until_first_complete as run_until_first_complete,
-)
+)  # noqa
 
 if sys.version_info >= (3, 7):
     from contextlib import AsyncExitStack as AsyncExitStack

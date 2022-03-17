@@ -1,7 +1,6 @@
 import pytest
-from fastapi.testclient import TestClient
-
 from docs_src.body_fields.tutorial001 import app
+from fastapi.testclient import TestClient
 
 client = TestClient(app)
 
