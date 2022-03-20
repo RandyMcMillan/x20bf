@@ -392,10 +392,12 @@ docs:
 	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/MAKE.md                  >> $(PWD)/README.md'
 	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/CONTRIBUTING.md          >> $(PWD)/README.md'
 	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/FOOTER.md                >> $(PWD)/README.md'
+	ln -sF README.md 0x20bf.org.md
 	#brew install pandoc
 	bash -c "if hash pandoc 2>/dev/null; then echo; fi || brew install pandoc"
 	# bash -c 'pandoc -s README.md -o index.html  --metadata title="$(BASENAME)" '
-	bash -c 'pandoc -s README.md -o index.html  --metadata title="" '
+	bash -c 'pandoc -s 0x20bf.org.md -o 0x20bf.org.html  --metadata title="" '
+	ln -sF 0x20bf.org.html index.html
 	# bash -c 'pandoc -s README.md -o index.html'
 	#bash -c "if hash open 2>/dev/null; then open README.md; fi || echo failed to open README.md"
 	git add --ignore-errors $(PWD)/$(PROJECT_NAME)/sources/*.md

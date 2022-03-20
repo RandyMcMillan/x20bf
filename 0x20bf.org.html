@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>0x20bf.org</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<a
+href="https://keys.openpgp.org/vks/v1/by-fingerprint/E616FA7221A1613E5B99206297966C06BB06757B">🐝</a>
+<a
+href="https://keys.openpgp.org/vks/v1/by-fingerprint/57C5E8BB2F2746C3474B8A511421BF6C4DC9817F">🥕</a>
+<a href="http://github.com/0x20bf-org">Github</a> <a
+href="https://twitter.com/0x20bf_org">Twitter</a>
+<html>
+<link rel="shortcut icon" href="x20bf/sources/favicon.ico" />
+</html>
+<HR>
+<center>
+<H4>
+x20bf - A general purpose messaging protocol
+</center>
+<h2 id="status-of-this-proposal">Status of this Proposal</h2>
+<p>This document proposes an Internet standards track protocol for
+transporting, broadcasting and syndication of messages over common
+internet communications channels. The distribution of all documents
+related to this proposal are unlimited and unencumbered by any <a
+href="LICENSE">LICENSE</a>, but some are included anyway.</p>
+<h2 id="abstract">Abstract</h2>
+<p>This document describes the ox20bf protocol message structure and
+related operations associated with message field ordering and data
+typing. x20bf is meant to be simple, enabling flexability of
+implementation. Gnupg is used for text message encryption. Git version
+control is used for archiving messages.</p>
+<h2 id="protocol---field-definitions">Protocol - Field definitions</h2>
+<h3 id="message-field-delimiter">message field delimiter</h3>
+<p><code>:</code> - message field delimiter</p>
+<h3 id="gnupg-longshort-key-id-of-the-reciever-of-a-message">gnupg
+(long/short key ID) of the reciever of a message</h3>
+<p><code>GPGR</code> - gnupg (long/short key ID) of the reciever of a
+message</p>
+<h3 id="gnupg-longshort-key-id-of-the-sender-of-a-message">gnupg
+(long/short key ID) of the sender of a message</h3>
+<p><code>GPGS</code> - gnupg (long/short key ID) of the sender of a
+message</p>
+<h5 id="example---ping-short-format">Example - ping short format</h5>
+<p><code>:GPGR:GPGS:</code>
+<code>:&lt;recipient&gt;:&lt;sender&gt;:</code></p>
+<h3 id="algorithm-field">algorithm field</h3>
+<p><code>:ALGO:</code> indicates encryption algorithm used for message
+construction</p>
+<h5 id="example">Example</h5>
+<p><code>:ALGO:ALGO:ALGO:ALGO:</code></p>
+<p><code>:PUBKEY:CIPHER:HASH:COMPRESSION:</code></p>
+<p><code>:RSA:AES256:SHA256:ZIP:</code></p>
+<h5 id="gnupg-supported-algorithms">gnupg supported algorithms:</h5>
+<pre><code>Pubkey: RSA, ELG, DSA, ECDH, ECDSA, EDDSA
+Cipher: IDEA, 3DES, CAST5, BLOWFISH, AES, AES192, AES256, TWOFISH,
+        CAMELLIA128, CAMELLIA192, CAMELLIA256
+Hash: SHA1, RIPEMD160, SHA256, SHA384, SHA512, SHA224
+Compression: Uncompressed, ZIP, ZLIB, BZIP2</code></pre>
+<p>We assume messages are sent in the blind:
+<code>--include-key-block</code> will be the default, to enable offline
+decryption. <a
+href="https://www.gnupg.org/documentation/manuals/gnupg/OpenPGP-Options.html">OpenPGP-Options.html</a></p>
+<h3 id="time-fields">time fields</h3>
+<p><code>:BTC_TIME:</code> - a Bitcoin block height in the “time
+chain”.</p>
+<p><code>:BTC:</code> - a Bitcoin block height in the “time chain”.</p>
+<p><code>:UNIX_TIME_SECONDS:</code> - UTC Time in seconds</p>
+<p><code>:UNIX_TIME_MILLIS:</code> - UTC Time in milliseconds</p>
+<p><code>:TIME:</code> - UTC Time in milliseconds</p>
+<h5 id="example---ping-time-chain-format">Example - ping time chain
+format</h5>
+<p><code>:GPGR:GPGS:BTC_TIME:</code></p>
+<h5 id="example---ping-utc-time-format">Example - ping UTC time
+format</h5>
+<p><code>:GPGR:GPGS:UNIX_TIME_SECONDS:</code></p>
+<h5 id="example---ping-full-format-seconds">Example - ping full format
+(seconds)</h5>
+<p><code>:GPGR:GPGS:BTC_TIME:UNIX_TIME_SECONDS:</code></p>
+<h5 id="example---ping-full-format-milliseconds">Example - ping full
+format (milliseconds)</h5>
+<p><code>:GPGR:GPGS:BTC_TIME:UNIX_TIME_MILLIS:</code></p>
+<h5
+id="example---ping-abridged-format-milliseconds---abridged-time-is-in-millisoeconds">Example
+- ping abridged format (milliseconds) - abridged <code>:TIME:</code> is
+in millisoeconds</h5>
+<p><code>:GPGR:GPGS:BTC:TIME:</code></p>
+<h3 id="time-functions">time functions</h3>
+<p><code>:NETWORK_MODULUS:</code></p>
+<h5 id="variables">variables:</h5>
+<p>genesis_time = 1231006505 (1/3/2009, 1:15:05 PM)</p>
+<p>millis = current UNIX time in milliseconds (example:
+1646634471416)</p>
+<p>bitcoin_network_age = (millis - genesis_time)</p>
+<p>NETWORK_MODULUS = (millis - genesis_time) % BTC_TIME</p>
+<pre><code>NETWORK_MODULUS = bitcoin_network_age % BTC_TIME
+or
+NETWORK_MODULUS = (millis - genesis_time) % BTC_TIME</code></pre>
+<h5 id="helper-functions"><a
+href="./sources/modulus_conversion_formulas.md">Helper
+Functions</a>:</h5>
+<pre><code>n = (millis - genesis_time - NETWORK_MODULUS)/BTC_TIME
+nBTC_TIME = (millis - genesis_time - NETWORK_MODULUS)
+millis = (genesis_time + nBTC_TIME + NETWORK_MODULUS)</code></pre>
+<hr />
+<h5 id="examples">Examples:</h5>
+<pre class="shell"><code>066.2022 01:35:44 AM :NETWORK_MODULUS:516881:
+066.2022 01:36:15 AM :NETWORK_MODULUS:548176:
+066.2022 01:36:36 AM :NETWORK_MODULUS:569069:</code></pre>
+<hr />
+<p><code>:NETWORK_WEEBLE:</code></p>
+<p><code>:NETWORK_WOBBLE:</code></p>
+<hr />
+<p>TODO: more message structure</p>
+<p>TODO: file structure</p>
+<p>TODO: LOC - location specifications for offline resources</p>
+<hr />
+<p><br><a
+href="https://github.com/0x20bf-org/x20bf/actions/workflows/python.yml"><img
+src="https://github.com/0x20bf-org/x20bf/actions/workflows/python.yml/badge.svg"
+alt="python.yml" /></a></p>
+<h2 id="getting-started">Getting Started</h2>
+<h5 id="git"><a href="https://git-scm.com/downloads">git</a></h5>
+<pre><code>git clone https://github.com/x20bf-org/x20bf.git
+cd x20bf</code></pre>
+<h5 id="python3.8"><a
+href="https://www.python.org/downloads/">python@3.8+</a></h5>
+<pre><code>git clone https://github.com/x20bf-org/x20bf.git
+cd x20bf
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+pip install -e .</code></pre>
+<h5 id="make"><a href="https://www.gnu.org/software/make/">make</a></h5>
+<pre><code>COMMAND              SUMMARY
+
+help
+report               environment args
+init                 initialize requirements
+initialize           run 0x020bf/scripts/initialize
+requirements         pip install --user -r requirements.txt
+
+venv                 create python3 virtual environment
+test-venv            python3 ./tests/test.py
+test-venv-p2p        p2p test battery
+test-depends         test-gnupg test-p2p test-fastapi
+test-gnupg           python3 ./tests/depends/gnupg/test_gnupg.py
+test-p2p             python3 ./tests/depends/p2p/setup.py
+venv-clean           rm -rf venv rokeys test_gnupg.log
+test-p2p             python3 ./tests/test.py
+
+PACKAGE
+
+build                python3 setup.py build
+install              python3 -m pip install -e .
+dist                 python3 setup.py bdist_egg sdist
+
+SUB-PACKAGES
+
+        depends
+install-depends      install python &lt;packages&gt;
+install-gnupg        install python gnupg
+install-p2p          install python p2pnetwork
+install-fastapi      install python fastapi
+install-git          install python GitPython
+install-tor          install python torpy
+install-cryptography install python cryptography
+
+pre-commit           pre-commit run -a
+                     install .git/hooks/pre-commit
+
+docs                 build docs from sources/*.md
+clean                rm -rf build
+serve                serve repo on $(PORT)
+
+gui
+
+make                 venv &amp;&amp; . venv/bin/activate</code></pre>
+<h2 id="contributing"><a
+href="./sources/CONTRIBUTING.md">Contributing</a></h2>
+<p>Check linting and formatting</p>
+<pre class="shell"><code>  pre-commit run -a</code></pre>
+<p>Build for distribution</p>
+<pre class="shell"><code>  python3 setup.py build</code></pre>
+<hr />
+<details>
+<summary>
+Referral Links:
+</summary>
+<p>
+<p><a
+href="https://www.digitalocean.com/?refcode=ae5c7d05da91&amp;utm_campaign=Referral_Invite&amp;utm_medium=Referral_Program&amp;utm_source=badge"><img
+src="https://web-platforms.sfo2.digitaloceanspaces.com/WWW/Badge%202.svg"
+alt="DigitalOcean Referral Badge" /></a></p>
+</p>
+</details>
+</body>
+</html>
