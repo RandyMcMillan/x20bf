@@ -18,3 +18,5 @@ GitPython
 cffi
 cryptography
 setuptools_rust
+mpmath
+PySide6

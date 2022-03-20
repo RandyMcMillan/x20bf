@@ -3,6 +3,9 @@ import asyncio
 import os
 import shutil
 import time
+from math import floor as floor
+import mpmath
+from decimal import getcontext
 
 import aiohttp
 import blockcypher
@@ -10,6 +13,26 @@ import blockcypher
 from logger import logger
 
 genesis_time = 1231006505
+
+
+def test_nanos_percision(nanos):
+    getcontext().prec = 50
+    mpmath.mp.dps = 50
+    print("nanos = " + str(nanos))
+    print(" mpmath.mpf(nanos): {0}".format(mpmath.mpf(nanos)))
+    print(" mpmath.sqrt(nanos): {0}".format(mpmath.sqrt(nanos)))
+    print("What is returned from thee get_nanos() function...")
+    print(" int(mpmath.mpf(nanos)): {0}".format(int(mpmath.mpf(nanos))))
+
+
+def test_millis_percision(nanos):
+    getcontext().prec = 50
+    mpmath.mp.dps = 50
+    print("nanos = " + str(nanos))
+    print(" mpmath.mpf(nanos): {0}".format(mpmath.mpf(nanos)))
+    print(" mpmath.sqrt(nanos): {0}".format(mpmath.sqrt(nanos)))
+    print("What is returned from thee get_millis() function...")
+    print(" int(mpmath.mpf(nanos)): {0}".format(int(mpmath.mpf(nanos))))
 
 
 async def touch_time(time):
@@ -27,9 +50,23 @@ def move_block_time():
         pass
 
 
+def get_nanos():
+    getcontext().prec = 50
+    mpmath.mp.dps = 50
+    global nanos
+    # capture float nanosecond time
+    # other wise it will be rounded to millis seconds + 000 zeros
+    nanos = float(time.time_ns())
+    # test_nanos_percision(nanos)
+    # test_millis_percision(nanos)
+    return int(mpmath.mpf(nanos))
+
+
 def get_millis():
     global millis
-    millis = int(round(time.time() * 1000))
+    millis = int(floor(get_nanos() / 1000))
+    # test_nanos_percision(millis)
+    # test_millis_percision(millis)
     return millis
 
 
@@ -99,7 +136,8 @@ def network_modulus():
     # GENESIS_TIME is well known
     # btc_time() block height message was contructed is known to GPGR and GPGS
     # TODO: add functions to reconstruct :WEEBLE:WOBBLE: based on these values
-    NETWORK_MODULUS = (get_millis() - genesis_time) % btc_time()
+    # NETWORK_MODULUS = (get_millis() - genesis_time) % btc_time()
+    NETWORK_MODULUS = (get_nanos() - genesis_time) % btc_time()
     f = open("NETWORK_MODULUS", "w")
     f.write("" + str(NETWORK_MODULUS) + "\n")
     f.close()
@@ -120,7 +158,8 @@ def network_weeble_wobble():
 def network_weeble():
     # (current_time - genesis time) yields time from bitcoin genesis block
     # dividing by number of blocks yields an average time per block
-    NETWORK_WEEBLE = int((get_millis() - genesis_time) / btc_time())
+    # NETWORK_WEEBLE = int((get_millis() - genesis_time) / btc_time())
+    NETWORK_WEEBLE = int((get_nanos() - genesis_time) / btc_time())
     f = open("NETWORK_WEEBLE", "w")
     f.write("" + str(NETWORK_WEEBLE) + "\n")
     f.close()
@@ -130,7 +169,8 @@ def network_weeble():
 def network_wobble():
     # wobble is the remainder of the weeble_wobble calculation
     # source of deterministic entropy
-    NETWORK_WOBBLE = str(float((get_millis() - genesis_time) / btc_time() % 1)).strip(
+    # NETWORK_WOBBLE = str(float((get_millis() - genesis_time) / btc_time() % 1)).strip(
+    NETWORK_WOBBLE = str(float((get_nanos() - genesis_time) / btc_time() % 1)).strip(
         "0."
     )
     f = open("NETWORK_WOBBLE", "w")
