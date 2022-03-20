@@ -39,4 +39,7 @@
  	docs                 build docs from sources/*.md
  	clean                rm -rf build
  	serve                serve repo on $(PORT)
+ 	
+ 	gui
+ 	
  	make                 venv && . venv/bin/activate

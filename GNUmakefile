@@ -426,8 +426,9 @@ success:
 	@-/usr/bin/true && ([ $$? -eq 0 ] && echo "success!") || echo "failure!"
 
 .PHONY:
+##	:
+##:	gui
 gui:
 	pushd x20bf/gui && $(PYTHON3) mainwindow.py && popd
-
-##
+##	:
 ##:	make                 venv && . venv/bin/activate
