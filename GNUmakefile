@@ -354,10 +354,10 @@ install-rustup:
 	[ ! hash rustc 2>/dev/null ] && chmod +x sh.rustup.rs && ./sh.rustup.rs || echo "rustc is already installed."
 .PHONY: depends
 ##
-depends: install-gnupg install-fastapi install-p2p install-git install-tor install-crypto
+depends: install-gnupg install-fastapi install-p2p install-git install-tor
 	@echo if install-crypto fails
-	try:
-	make install-rustup
+	@echo try:
+	@echo make install-rustup
 
 .PHONY: git-add
 
