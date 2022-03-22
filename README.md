@@ -185,7 +185,19 @@ pip install -e .
  	install-fastapi      install python fastapi
  	install-git          install python GitPython
  	install-tor          install python torpy
- 	install-cryptography install python cryptography
+ 	
+ 	install-crypto       install python cryptography
+ 	
+ 	                     The cryptography python lib
+ 	                     requires rust to build.
+ 	
+ 	                     Try 'make init' or 'make install-rust'
+ 	                     then retry 'make install-crypto'
+ 	
+ 	                     Try 'make reqs' to install
+ 	                     the cryptography dependency
+ 	                     without building.
+ 	
  	install-rustup       install rust toolchain
   
  	pre-commit           pre-commit run -a
