@@ -190,6 +190,8 @@ pip install -e .
  	
  	                     The cryptography python lib
  	                     requires rust to build.
+ 	                     arch x86_64
+ 	                     TODO arch64
  	
  	                     Try 'make init' or 'make install-rust'
  	                     then retry 'make install-crypto'
