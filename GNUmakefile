@@ -328,15 +328,36 @@ install-tor:
 	pushd $(DEPENDSPATH)/tor && $(PYTHON3) -m $(PIP) check . && popd
 	pushd $(DEPENDSPATH)/tor && $(PYTHON3) -m $(PIP) install . && popd
 .PHONY: install-cryptography
-##:	install-cryptography install python cryptography
+##	:
+##:	install-crypto       install python cryptography
+##	:
+##:	                     The cryptography python lib
+##:	                     requires rust to build.
+##	:
+##:	                     Try 'make init' or 'make install-rust'
+##:	                     then retry 'make install-crypto'
+##	:
+##:	                     Try 'make reqs' to install
+##:	                     the cryptography dependency
+##:	                     without building.
+##	:
 install-crypto: install-cryptography
 install-cryptography:
 	pushd $(DEPENDSPATH)/cryptography && $(PYTHON3) -m $(PIP) check . && popd
 	#REF: --global-option=build_ext --global-option="-L/usr/local/opt/openssl/lib" --global-option="-I/usr/local/opt/openssl/include"
 	pushd $(DEPENDSPATH)/cryptography && $(PYTHON3) -m $(PIP) install . --global-option=build_ext --global-option="-L/usr/local/opt/openssl/lib" --global-option="-I/usr/local/opt/openssl/include" && popd
+.PHONY: install-rust install-rustup
+##:	install-rustup       install rust toolchain
+install-rust: install-rustup
+install-rustup:
+	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > sh.rustup.rs
+	[ ! hash rustc 2>/dev/null ] && chmod +x sh.rustup.rs && ./sh.rustup.rs || echo "rustc is already installed."
 .PHONY: depends
 ##
 depends: install-gnupg install-fastapi install-p2p install-git install-tor install-crypto
+	@echo if install-crypto fails
+	try:
+	make install-rustup
 
 .PHONY: git-add
 

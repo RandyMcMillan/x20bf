@@ -186,6 +186,7 @@ pip install -e .
  	install-git          install python GitPython
  	install-tor          install python torpy
  	install-cryptography install python cryptography
+ 	install-rustup       install rust toolchain
   
  	pre-commit           pre-commit run -a
  	                     install .git/hooks/pre-commit

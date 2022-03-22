@@ -187,3 +187,4 @@ x20bf/sources/email.zip
 x20bf/depends/gnupg/python_gnupg.egg-info
 x20bf/depends/gnupg/python_gnupg.egg-info/*
 *.pyproject.user
+sh.rustup.rs
