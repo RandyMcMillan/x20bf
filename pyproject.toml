@@ -13,6 +13,7 @@ PyYAML = "5.4.1"
 gnupg = "^2.3.1"
 asyncio = "^3.4.1"
 p2pnetwork = "^1.1.0"
+# p2psecure = "^0.0.1"
 GitPython = "^3.1.27"
 
 [tool.poetry.dev-dependencies]
