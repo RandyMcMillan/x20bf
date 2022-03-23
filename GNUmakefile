@@ -311,6 +311,12 @@ p2p: install-p2p
 install-p2p:
 	pushd $(DEPENDSPATH)/p2p && $(PYTHON3) -m $(PIP) check . && popd
 	pushd $(DEPENDSPATH)/p2p && $(PYTHON3) $(DEPENDSPATH)/p2p/setup.py install && popd
+.PHONY: install-p2ps
+##:	install-p2ps         install python p2psecure
+p2ps: install-p2ps
+install-p2ps:
+	pushd $(DEPENDSPATH)/p2ps && $(PYTHON3) -m $(PIP) check . && popd
+	pushd $(DEPENDSPATH)/p2ps && $(PYTHON3) $(DEPENDSPATH)/p2ps/setup.py install && popd
 .PHONY: install-fastapi fastapi
 ##:	install-fastapi      install python fastapi
 fastapi: install-fastapi
@@ -356,7 +362,7 @@ install-rustup:
 	[ ! hash rustc 2>/dev/null ] && chmod +x sh.rustup.rs && ./sh.rustup.rs || echo "rustc is already installed."
 .PHONY: depends
 ##
-depends: install-gnupg install-fastapi install-p2p install-git install-tor
+depends: install-gnupg install-fastapi install-p2p install-p2ps install-git install-tor
 	@echo if install-crypto fails
 	@echo try:
 	@echo make install-rustup
