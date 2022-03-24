@@ -198,7 +198,7 @@ test-venv:
        python3 tests/test_import.py; \
        python3 tests/test_$(PROJECT_NAME)_version.py; \
 	);
-##:	test-venv-p2p        p2p test battery
+##:	test-venv-p2p        p2p  test battery
 test-venv-p2p:
 	# insert test commands here
 	test -d venv || virtualenv venv
@@ -213,6 +213,15 @@ test-venv-p2p:
        python3 tests/my_own_p2p_application.py; \
        python3 tests/my_own_p2p_application_callback.py; \
        python3 tests/my_own_p2p_application_using_dict.py; \
+	);
+
+##:	test-venv-p2ps       p2ps test battery
+test-venv-p2ps:
+	# insert test commands here
+	test -d venv || virtualenv venv
+	( \
+	   source venv/bin/activate; pip install -r requirements.txt; \
+       python3 tests/test_secure_node_cli.py; \
 	);
 
 ##:	test-depends         test-gnupg test-p2p test-fastapi
