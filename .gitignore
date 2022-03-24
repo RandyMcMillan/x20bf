@@ -188,3 +188,5 @@ x20bf/depends/gnupg/python_gnupg.egg-info
 x20bf/depends/gnupg/python_gnupg.egg-info/*
 *.pyproject.user
 sh.rustup.rs
+blockchain.db
+secure_node.dat
