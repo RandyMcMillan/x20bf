@@ -28,6 +28,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 packages = find_packages(
     include=[
         "x20bf",
+        "x20bf/gui",
         "depends/p2p",
         "depends/gnupg",
         "depends/fastapi",
@@ -66,6 +67,7 @@ setup(
     ],
     packages=[
         "x20bf",
+        "x20bf/gui",
         "tests",
         "x20bf/depends/p2p/p2pnetwork",
         "x20bf/depends/gnupg",

@@ -13,7 +13,7 @@ except DistributionNotFound:
     # package is not installed
     version = "unknown"
 
-__title__ = "x20bf"
+__title__ = "0x20bf"
 __author__ = "@RandyMcMillan, @BitKarrot"
 __version__ = v
 __license__ = "Apache License 2.0"
