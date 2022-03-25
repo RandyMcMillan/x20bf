@@ -466,3 +466,18 @@ gui:
 	pushd x20bf/gui && $(PYTHON3) mainwindow.py && popd
 ##	:
 ##:	make                 venv && . venv/bin/activate
+
+.PHONY:
+##	:
+##:	push-subtrees        push the x20bf/depends/*
+push-subtrees: pre-commit
+	# git ls-subtrees
+	git subtree push --prefix=x20bf/depends/cryptography                      git@github.com:0x20bf-org/cryptography $(TIME)-$(shell git rev-parse --short HEAD)
+	git subtree push --prefix=x20bf/depends/tor                               git@github.com:0x20bf-org/tor          $(TIME)-$(shell git rev-parse --short HEAD)
+	git subtree push --prefix=x20bf/depends/git/git/ext/gitdb/gitdb/ext/smmap git@github.com:0x20bf-org/smmap        $(TIME)-$(shell git rev-parse --short HEAD)
+	git subtree push --prefix=x20bf/depends/git/git/ext/gitdb                 git@github.com:0x20bf-org/gitdb        $(TIME)-$(shell git rev-parse --short HEAD)
+	git subtree push --prefix=x20bf/depends/git                               git@github.com:0x20bf-org/git          $(TIME)-$(shell git rev-parse --short HEAD)
+	git subtree push --prefix=x20bf/depends/gnupg                             git@github.com:0x20bf-org/gnupg        $(TIME)-$(shell git rev-parse --short HEAD)
+	git subtree push --prefix=x20bf/depends/fastapi                           git@github.com:0x20bf-org/fastapi      $(TIME)-$(shell git rev-parse --short HEAD)
+	git subtree push --prefix=x20bf/depends/p2p                               git@github.com:0x20bf-org/p2p          $(TIME)-$(shell git rev-parse --short HEAD)
+	git subtree push --prefix=x20bf/depends/git/git/ext/gitdb/gitdb/ext/smmap git@github.com:0x20bf-org/smmap.git    $(TIME)-$(shell git rev-parse --short HEAD)
