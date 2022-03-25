@@ -481,3 +481,4 @@ push-subtrees: pre-commit
 	git subtree push --prefix=x20bf/depends/fastapi                           git@github.com:0x20bf-org/fastapi      $(TIME)-$(shell git rev-parse --short HEAD)
 	git subtree push --prefix=x20bf/depends/p2p                               git@github.com:0x20bf-org/p2p          $(TIME)-$(shell git rev-parse --short HEAD)
 	git subtree push --prefix=x20bf/depends/git/git/ext/gitdb/gitdb/ext/smmap git@github.com:0x20bf-org/smmap.git    $(TIME)-$(shell git rev-parse --short HEAD)
+	git subtree push --prefix=docker                                          git@github.com:0x20bf-org/docker.git   $(TIME)-$(shell git rev-parse --short HEAD)
