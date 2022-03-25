@@ -213,6 +213,8 @@ pip install -e .
  	gui
  	
  	make                 venv && . venv/bin/activate
+ 	
+ 	push-subtrees        push the x20bf/depends/*
 
 ## [Contributing](./sources/CONTRIBUTING.md)
 
