@@ -224,7 +224,7 @@ fi
 # catch all for poetry
 if ! hash poetry 2>/dev/null; then
     curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
-    source $HOME/.poetry/env
+    # source $HOME/.poetry/env
 fi
 # touch $HOME/.bash_profile
 # echo 'export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> $HOME/.bash_profile
