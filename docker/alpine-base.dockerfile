@@ -4,11 +4,14 @@ ARG NO_CACHE=${NO_CACHE}
 ARG VERBOSE=${VERBOSE}
 RUN apk update \
     && apk add  ${VERBOSE} ${NO_CACHE}   \
+        musl \
         alpine-sdk util-linux sudo bash-completion git vim curl shadow openssh-client \
-        python3-dev py3-pip py3-pyside2 libffi-dev docker docker-compose
+        python3-dev py3-pip py3-pyside2 libffi-dev libffi docker docker-compose \
+        gmp zlib
 # if fail try mirror: http://uk.alpinelinux.org/alpine/
 # https://mirrors.alpinelinux.org
 RUN apk add pre-commit --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing
+RUN apk add pandoc     --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing
 
 FROM scratch as user
 COPY --from=base . .
