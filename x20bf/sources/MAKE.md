@@ -60,4 +60,6 @@
  	
  	make                 venv && . venv/bin/activate
  	
- 	push-subtrees        push the x20bf/depends/*
+ 	docker               build an alpine docker container
+ 	
+ 	push-subtrees        push all subtrees to their repos

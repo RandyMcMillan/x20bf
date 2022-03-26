@@ -35,10 +35,10 @@ SSH_PRIVATE_KEY := ~/.ssh/id_rsa
 else
 SSH_PRIVATE_KEY := $(ssh-pkey)
 endif
-export SSH_PRINVATE_KEY
+export SSH_PRIVATE_KEY
 
 ifeq ($(alpine),)
-ALPINE_VERSION := 3.11.10
+ALPINE_VERSION := 3.14
 else
 ALPINE_VERSION := $(alpine)
 endif
@@ -100,11 +100,11 @@ DOCKER_COMPOSE:=$(shell which docker-compose)
 export DOCKER_COMPOSE
 
 # all our targets are phony (no files to check).
-.PHONY: debian build-debian rebuild-debian alpine shell help alpine-build alpine-rebuild build rebuild alpine-test service login  clean
+.PHONY: - debian build-debian rebuild-debian alpine shell help alpine-build alpine-rebuild build rebuild alpine-test service login  clean
 
 # suppress makes own output
 #.SILENT:
-
+-: alpine
 # Regular Makefile part for buildpypi itself
 .PHONY: help
 help:
@@ -183,9 +183,9 @@ endif
 alpine: alpine-base
 alpine-base:
 ifeq ($(CMD_ARGUMENTS),)
-	docker-compose $(VERBOSE) -p $(PROJECT_NAME)_$(HOST_UID) run --rm alpine-base sh
+	docker-compose $(VERBOSE) -p $(PROJECT_NAME)_$(HOST_UID) run --rm alpine-base bash
 else
-	docker-compose $(VERBOSE) -p $(PROJECT_NAME)_$(HOST_UID) run --rm alpine-base sh -c "$(CMD_ARGUMENTS)"
+	docker-compose $(VERBOSE) -p $(PROJECT_NAME)_$(HOST_UID) run --rm alpine-base bash -c "$(CMD_ARGUMENTS)"
 endif
 
 .PHONY: alpine-guix
@@ -277,11 +277,11 @@ else
 	docker-compose $(VERBOSE) -p $(PROJECT_NAME)_$(HOST_UID) run --rm fedora34 sh -c "$(CMD_ARGUMENTS)"
 endif
 
-alpine-build:
+build-alpine:
 	# only build the container. Note, docker does this also if you apply other targets.
-	docker-compose build alpine-base
+	docker-compose build $(NO_CACHE) alpine-base
 
-alpine-rebuild:
+rebuild-alpine:
 	# force a rebuild by passing --no-cache
 	docker-compose build --no-cache $(VERBOSE) ${SERVICE_TARGET}
 
@@ -300,7 +300,7 @@ login: service
 
 build: alpine-build
 
-rebuild: alpine-rebuild
+rebuild: rebuild-alpine
 
 link:
 

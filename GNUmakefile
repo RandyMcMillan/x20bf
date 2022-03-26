@@ -1,5 +1,3 @@
-# export CFLAGS='-stdlib=libc++'
-# export CFLAGS='-stdlib=c++11'
 export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
 export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
@@ -9,7 +7,8 @@ SHELL                                   := /bin/bash
 PWD                                     ?= pwd_unknown
 TIME                                    := $(shell date +%s)
 export TIME
-
+HOST                                    := $(shell uname -n)
+USER                                    := $(shell whoami)
 GPGBINARY                               := $(shell which gpg)
 export GPGBINARY
 PYTHON                                  := $(shell which python)
@@ -63,11 +62,16 @@ else
 	endif
 endif
 
-ifeq ($(PYTHON3),/usr/local/bin/python3)
+ifneq ($(PYTHON3),)
 PIP                                    := pip
 PIP3                                   := pip
 export PIP
 export PIP3
+ifneq ($(PIP),)
+ifneq ($(PIP2),)
+PIP                                    := pip3
+endif
+endif
 endif
 
 ifeq ($(project),)
@@ -93,10 +97,11 @@ export PORT
 GIT_USER_NAME                           := $(shell git config user.name)
 export GIT_USER_NAME
 ifneq ($(USER),runner)
-USER:=--user
+USER_FLAG:=--user
 else
-USER:=
+USER_FLAG:=
 endif
+export USER_FLAG
 GH_USER_NAME                            := $(shell git config user.name)
 export GIT_USER_NAME
 
@@ -119,8 +124,10 @@ export GIT_REPO_NAME
 GIT_REPO_PATH                           := $(HOME)/$(GIT_REPO_NAME)
 export GIT_REPO_PATH
 
-BASENAME := $(shell basename -s .git `git config --get remote.origin.url`)
-export BASENAME
+ifeq ($(nocache),true)
+NO_CACHE := --no-cache
+export NO_CACHE
+endif
 
 # Force the user to explicitly select public - public=true
 # export KB_PUBLIC=public && make keybase-public
@@ -148,6 +155,7 @@ DASH_U:=
 endif
 export DASH_U
 
+export # all env vars
 
 .PHONY: - help
 ##:	COMMAND              SUMMARY
@@ -285,14 +293,19 @@ report:
 	@echo '      args:'
 	@echo '        - TIME=${TIME}'
 	@echo '        - UNAME_S=${UNAME_S}'
+	@echo '        - UNAME_N=${UNAME_N}'
 	@echo '        - BASENAME=${BASENAME}'
 	@echo '        - PROJECT_NAME=${PROJECT_NAME}'
 	@echo '        - GPGBINARY=${GPGBINARY}'
 	@echo '        - PYTHON3=${PYTHON3}'
 	@echo '        - PIP=${PIP}'
+	@echo '        - PIP2=${PIP2}'
+	@echo '        - PIP3=${PIP3}'
 	@echo '        - PYTHONPATH=${PYTHONPATH}'
 	@echo '        - DEPENDSPATH=${DEPENDSPATH}'
 	@echo '        - BUILDPATH=${BUILDPATH}'
+	@echo '        - USER=${USER}'
+	@echo '        - USER_FLAG=${USER_FLAG}'
 	@echo '        - GIT_USER_NAME=${GIT_USER_NAME}'
 	@echo '        - GIT_USER_EMAIL=${GIT_USER_EMAIL}'
 	@echo '        - GIT_SERVER=${GIT_SERVER}'
@@ -467,9 +480,16 @@ gui:
 ##	:
 ##:	make                 venv && . venv/bin/activate
 
-.PHONY:
+.PHONY: docker docker-build
 ##	:
-##:	push-subtrees        push the x20bf/depends/*
+##:	docker               build an alpine docker container
+docker: docker-build
+docker-build:
+	$(MAKE) -C docker build-alpine alpine
+
+.PHONY: push-subtrees
+##	:
+##:	push-subtrees        push all subtrees to their repos
 push-subtrees: pre-commit
 	# git ls-subtrees
 	git subtree push --prefix=x20bf/depends/cryptography                      git@github.com:0x20bf-org/cryptography $(TIME)-$(shell git rev-parse --short HEAD)
