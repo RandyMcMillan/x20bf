@@ -389,7 +389,7 @@ install-rustup:
 	[ ! hash rustc 2>/dev/null ] && chmod +x sh.rustup.rs && ./sh.rustup.rs || echo "rustc is already installed."
 .PHONY: depends
 ##
-depends: install-gnupg install-fastapi install-p2p install-git install-tor
+depends: install-gnupg install-fastapi install-p2p install-git
 	@echo if install-crypto fails
 	@echo try:
 	@echo make install-rustup
@@ -453,7 +453,7 @@ docs:
 	bash -c "if hash pandoc 2>/dev/null; then echo; fi || brew install pandoc"
 	# bash -c 'pandoc -s README.md -o index.html  --metadata title="$(BASENAME)" '
 	bash -c 'pandoc -s 0x20bf.org.md -o 0x20bf.org.html  --metadata title="" '
-	ln -sF 0x20bf.org.html index.html
+	ln -sf 0x20bf.org.html index.html
 	# bash -c 'pandoc -s README.md -o index.html'
 	#bash -c "if hash open 2>/dev/null; then open README.md; fi || echo failed to open README.md"
 	git add --ignore-errors $(PWD)/$(PROJECT_NAME)/sources/*.md
@@ -497,6 +497,11 @@ gui:
 docker: docker-build
 docker-build:
 	$(MAKE) -C docker build-alpine alpine
+.PHONY: docker-test
+##	:
+##:	docker-test          build an alpine docker container
+docker-test:
+	$(MAKE) -C docker alpine-test user=root
 
 .PHONY: push-subtrees
 ##	:

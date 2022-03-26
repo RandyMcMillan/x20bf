@@ -188,7 +188,6 @@ if [[ "$OSTYPE" == "linux"* ]]; then
     if [[ "$OSTYPE" == "linux-musl" ]]; then
         if hash apk 2>/dev/null; then
             apk add awk
-            report
             initialize-report
             initialize-use-apk
             echo 'Using apk...'
@@ -199,7 +198,6 @@ if [[ "$OSTYPE" == "linux"* ]]; then
         checkraspi
         if hash apt 2>/dev/null; then
             apt install awk
-            report
             initialize-report
             # likely a raspi
             # more detect raspi needed
@@ -228,8 +226,8 @@ if ! hash poetry 2>/dev/null; then
     curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
     source $HOME/.poetry/env
 fi
-touch $HOME/.bash_profile
-echo 'export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> $HOME/.bash_profile
+# touch $HOME/.bash_profile
+# echo 'export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> $HOME/.bash_profile
 export CFLAGS='-stdlib=libc++'
 export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"

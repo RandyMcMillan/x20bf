@@ -38,7 +38,7 @@ endif
 export SSH_PRIVATE_KEY
 
 ifeq ($(alpine),)
-ALPINE_VERSION := 3.14
+ALPINE_VERSION := edge
 else
 ALPINE_VERSION := $(alpine)
 endif
@@ -286,9 +286,7 @@ rebuild-alpine:
 	docker-compose build --no-cache $(VERBOSE) ${SERVICE_TARGET}
 
 alpine-test:
-	docker-compose -p $(PROJECT_NAME)_$(HOST_UID) run --rm ${SERVICE_TARGET} sh -c '\
-		echo "I am `whoami`. My uid is `id -u`." && /bin/bash -c "curl -fsSL https://raw.githubusercontent.com/randymcmillan/docker.shell/master/whatami"' \
-	&& echo success
+	docker-compose -p $(PROJECT_NAME)_$(HOST_UID) run --rm ${SERVICE_TARGET} bash -c 'sudo -s make depends && bash '
 
 service:
 	# run as a (background) service

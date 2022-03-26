@@ -8,8 +8,8 @@ aiohttp
 aiohttp[speedups]
 asyncio
 psutil
-PyYAML==5.4.1
-pre-commit==2.13.0
+PyYAML
+pre-commit
 black
 mypy
 gnupg
@@ -22,3 +22,7 @@ setuptools_rust
 mpmath
 wheel
 # PySide2
+termcolor
+pycryptodome
+fire
+pytor
