@@ -98,6 +98,8 @@ GIT_USER_NAME                           := $(shell git config user.name)
 export GIT_USER_NAME
 ifneq ($(USER),runner)
 USER_FLAG:=--user
+PIP                                    := pip
+export PIP
 else
 USER_FLAG:=
 endif
