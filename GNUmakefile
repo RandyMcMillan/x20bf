@@ -62,18 +62,6 @@ else
 	endif
 endif
 
-ifneq ($(PYTHON3),)
-PIP                                    := pip
-PIP3                                   := pip
-export PIP
-export PIP3
-ifneq ($(PIP),)
-ifneq ($(PIP2),)
-PIP                                    := pip3
-endif
-endif
-endif
-
 ifeq ($(project),)
 PROJECT_NAME                            := $(notdir $(PWD))
 else
@@ -96,17 +84,8 @@ export PORT
 #GIT CONFIG
 GIT_USER_NAME                           := $(shell git config user.name)
 export GIT_USER_NAME
-ifneq ($(USER),runner)
-USER_FLAG:=--user
-PIP                                    := pip
-export PIP
-else
-USER_FLAG:=
-endif
-export USER_FLAG
 GH_USER_NAME                            := $(shell git config user.name)
 export GIT_USER_NAME
-
 GIT_USER_EMAIL                          := $(shell git config user.email)
 export GIT_USER_EMAIL
 GIT_SERVER                              := https://github.com
@@ -149,13 +128,43 @@ export LIBS
 
 BUILDDIR              = build
 
-
 ifneq ($(shell id -u),0)
 DASH_U:=-U
 else
 DASH_U:=
 endif
 export DASH_U
+
+#
+# Just in time handling of CI configs
+# and misc ENV for docker/cross platform
+#
+
+ifneq ($(PYTHON3),)
+PIP                                    := pip
+PIP3                                   := pip
+export PIP
+export PIP3
+ifneq ($(PIP),)
+ifneq ($(PIP2),)
+PIP                                    := pip3
+endif
+endif
+endif
+
+#
+# Just in time handling of CI configs
+# and misc ENV for docker/cross platform
+#
+
+ifneq ($(USER),runner)
+USER_FLAG:=--user
+PIP                                    := pip
+export PIP
+else
+USER_FLAG:=
+endif
+export USER_FLAG
 
 export # all env vars
 
@@ -439,7 +448,7 @@ docs:
 	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/MAKE.md                  >> $(PWD)/README.md'
 	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/CONTRIBUTING.md          >> $(PWD)/README.md'
 	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/FOOTER.md                >> $(PWD)/README.md'
-	ln -sF README.md 0x20bf.org.md
+	ln -sf README.md 0x20bf.org.md
 	#brew install pandoc
 	bash -c "if hash pandoc 2>/dev/null; then echo; fi || brew install pandoc"
 	# bash -c 'pandoc -s README.md -o index.html  --metadata title="$(BASENAME)" '
