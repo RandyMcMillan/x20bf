@@ -87,6 +87,8 @@ fi
 if hash brew 2>/dev/null; then
     export HOMEBREW_NO_ENV_HINTS=0
 
+    brew install glibc
+
     brew install --quiet python@3.8
     brew install --quiet python@3.9
     brew install --quiet python@3.10
@@ -176,7 +178,7 @@ if [[ "$OSTYPE" == "linux"* ]]; then
             sudo apt install python3
             sudo apt-get install python3-pip python3-pyside2
             sudo apt install containerd docker.io docker-compose
-            sudo apt install libssl-dev
+            sudo apt install libssl-dev libffi7 glibc
 
             initialize-report
             initialize-use-apt
@@ -224,6 +226,7 @@ fi
 # catch all for poetry
 if ! hash poetry 2>/dev/null; then
     curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -
+    source $HOME/.poetry/env
 fi
 touch $HOME/.bash_profile
 echo 'export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"' >> $HOME/.bash_profile
