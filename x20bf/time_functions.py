@@ -10,7 +10,7 @@ from decimal import getcontext
 import aiohttp
 import blockcypher
 
-from logger import logger
+import x20bf.logger as logger
 
 genesis_time = 1231006505
 
