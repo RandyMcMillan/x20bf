@@ -25,3 +25,4 @@ termcolor
 pycryptodome
 fire
 pytor
+click
