@@ -1,5 +1,3 @@
-# export CFLAGS='-stdlib=libc++'
-# export CFLAGS='-stdlib=c++11'
 export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
 export CPPFLAGS="-I/usr/local/opt/openssl@1.1/include"
 export PKG_CONFIG_PATH="/usr/local/opt/openssl@1.1/lib/pkgconfig"
@@ -9,7 +7,8 @@ SHELL                                   := /bin/bash
 PWD                                     ?= pwd_unknown
 TIME                                    := $(shell date +%s)
 export TIME
-
+HOST                                    := $(shell uname -n)
+USER                                    := $(shell whoami)
 GPGBINARY                               := $(shell which gpg)
 export GPGBINARY
 PYTHON                                  := $(shell which python)
@@ -63,13 +62,6 @@ else
 	endif
 endif
 
-ifeq ($(PYTHON3),/usr/local/bin/python3)
-PIP                                    := pip
-PIP3                                   := pip
-export PIP
-export PIP3
-endif
-
 ifeq ($(project),)
 PROJECT_NAME                            := $(notdir $(PWD))
 else
@@ -92,14 +84,8 @@ export PORT
 #GIT CONFIG
 GIT_USER_NAME                           := $(shell git config user.name)
 export GIT_USER_NAME
-ifneq ($(USER),runner)
-USER:=--user
-else
-USER:=
-endif
 GH_USER_NAME                            := $(shell git config user.name)
 export GIT_USER_NAME
-
 GIT_USER_EMAIL                          := $(shell git config user.email)
 export GIT_USER_EMAIL
 GIT_SERVER                              := https://github.com
@@ -119,8 +105,10 @@ export GIT_REPO_NAME
 GIT_REPO_PATH                           := $(HOME)/$(GIT_REPO_NAME)
 export GIT_REPO_PATH
 
-BASENAME := $(shell basename -s .git `git config --get remote.origin.url`)
-export BASENAME
+ifeq ($(nocache),true)
+NO_CACHE := --no-cache
+export NO_CACHE
+endif
 
 # Force the user to explicitly select public - public=true
 # export KB_PUBLIC=public && make keybase-public
@@ -140,7 +128,6 @@ export LIBS
 
 BUILDDIR              = build
 
-
 ifneq ($(shell id -u),0)
 DASH_U:=-U
 else
@@ -148,6 +135,38 @@ DASH_U:=
 endif
 export DASH_U
 
+#
+# Just in time handling of CI configs
+# and misc ENV for docker/cross platform
+#
+
+ifneq ($(PYTHON3),)
+PIP                                    := pip
+PIP3                                   := pip
+export PIP
+export PIP3
+ifneq ($(PIP),)
+ifneq ($(PIP2),)
+PIP                                    := pip3
+endif
+endif
+endif
+
+#
+# Just in time handling of CI configs
+# and misc ENV for docker/cross platform
+#
+
+ifneq ($(USER),runner)
+USER_FLAG:=--user
+PIP                                    := pip
+export PIP
+else
+USER_FLAG:=
+endif
+export USER_FLAG
+
+export # all env vars
 
 .PHONY: - help
 ##:	COMMAND              SUMMARY
@@ -285,14 +304,19 @@ report:
 	@echo '      args:'
 	@echo '        - TIME=${TIME}'
 	@echo '        - UNAME_S=${UNAME_S}'
+	@echo '        - UNAME_N=${UNAME_N}'
 	@echo '        - BASENAME=${BASENAME}'
 	@echo '        - PROJECT_NAME=${PROJECT_NAME}'
 	@echo '        - GPGBINARY=${GPGBINARY}'
 	@echo '        - PYTHON3=${PYTHON3}'
 	@echo '        - PIP=${PIP}'
+	@echo '        - PIP2=${PIP2}'
+	@echo '        - PIP3=${PIP3}'
 	@echo '        - PYTHONPATH=${PYTHONPATH}'
 	@echo '        - DEPENDSPATH=${DEPENDSPATH}'
 	@echo '        - BUILDPATH=${BUILDPATH}'
+	@echo '        - USER=${USER}'
+	@echo '        - USER_FLAG=${USER_FLAG}'
 	@echo '        - GIT_USER_NAME=${GIT_USER_NAME}'
 	@echo '        - GIT_USER_EMAIL=${GIT_USER_EMAIL}'
 	@echo '        - GIT_SERVER=${GIT_SERVER}'
@@ -365,7 +389,7 @@ install-rustup:
 	[ ! hash rustc 2>/dev/null ] && chmod +x sh.rustup.rs && ./sh.rustup.rs || echo "rustc is already installed."
 .PHONY: depends
 ##
-depends: install-gnupg install-fastapi install-p2p install-git install-tor
+depends: install-gnupg install-fastapi install-p2p install-git
 	@echo if install-crypto fails
 	@echo try:
 	@echo make install-rustup
@@ -424,12 +448,12 @@ docs:
 	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/MAKE.md                  >> $(PWD)/README.md'
 	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/CONTRIBUTING.md          >> $(PWD)/README.md'
 	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/FOOTER.md                >> $(PWD)/README.md'
-	ln -sF README.md 0x20bf.org.md
+	ln -sf README.md 0x20bf.org.md
 	#brew install pandoc
 	bash -c "if hash pandoc 2>/dev/null; then echo; fi || brew install pandoc"
 	# bash -c 'pandoc -s README.md -o index.html  --metadata title="$(BASENAME)" '
 	bash -c 'pandoc -s 0x20bf.org.md -o 0x20bf.org.html  --metadata title="" '
-	ln -sF 0x20bf.org.html index.html
+	ln -sf 0x20bf.org.html index.html
 	# bash -c 'pandoc -s README.md -o index.html'
 	#bash -c "if hash open 2>/dev/null; then open README.md; fi || echo failed to open README.md"
 	git add --ignore-errors $(PWD)/$(PROJECT_NAME)/sources/*.md
@@ -467,9 +491,21 @@ gui:
 ##	:
 ##:	make                 venv && . venv/bin/activate
 
-.PHONY:
+.PHONY: docker docker-build
 ##	:
-##:	push-subtrees        push the x20bf/depends/*
+##:	docker               build an alpine docker container
+docker: docker-build
+docker-build:
+	$(MAKE) -C docker build-alpine alpine
+.PHONY: docker-test
+##	:
+##:	docker-test          build an alpine docker container
+docker-test:
+	$(MAKE) -C docker alpine-test user=$(user)
+
+.PHONY: push-subtrees
+##	:
+##:	push-subtrees        push all subtrees to their repos
 push-subtrees: pre-commit
 	# git ls-subtrees
 	git subtree push --prefix=x20bf/depends/cryptography                      git@github.com:0x20bf-org/cryptography $(TIME)-$(shell git rev-parse --short HEAD)
@@ -481,3 +517,4 @@ push-subtrees: pre-commit
 	git subtree push --prefix=x20bf/depends/fastapi                           git@github.com:0x20bf-org/fastapi      $(TIME)-$(shell git rev-parse --short HEAD)
 	git subtree push --prefix=x20bf/depends/p2p                               git@github.com:0x20bf-org/p2p          $(TIME)-$(shell git rev-parse --short HEAD)
 	git subtree push --prefix=x20bf/depends/git/git/ext/gitdb/gitdb/ext/smmap git@github.com:0x20bf-org/smmap.git    $(TIME)-$(shell git rev-parse --short HEAD)
+	git subtree push --prefix=docker                                          git@github.com:0x20bf-org/docker.git   $(TIME)-$(shell git rev-parse --short HEAD)
