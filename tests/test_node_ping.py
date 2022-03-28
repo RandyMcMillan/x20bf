@@ -10,9 +10,14 @@
 import sys
 import time
 
-sys.path.insert(0, "..")  # Import the files where the modules are located
+sys.path.insert(0, "../x20bf")
+sys.path.insert(1, "../x20bf/depends/p2p")
 
-from p2pnetwork.node import Node
+# import x20bf.depends.p2p.p2pnetwork.node as node
+# from x20bf.depends.p2p.p2pnetwork.node import Node
+# from p2pnetwork.node import Node
+# from p2p.node import Node
+from x20bf.depends.p2p.p2pnetwork.node import Node
 
 import ping as p
 from time_functions import btc_time

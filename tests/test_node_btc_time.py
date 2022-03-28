@@ -10,7 +10,8 @@
 import sys
 import time
 
-sys.path.insert(0, "..")  # Import the files where the modules are located
+sys.path.insert(0, "../x20bf")
+sys.path.insert(1, "../x20bf/depends/p2p/p2pnetwork")
 
 from p2pnetwork.node import Node
 
