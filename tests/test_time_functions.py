@@ -3,42 +3,38 @@ import asyncio
 import getopt as G
 import sys as S
 
-from time_functions import (
-    blockcypher_height,
-    btc_time,
-    btc_unix_time_millis,
-    btc_unix_time_seconds,
-    get_millis,
-    get_seconds,
-    mempool_height,
-    move_block_time,
-    network_modulus,
-    network_weeble,
-    network_weeble_wobble,
-    network_wobble,
-    touch_time,
-    unix_time_millis,
-    unix_time_seconds,
-)
+# from x20bf import time_functions
+from time_functions import blockcypher_height
+from time_functions import touch_time
+from time_functions import btc_time
+from time_functions import move_block_time
+from time_functions import get_millis
+from time_functions import get_seconds
+from time_functions import mempool_height
 
-loop = asyncio.new_event_loop()
-loop.run_until_complete(touch_time(btc_time()))
-# print(touch_time(btc_time()))
+
+touch = asyncio.new_event_loop()
+touch.run_until_complete(touch_time(btc_time()))
 print(move_block_time())
 print(get_millis())
 print(get_seconds())
-print(blockcypher_height())
-print(btc_time())
-print(btc_unix_time_millis())
-print(btc_unix_time_seconds())
-print(unix_time_millis())
-print(unix_time_seconds())
-print(network_modulus())
-print(network_weeble_wobble())
-print(network_weeble())
-print(network_wobble())
-# print(mempool_height())
-loop.run_until_complete(mempool_height())
+
+bc_height = asyncio.new_event_loop()
+print(bc_height.run_until_complete(blockcypher_height()))
+
+mp_time = asyncio.new_event_loop()
+print(mp_time.run_until_complete(mempool_height()))
+
+# print(btc_unix_time_millis())
+# print(btc_unix_time_seconds())
+# print(unix_time_millis())
+# print(unix_time_seconds())
+# print(network_modulus())
+# print(network_weeble_wobble())
+# print(network_weeble())
+# print(network_wobble())
+# # print(mempool_height())
+# loop.run_until_complete(mempool_height())
 
 
 def main(argv):

@@ -30,9 +30,6 @@
         font-size: 0.9em;
         padding: 1em;
       }
-      h1 {
-        font-size: 1.8em;
-      }
     }
     @media print {
       body {
@@ -136,12 +133,6 @@
     }
     #TOC li {
       list-style: none;
-    }
-    #TOC ul {
-      padding-left: 1.3em;
-    }
-    #TOC > ul {
-      padding-left: 0;
     }
     #TOC a:not(:hover) {
       text-decoration: none;
@@ -287,68 +278,72 @@ source venv/bin/activate
 pip install -r requirements.txt
 pip install -e .</code></pre>
 <h5 id="make"><a href="https://www.gnu.org/software/make/">make</a></h5>
-<pre><code>COMMAND              SUMMARY
-
-help
-report               environment args
-init                 initialize requirements
-initialize           run 0x020bf/scripts/initialize
-requirements         pip install --user -r requirements.txt
-
-venv                 create python3 virtual environment
-test-venv            python3 ./tests/test.py
-test-venv-p2p        p2p  test battery
-test-venv-p2ps       p2ps test battery
-test-depends         test-gnupg test-p2p test-fastapi
-test-gnupg           python3 ./tests/depends/gnupg/test_gnupg.py
-test-p2p             python3 ./tests/depends/p2p/setup.py
-venv-clean           rm -rf venv rokeys test_gnupg.log
-test-p2p             python3 ./tests/test.py
-
-PACKAGE
-
-build                python3 setup.py build
-install              python3 -m pip install -e .
-dist                 python3 setup.py bdist_egg sdist
-
-SUB-PACKAGES
-
-        depends
-install-depends      install python &lt;packages&gt;
-install-gnupg        install python gnupg
-install-p2p          install python p2pnetwork
-install-fastapi      install python fastapi
-install-git          install python GitPython
-install-tor          install python torpy
-
-install-crypto       install python cryptography
-
-                     The cryptography python lib
-                     requires rust to build.
-                     arch x86_64
-                     TODO arch64
-
-                     Try &#39;make init&#39; or &#39;make install-rust&#39;
-                     then retry &#39;make install-crypto&#39;
-
-                     Try &#39;make reqs&#39; to install
-                     the cryptography dependency
-                     without building.
-
-install-rustup       install rust toolchain
-
-pre-commit           pre-commit run -a
-                     install .git/hooks/pre-commit
-
-docs                 build docs from sources/*.md
-clean                rm -rf build
-serve                serve repo on $(PORT)
-
-gui
-
-make                 venv &amp;&amp; . venv/bin/activate
-
-push-subtrees        push the x20bf/depends/*</code></pre>
+<p>make[1]: Entering directory ‘/home/root/x20bf’ COMMAND SUMMARY</p>
+<pre><code>    help                                                              
+    report               environment args                             
+    init                 initialize requirements                      
+    initialize           run 0x020bf/scripts/initialize               
+    requirements         pip install --user -r requirements.txt       
+                                                                   
+    venv                 create python3 virtual environment           
+    test-venv            python3 ./tests/test.py                      
+    test-venv-p2p        p2p  test battery                            
+    test-venv-p2ps       p2ps test battery                            
+    test-depends         test-gnupg test-p2p test-fastapi             
+    test-gnupg           python3 ./tests/depends/gnupg/test_gnupg.py  
+    test-p2p             python3 ./tests/depends/p2p/setup.py         
+    venv-clean           rm -rf venv rokeys test_gnupg.log            
+    test-p2p             python3 ./tests/test.py                      
+                                                                   
+    PACKAGE                                                           
+                                                                   
+    build                python3 setup.py build                       
+    install              python3 -m pip install -e .                  
+    dist                 python3 setup.py bdist_egg sdist             
+                                                                   
+    SUB-PACKAGES                                                      
+                                                                   
+            depends                                                   
+    install-depends      install python &lt;packages&gt;                    
+    install-gnupg        install python gnupg                         
+    install-p2p          install python p2pnetwork                    
+    install-fastapi      install python fastapi                       
+    install-git          install python GitPython                     
+    install-tor          install python torpy                         
+                                                                   
+    install-crypto       install python cryptography                  
+                                                                   
+                         The cryptography python lib                  
+                         requires rust to build.                      
+                         arch x86_64                                  
+                         TODO arch64                                  
+                                                                   
+                         Try &#39;make init&#39; or &#39;make install-rust&#39;       
+                         then retry &#39;make install-crypto&#39;             
+                                                                   
+                         Try &#39;make reqs&#39; to install                   
+                         the cryptography dependency                  
+                         without building.                            
+                                                                   
+    install-rustup       install rust toolchain                       
+                                                                   
+    pre-commit           pre-commit run -a                            
+                         install .git/hooks/pre-commit                
+                                                                   
+    docs                 build docs from sources/*.md                 
+    clean                rm -rf build                                 
+    serve                serve repo on $(PORT)                        
+                                                                   
+    gui                                                               
+                                                                   
+    make                 venv &amp;&amp; . venv/bin/activate                  
+                                                                   
+    docker               build an alpine docker container             
+                                                                   
+    docker-test          build an alpine docker container             
+                                                                   
+    push-subtrees        push all subtrees to their repos             </code></pre>
+<p>make[1]: Leaving directory ‘/home/root/x20bf’</p>
 <h2 id="contributing"><a
 href="./sources/CONTRIBUTING.md">Contributing</a></h2>
 <p>Check linting and formatting</p>
