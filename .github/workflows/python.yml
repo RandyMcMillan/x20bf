@@ -62,6 +62,7 @@ jobs:
           make
       - name: make init reqs
         run: |
+          rm -f /usr/local/LICENSE
           make init reqs
       - name: make depends
         run: |
