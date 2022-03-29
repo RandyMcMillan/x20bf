@@ -159,11 +159,13 @@ export # all env vars
 -: help
 
 .PHONY: init initialize requirements
+##	:
 ##:	report               environment args
 ##
+##	:
 ##:	init                 initialize requirements
-init: initialize requirements
-	# remove this artifact from gnupg tests
+init:
+	make initialize
 	rm -rf rokeys/.gitignore || sudo -s rm -rf rokeys/.gitignore
 	cat x20bf/scripts/pre-commit > .git/hooks/pre-commit
 .PHONY: initialize
@@ -173,10 +175,23 @@ initialize:
 .PHONY: requirements reqs
 
 reqs: requirements
+##
 ##:	requirements         pip install --user -r requirements.txt
+##
 requirements:
 	$(PYTHON3) -m $(PIP) install $(DASH_U) --upgrade pip
 	$(PYTHON3) -m $(PIP) install $(DASH_U) -r requirements.txt
+.PHONY: poetry-build
+##	:
+##:	poetry-build
+poetry-build:
+	poetry build
+.PHONY: poetry-install
+##
+##:	poetry-install
+##
+poetry-install:
+	poetry install
 
 .PHONY: venv
 ##	:
