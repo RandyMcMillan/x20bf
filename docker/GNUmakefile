@@ -16,29 +16,28 @@ SERVICE_TARGET := alpine-base
 endif
 export SERVICE_TARGET
 
-ifeq ($(user),root)
-HOST_USER := root
-HOST_UID  := $(strip $(if $(uid),$(uid),0))
-else
-# allow override by adding user= and/ or uid=  (lowercase!).
-# uid= defaults to 0 if user= set (i.e. root).
-# USER retrieved from env, UID from shell.
+# default to host user/uid
 HOST_USER :=  $(strip $(if $(USER),$(USER),nodummy))
 HOST_UID  :=  $(strip $(if $(shell id -u),$(shell id -u),4000))
+ifeq ($(user), root)
+HOST_USER := root
+HOST_UID  := $(strip $(if $(uid),$(uid),0))
 endif
 ifneq ($(uid),)
 HOST_UID  := $(uid)
 endif
+export HOST_USER
+export HOST_UID
 
 ifeq ($(ssh-pkey),)
-SSH_PRIVATE_KEY := ~/.ssh/id_rsa
+SSH_PRIVATE_KEY := $(HOME)/.ssh/id_rsa
 else
 SSH_PRIVATE_KEY := $(ssh-pkey)
 endif
-export SSH_PRINVATE_KEY
+export SSH_PRIVATE_KEY
 
 ifeq ($(alpine),)
-ALPINE_VERSION := 3.11.10
+ALPINE_VERSION := edge
 else
 ALPINE_VERSION := $(alpine)
 endif
@@ -100,11 +99,11 @@ DOCKER_COMPOSE:=$(shell which docker-compose)
 export DOCKER_COMPOSE
 
 # all our targets are phony (no files to check).
-.PHONY: debian build-debian rebuild-debian alpine shell help alpine-build alpine-rebuild build rebuild alpine-test service login  clean
+.PHONY: - debian build-debian rebuild-debian alpine shell help alpine-build alpine-rebuild build rebuild alpine-test service login  clean
 
 # suppress makes own output
 #.SILENT:
-
+-: alpine
 # Regular Makefile part for buildpypi itself
 .PHONY: help
 help:
@@ -183,9 +182,9 @@ endif
 alpine: alpine-base
 alpine-base:
 ifeq ($(CMD_ARGUMENTS),)
-	docker-compose $(VERBOSE) -p $(PROJECT_NAME)_$(HOST_UID) run --rm alpine-base sh
+	docker-compose $(VERBOSE) -p $(PROJECT_NAME)_$(HOST_UID) run --rm alpine-base bash
 else
-	docker-compose $(VERBOSE) -p $(PROJECT_NAME)_$(HOST_UID) run --rm alpine-base sh -c "$(CMD_ARGUMENTS)"
+	docker-compose $(VERBOSE) -p $(PROJECT_NAME)_$(HOST_UID) run --rm alpine-base bash -c "$(CMD_ARGUMENTS)"
 endif
 
 .PHONY: alpine-guix
@@ -277,18 +276,16 @@ else
 	docker-compose $(VERBOSE) -p $(PROJECT_NAME)_$(HOST_UID) run --rm fedora34 sh -c "$(CMD_ARGUMENTS)"
 endif
 
-alpine-build:
+build-alpine:
 	# only build the container. Note, docker does this also if you apply other targets.
-	docker-compose build alpine-base
+	docker-compose build $(NO_CACHE) alpine-base
 
-alpine-rebuild:
+rebuild-alpine:
 	# force a rebuild by passing --no-cache
 	docker-compose build --no-cache $(VERBOSE) ${SERVICE_TARGET}
 
 alpine-test:
-	docker-compose -p $(PROJECT_NAME)_$(HOST_UID) run --rm ${SERVICE_TARGET} sh -c '\
-		echo "I am `whoami`. My uid is `id -u`." && /bin/bash -c "curl -fsSL https://raw.githubusercontent.com/randymcmillan/docker.shell/master/whatami"' \
-	&& echo success
+	docker-compose -p $(PROJECT_NAME)_$(HOST_UID) run --rm ${SERVICE_TARGET} bash -c 'sudo -s make depends && bash '
 
 service:
 	# run as a (background) service
@@ -300,7 +297,7 @@ login: service
 
 build: alpine-build
 
-rebuild: alpine-rebuild
+rebuild: rebuild-alpine
 
 link:
 
