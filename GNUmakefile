@@ -19,11 +19,12 @@ PYTHON3                                 := $(shell which python3)
 export PYTHON3
 
 PIP                                     := $(notdir $(shell which pip))
-export PIP
 PIP2                                    := $(notdir $(shell which pip2))
-export PIP2
 PIP3                                    := $(notdir $(shell which pip3))
+export PIP
+export PIP2
 export PIP3
+
 ifeq ($(OS),Windows_NT)
 	CCFLAGS += -D WIN32
 	ifeq ($(PROCESSOR_ARCHITEW6432),AMD64)
@@ -140,30 +141,13 @@ export DASH_U
 # and misc ENV for docker/cross platform
 #
 
-ifneq ($(PYTHON3),)
-PIP                                    := pip
-PIP3                                   := pip
-export PIP
-export PIP3
-ifneq ($(PIP),)
-ifneq ($(PIP2),)
-PIP                                    := pip3
-endif
-endif
-endif
-
-#
-# Just in time handling of CI configs
-# and misc ENV for docker/cross platform
-#
-
 ifneq ($(USER),runner)
 USER_FLAG:=--user
 PIP                                    := pip
-export PIP
 else
 USER_FLAG:=
 endif
+export PIP
 export USER_FLAG
 
 export # all env vars
@@ -308,7 +292,6 @@ report:
 	@echo '        - GPGBINARY=${GPGBINARY}'
 	@echo '        - PYTHON3=${PYTHON3}'
 	@echo '        - PIP=${PIP}'
-	@echo '        - PIP2=${PIP2}'
 	@echo '        - PIP3=${PIP3}'
 	@echo '        - PYTHONPATH=${PYTHONPATH}'
 	@echo '        - DEPENDSPATH=${DEPENDSPATH}'
