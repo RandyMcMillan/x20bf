@@ -79,6 +79,19 @@ jobs:
       - name: rm -rf rokeys
         run: |
           rm -rf rokeys
+      - name: make test-venv
+        run: |
+          make test-venv
       - name: make test-p2p
         run: |
           make test-p2p
+      - name: make poetry-build
+        run: |
+          source $HOME/.poetry/env
+          source .venv/bin/activate
+          make poetry-build
+      - name: make poetry-install
+        run: |
+          source .venv/bin/activate
+          source $HOME/.poetry/env
+          make poetry-install
