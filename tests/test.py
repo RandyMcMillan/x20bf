@@ -1,8 +1,11 @@
-#!/usr/bin/env python3
+import sys
+sys.path.insert(0, "../x20bf")
+sys.path.insert(1, "../x20bfi/depends/p2p")
+
 import getopt as G
 import sys as S
 
-import node_interface as ni
+import x20bf.node_interface as ni
 
 
 def main(argv):
