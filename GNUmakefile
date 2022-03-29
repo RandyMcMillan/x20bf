@@ -198,31 +198,29 @@ requirements:
 ##	:
 ##:	venv                 create python3 virtual environment
 venv:
-	test -d venv || virtualenv venv
+	test -d .venv || virtualenv .venv
 	( \
-	   source venv/bin/activate; pip install -r requirements.txt; \
+	   source .venv/bin/activate; pip install -r requirements.txt; \
 	);
 	@echo "To activate (venv)"
 	@echo "try:"
-	@echo ". venv/bin/activate"
+	@echo ". .venv/bin/activate"
 	@echo "or:"
 	@echo "make test-venv"
 ##:	test-venv            python3 ./tests/test.py
 test-venv:
 	# insert test commands here
-	test -d venv || virtualenv venv
+	test -d .venv || virtualenv .venv
 	( \
-	   source venv/bin/activate; pip install -r requirements.txt; \
+	   source .venv/bin/activate; pip install -r requirements.txt; \
        python3 tests/test.py; \
-       python3 tests/test_import.py; \
-       python3 tests/test_$(PROJECT_NAME)_version.py; \
-	);
+    );
 ##:	test-venv-p2p        p2p  test battery
 test-venv-p2p:
 	# insert test commands here
-	test -d venv || virtualenv venv
+	test -d .venv || virtualenv .venv
 	( \
-	   source venv/bin/activate; pip install -r requirements.txt; \
+	   source .venv/bin/activate; pip install -r requirements.txt; \
        python3 $(PROJECT_NAME)/depends/p2p/setup.py build; \
        python3 $(PROJECT_NAME)/depends/p2p/setup.py install; \
        python3 tests/test_time_functions.py; \
@@ -237,9 +235,9 @@ test-venv-p2p:
 ##:	test-venv-p2ps       p2ps test battery
 test-venv-p2ps:
 	# insert test commands here
-	test -d venv || virtualenv venv
+	test -d .venv || virtualenv .venv
 	( \
-	   source venv/bin/activate; pip install -r requirements.txt; \
+	   source .venv/bin/activate; pip install -r requirements.txt; \
        python3 tests/test_secure_node_cli.py; \
 	);
 
@@ -249,24 +247,24 @@ test-depends: test-gnupg test-p2p
 ##:	test-p2p             python3 ./tests/depends/p2p/setup.py
 ##:	venv-clean           rm -rf venv rokeys test_gnupg.log
 venv-clean:
-	rm -rf venv
+	rm -rf .venv
 	rm -rf rokeys
 	rm -rf test_gnupg.log
 test-gnupg: venv
-	. venv/bin/activate;
+	. .venv/bin/activate;
 	python3 ./tests/depends/gnupg/setup.py install;
 	python3 ./tests/depends/gnupg/test_gnupg.py;
 ##:	test-p2p             python3 ./tests/test.py
 test-p2p:
 	# insert test commands here
-	test -d venv || virtualenv venv
+	test -d .venv || virtualenv .venv
 	( \
-	   source venv/bin/activate; pip install -r requirements.txt; \
-	   source venv/bin/activate; pip install -r requirements.txt; \
+	   source .venv/bin/activate; pip install -r requirements.txt; \
+	   source .venv/bin/activate; pip install -r requirements.txt; \
        python3 tests/test_node_interface.py; \
 	);
 #test-fastapi: venv
-#	. venv/bin/activate;
+#	. .venv/bin/activate;
 #	pushd tests/depends/fastapi/tests && python3 test_application.py
 ##	:
 clean-venv: venv-clean
@@ -433,8 +431,8 @@ pre-commit:
 	@echo "git commit (--amend) --no-verify"
 	@echo "to manually commit files."
 	@echo "NOTE: make docs products are whitespace dependent for output formatting."
-	cat x20bf/scripts/pre-commit > .git/hooks/pre-commit
-	pre-commit run -a
+	# cat x20bf/scripts/pre-commit > .git/hooks/pre-commit
+	# pre-commit run -a
 
 .PHONY: docs
 ##:	docs                 build docs from sources/*.md
