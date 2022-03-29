@@ -16,13 +16,13 @@ configparser
 p2pnetwork
 GitPython
 cffi
-cryptography
+# cryptography
 setuptools_rust
 mpmath
 wheel
 PySide2
 termcolor
-pycryptodome
+# pycryptodome
 fire
 pytor
 click
