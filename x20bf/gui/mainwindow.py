@@ -3,10 +3,10 @@ import os
 from pathlib import Path
 import sys
 
-from PySide6.QtWidgets import QApplication, QMainWindow
-import PySide6.QtCore as QtCore
-from PySide6.QtCore import QFile as QFile
-from PySide6.QtUiTools import QUiLoader as QUiLoader
+from PySide2.QtWidgets import QApplication, QMainWindow
+import PySide2.QtCore as QtCore
+from PySide2.QtCore import QFile as QFile
+from PySide2.QtUiTools import QUiLoader as QUiLoader
 
 if "PYSIDE_DESIGNER_PLUGINS" not in os.environ:
     PYSIDE_DESIGNER_PLUGINS = os.path.dirname(os.path.realpath(__file__))
@@ -31,4 +31,4 @@ if __name__ == "__main__":
     app = QApplication([])
     widget = MainWindow()
     widget.show()
-    sys.exit(app.exec())
+    sys.exit(app.exec_())
