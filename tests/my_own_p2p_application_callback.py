@@ -6,13 +6,13 @@
 # a new class. However, it is adviced to implement your own class rather than use the callback. Callback will get you #
 # a big and large method implementation.                                                                              #
 #######################################################################################################################
-
-import sys
 import time
+import sys
+sys.path.insert(0, "../x20bf")
+sys.path.insert(1, "../x20bf/depends/p2p")
+sys.path.insert(2, "../x20bf/depends/p2p/p2pnetwork")
 
-sys.path.insert(0, "..")  # Import the files where the modules are located
-
-from p2pnetwork.node import Node
+from x20bf.depends.p2p.p2pnetwork.node import Node
 
 
 # The big callback method that gets all the events that happen inside the p2p network.

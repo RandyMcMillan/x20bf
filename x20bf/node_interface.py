@@ -1,99 +1,43 @@
+#######################################################################################################################
+# Author: Maurice Snoeren                                                                                             #
+# Version: 0.1 beta (use at your own risk)                                                                            #
+#                                                                                                                     #
+# This example show how to derive a own Node class (MyOwnPeer2PeerNode) from p2pnet.Node to implement your own Node   #
+# implementation. See the MyOwnPeer2PeerNode.py for all the details. In that class all your own application specific  #
+# details are coded.                                                                                                  #
+#######################################################################################################################
+import time
 import sys
-import asyncio
+sys.path.insert(0, "../x20bf")
+sys.path.insert(1, "../x20bf/depends/p2p")
+sys.path.insert(2, "../x20bf/depends/p2p/p2pnetwork")
 
+# import x20bf.depends.p2p.p2pnetwork.node as node
 from x20bf.depends.p2p.p2pnetwork.node import Node
 
-import logger as logger
-import version as version
-from time_functions import (
-    blockcypher_height,
-    btc_time,
-    genesis_time,
-    get_millis,
-    get_seconds,
-    mempool_height,
-)
+node_1 = Node("127.0.0.1", 8001)
+node_2 = Node("127.0.0.1", 8002)
+node_3 = Node("127.0.0.1", 8003)
 
+time.sleep(1)
 
-class NodeInterface(Node):
+node_1.start()
+node_2.start()
+node_3.start()
 
-    # Python class constructor
+time.sleep(1)
 
-    def __init__(self, host, port, id=None, callback=None, max_connections=0):
-        super(NodeInterface, self).__init__(host, port, id, callback, max_connections)
-        loop = asyncio.new_event_loop()
-        self.logger = logger.logger()
+node_1.connect_with_node("127.0.0.1", 8002)
+node_2.connect_with_node("127.0.0.1", 8003)
+node_3.connect_with_node("127.0.0.1", 8001)
 
-        self.genesis_time = genesis_time
-        self.btc_time = btc_time()
-        self.get_millis = get_millis()
-        self.get_seconds = get_seconds()
-        self.mempool_height = loop.run_until_complete(mempool_height())
-        self.blockcypher_height = loop.run_until_complete(blockcypher_height())
-        self.version = version.version()
-        self.start_time = str(":" + str(btc_time()) + ":" + str(get_millis()) + ":")
-        self.logger.info(
-            "x20bf v"
-            + self.version
-            + " General Purpose Messaging Protocol "
-            + "https://0x20bf.org"
-        )
-        self.logger.info(":START_TIME" + self.start_time)
+time.sleep(2)
 
-    # all the methods below are called when things happen in the network.
-    # implement your network node behavior to create the required functionality.
-    def network_lag(self):
+node_1.send_to_nodes({"name": "Maurice", "number": 11})
 
-        loop = asyncio.new_event_loop()
+time.sleep(5)
 
-        # TODO: check time_functions - more sources needed
-        # if delta > 0 - either service unavailable or lag
-        if (
-            abs(
-                loop.run_until_complete(self.blockcypher_height())
-                - loop.run_until_complete(self.mempool_height())
-            )
-        ) > 0:
-            return abs(
-                loop.run_until_complete(self.blockcypher_height())
-                - loop.run_until_complete(self.mempool_height())
-            )
-
-        if (
-            abs(
-                loop.run_until_complete(self.mempool_height())
-                - loop.run_until_complete(self.blockcypher_height())
-            )
-        ) > 0:
-            return abs(
-                loop.run_until_complete(self.mempool_height())
-                - loop.run_until_complete(self.blockcypher_height())
-            )
-
-        return 0
-
-    def outbound_node_connected(self, node):
-        print("outbound_node_connected (" + self.id + "): " + node.id)
-
-    def inbound_node_connected(self, node):
-        print("inbound_node_connected: (" + self.id + "): " + node.id)
-
-    def inbound_node_disconnected(self, node):
-        print("inbound_node_disconnected: (" + self.id + "): " + node.id)
-
-    def outbound_node_disconnected(self, node):
-        print("outbound_node_disconnected: (" + self.id + "): " + node.id)
-
-    def node_message(self, node, data):
-        print("node_message (" + self.id + ") from " + node.id + ": " + str(data))
-
-    def node_disconnect_with_outbound_node(self, node):
-        print(
-            "node wants to disconnect with oher outbound node: ("
-            + self.id
-            + "): "
-            + node.id
-        )
-
-    def node_request_to_stop(self):
-        print("node is requested to stop (" + self.id + "): ")
+node_1.stop()
+node_2.stop()
+node_3.stop()
+print("end test")

@@ -7,7 +7,7 @@ aiohttp
 aiohttp[speedups]
 asyncio
 psutil
-PyYAML
+PyYAML<6.0.0
 pre-commit
 black
 mypy

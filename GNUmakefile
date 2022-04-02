@@ -260,7 +260,7 @@ test-p2p:
 	   source .venv/bin/activate; pip install -r requirements.txt; \
        python3 $(PROJECT_NAME)/depends/p2p/setup.py build; \
        python3 $(PROJECT_NAME)/depends/p2p/setup.py install; \
-       python3 tests/test_node_interface.py; \
+       python3 $(PROJECT_NAME)/$(PROJECT_NAME).py; \
 	);
 #test-fastapi: venv
 #	. .venv/bin/activate;
