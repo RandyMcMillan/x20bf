@@ -5,7 +5,13 @@
 # MyOwnPeer2PeerNode is an example how to use the p2pnet.Node to implement your own peer-to-peer network node.        #
 # 28/06/2021: Added the new developments on id and max_connections
 #######################################################################################################################
-from p2pnetwork.node import Node
+import sys
+sys.path.insert(0, "../x20bf")
+sys.path.insert(1, "../x20bf/depends/p2p")
+sys.path.insert(2, "../x20bf/depends/p2p/p2pnetwork")
+
+
+from x20bf.depends.p2p.p2pnetwork.node import Node
 
 
 class MyOwnPeer2PeerNode(Node):

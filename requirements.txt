@@ -20,7 +20,6 @@ cffi
 setuptools_rust
 mpmath
 wheel
-PySide2
 termcolor
 # pycryptodome
 fire

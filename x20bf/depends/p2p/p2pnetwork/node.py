@@ -3,8 +3,11 @@ import random
 import socket
 import threading
 import time
+import sys
 
-from p2pnetwork.nodeconnection import NodeConnection
+sys.path.append('.')
+
+from x20bf.depends.p2p.p2pnetwork.nodeconnection import NodeConnection
 
 """
 Author: Maurice Snoeren <macsnoeren(at)gmail.com>

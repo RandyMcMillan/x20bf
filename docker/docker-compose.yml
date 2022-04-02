@@ -21,7 +21,7 @@ services:
         - PASSWORD=${PASSWORD}
     command: ["tail", "-f", "/dev/null"]
     volumes:
-      - ${HOME:-.}:/home/${HOST_USER}
+      - ${PWD:-.}:/home/${HOST_USER}/${PROJECT_NAME}
 
   alpine-guix:
     container_name: ${PROJECT_NAME}_${HOST_UID:-4000}
@@ -43,6 +43,7 @@ services:
         - PASSWORD=${PASSWORD}
     command: ["tail", "-f", "/dev/null"]
     volumes:
+      - ${PWD:-.}:/home/${HOST_USER}/${PROJECT_NAME}
       - ${HOME:-.}:/home/${HOST_USER}
 
   ubuntu:
@@ -65,6 +66,7 @@ services:
         - UBUNTU_VERSION=${UBUNTU_VERSION}
     command: ["tail", "-f", "/dev/null"]
     volumes:
+      - ${PWD:-.}:/home/${HOST_USER}/${PROJECT_NAME}
       - ${HOME:-.}:/home/${HOST_USER}
 
   debian:
@@ -87,6 +89,7 @@ services:
         - DEBIAN_VERSION=${DEBIAN_VERSION}
     command: ["tail", "-f", "/dev/null"]
     volumes:
+      - ${PWD:-.}:/home/${HOST_USER}/${PROJECT_NAME}
       - ${HOME:-.}:/home/${HOST_USER}
       - /Applications:/home/${HOST_USER}/Apps
 
@@ -110,7 +113,7 @@ services:
         - PASSWORD=${PASSWORD}
     command: ["tail", "-f", "/dev/null"]
     volumes:
-      - ${HOME:-.}:/home/${HOST_USER}
+      - ${PWD:-.}:/home/${HOST_USER}/${PROJECT_NAME}
 
   fedora33:
     container_name: ${PROJECT_NAME}_${HOST_UID:-4000}
@@ -132,7 +135,7 @@ services:
         - PASSWORD=${PASSWORD}
     command: ["tail", "-f", "/dev/null"]
     volumes:
-      - ${HOME:-.}:/home/${HOST_USER}
+      - ${PWD:-.}:/home/${HOST_USER}/${PROJECT_NAME}
 
   fedora34:
     container_name: ${PROJECT_NAME}_${HOST_UID:-4000}
@@ -154,7 +157,7 @@ services:
         - PASSWORD=${PASSWORD}
     command: ["tail", "-f", "/dev/null"]
     volumes:
-      - ${HOME:-.}:/home/${HOST_USER}
+      - ${PWD:-.}:/home/${HOST_USER}/${PROJECT_NAME}
 
   gentoo:
     container_name: ${PROJECT_NAME}_${HOST_UID:-4000}
@@ -176,7 +179,7 @@ services:
         - PASSWORD=${PASSWORD}
     command: ["tail", "-f", "/dev/null"]
     volumes:
-      - ${HOME:-.}:/home/${HOST_USER}
+      - ${PWD:-.}:/home/${HOST_USER}/${PROJECT_NAME}
 
   centos:
     container_name: ${PROJECT_NAME}_${HOST_UID:-4000}
@@ -198,7 +201,7 @@ services:
         - PASSWORD=${PASSWORD}
     command: ["tail", "-f", "/dev/null"]
     volumes:
-      - ${HOME:-.}:/home/${HOST_USER}
+      - ${PWD:-.}:/home/${HOST_USER}/${PROJECT_NAME}
 
   centos7:
     container_name: ${PROJECT_NAME}_${HOST_UID:-4000}
@@ -220,7 +223,7 @@ services:
         - PASSWORD=${PASSWORD}
     command: ["tail", "-f", "/dev/null"]
     volumes:
-      - ${HOME:-.}:/home/${HOST_USER}
+      - ${PWD:-.}:/home/${HOST_USER}/${PROJECT_NAME}
 
   base:
     container_name: ${PROJECT_NAME}_${HOST_UID:-4000}
@@ -242,5 +245,5 @@ services:
         - PASSWORD=${PASSWORD}
     command: ["tail", "-f", "/dev/null"]
     volumes:
-      - ${HOME:-.}:/home/${HOST_USER}
+      - ${PWD:-.}:/home/${HOST_USER}/${PROJECT_NAME}
 

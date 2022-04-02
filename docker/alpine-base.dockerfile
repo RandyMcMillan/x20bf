@@ -7,26 +7,85 @@ RUN apk update \
         py3-pyside2
 RUN apk update \
     && apk add ${VERBOSE} ${NO_CACHE} \
-        libgcc \
-        libshiboken2 \
-        libstdc++ \
-        musl \
+        libgcc
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        libshiboken2
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        libstdc++
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        musl
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
         py3-shiboken2
 RUN apk update \
     && apk add ${VERBOSE} ${NO_CACHE} \
-        alpine-sdk \
+        alpine-sdk
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
         util-linux
 RUN apk update \
     && apk add ${VERBOSE} ${NO_CACHE} \
-        sudo bash-completion \
-        git vim curl shadow openssh-client
+        sudo
 RUN apk update \
     && apk add ${VERBOSE} ${NO_CACHE} \
-        python3-dev py3-pip py3-virtualenv
+        bash-completion
 RUN apk update \
     && apk add ${VERBOSE} ${NO_CACHE} \
-        gmp libffi-dbg libffi-dev \
-        zlib autoconf automake libtool texinfo
+        git
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        vim
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        curl
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        shadow
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        openssh-client
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        python3-dev
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        py3-pip
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        py3-virtualenv
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        py3-pyside2
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        py3-pyside6
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        gmp
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        libffi-dbg
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        libffi-dev
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        zlib
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        autoconf
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        automake
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        libtool
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        texinfo
 # WORKDIR /tmp
 # RUN git clone https://github.com/0x20bf-org/libffi.git && \
 # cd libffi && git checkout f9ea41683444ebe11cfa45b05223899764df28fb && ./autogen.sh && \
@@ -39,7 +98,7 @@ RUN apk add pre-commit   --repository=http://dl-cdn.alpinelinux.org/alpine/edge/
 # RUN apk add pandoc       --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing
 
 FROM scratch as user
-COPY --from=base . .
+COPY --from=base / /
 
 ARG HOST_UID=${HOST_UID:-4000}
 ARG HOST_USER=${HOST_USER:-nodummy}
@@ -59,7 +118,8 @@ RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 
 USER ${HOST_USER}
 WORKDIR /home/${HOST_USER}
-RUN touch /home/${HOST_USER}/.bash_profile
+
+# RUN touch /home/${HOST_USER}/.bash_profile
 
 ENV SSH_PRIVATE_KEY=${SSH_PRIVATE_KEY}
 RUN mkdir -p /home/${HOST_USER}/.ssh &&  chmod 700 /home/${HOST_USER}/.ssh
@@ -67,11 +127,14 @@ CMD [ "eval", "`ssh-agent`" ]
 #CMD [ "ssh-add", "/home/${HOST_USER}/.ssh/${SSH_PRIVATE_KEY}" ]
 #CMD [ "chmod", "600", "/home/${HOST_USER}/.ssh/${SSH_PRIVATE_KEY}" ]
 WORKDIR /home/${HOST_USER}/x20bf
-# CMD [ "make", "-f", "GNUmakefile", "&&","make", "-f", "GNUmakefile","init" ]
-CMD [ "make", "-f", "GNUmakefile" ]
-CMD [ "make", "-f", "GNUmakefile", "init" ]
-CMD [ "make", "-f", "GNUmakefile", "venv" ]
-# RUN virtualenv venv && . venv/bin/activate
-# ENTRYPOINT [ "make", "venv" ]
+RUN git init
+RUN ls
+# RUN echo changeme | sudo -S make -f /home/${HOST_USER}/x20bf/GNUmakefile
+## CMD [ "make", "-f", "GNUmakefile", "&&","make", "-f", "GNUmakefile","init" ]
+#CMD [ "make", "-f", "GNUmakefile" ]
+#CMD [ "make", "-f", "GNUmakefile", "init" ]
+#CMD [ "make", "-f", "GNUmakefile", "venv" ]
+## RUN virtualenv venv && . venv/bin/activate
+## ENTRYPOINT [ "make", "venv" ]
 
 
