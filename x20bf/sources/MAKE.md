@@ -1,11 +1,15 @@
 ##### [make](https://www.gnu.org/software/make/)
- 	COMMAND              SUMMARY
   
  	help
+ 	
  	report               environment args
+ 	
  	init                 initialize requirements
  	initialize           run 0x020bf/scripts/initialize
  	requirements         pip install --user -r requirements.txt
+ 	
+ 	poetry-build
+ 	poetry-install
  	
  	venv                 create python3 virtual environment
  	test-venv            python3 ./tests/test.py

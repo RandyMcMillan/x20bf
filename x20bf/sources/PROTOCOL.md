@@ -13,7 +13,7 @@ This document describes the ox20bf protocol message structure and related operat
 ## Protocol - Field definitions
 
 ### message field delimiter
-`:` - message field delimiter
+`/` - message field delimiter
 
 ### gnupg (long/short key ID) of the reciever of a message
 `GPGR` - gnupg (long/short key ID) of the reciever of a message
@@ -22,63 +22,63 @@ This document describes the ox20bf protocol message structure and related operat
 `GPGS` - gnupg (long/short key ID) of the sender of a message
 
 ##### Example - ping short format
-`:GPGR:GPGS:` `:<recipient>:<sender>:`
+`/GPGR/GPGS/` `/<recipient>/<sender>/`
 
 ### algorithm field
-`:ALGO:` indicates encryption algorithm used for message construction
+`/ALGO/` indicates encryption algorithm used for message construction
 
 ##### Example
-`:ALGO:ALGO:ALGO:ALGO:`
+`/ALGO/ALGO/ALGO/ALGO/`
 
-`:PUBKEY:CIPHER:HASH:COMPRESSION:`
+`/PUBKEY/CIPHER/HASH/COMPRESSION/`
 
-`:RSA:AES256:SHA256:ZIP:`
+`/RSA/AES256/SHA256/ZIP/`
 
-##### gnupg supported algorithms:
+##### gnupg supported algorithms/
 ```
-Pubkey: RSA, ELG, DSA, ECDH, ECDSA, EDDSA
-Cipher: IDEA, 3DES, CAST5, BLOWFISH, AES, AES192, AES256, TWOFISH,
+Pubkey/ RSA, ELG, DSA, ECDH, ECDSA, EDDSA
+Cipher/ IDEA, 3DES, CAST5, BLOWFISH, AES, AES192, AES256, TWOFISH,
         CAMELLIA128, CAMELLIA192, CAMELLIA256
-Hash: SHA1, RIPEMD160, SHA256, SHA384, SHA512, SHA224
-Compression: Uncompressed, ZIP, ZLIB, BZIP2
+Hash/ SHA1, RIPEMD160, SHA256, SHA384, SHA512, SHA224
+Compression/ Uncompressed, ZIP, ZLIB, BZIP2
 ```
 
-We assume messages are sent in the blind: `--include-key-block` will be the default, to enable offline decryption. [OpenPGP-Options.html](https://www.gnupg.org/documentation/manuals/gnupg/OpenPGP-Options.html)
+We assume messages are sent in the blind/ `--include-key-block` will be the default, to enable offline decryption. [OpenPGP-Options.html](https://www.gnupg.org/documentation/manuals/gnupg/OpenPGP-Options.html)
 
 ### time fields
-`:BTC_TIME:` - a Bitcoin block height in the "time chain".
+`/BTC_TIME/` - a Bitcoin block height in the "time chain".
 
-`:BTC:` - a Bitcoin block height in the "time chain".
+`/BTC/` - a Bitcoin block height in the "time chain".
 
-`:UNIX_TIME_SECONDS:` - UTC Time in seconds
+`/UNIX_TIME_SECONDS/` - UTC Time in seconds
 
-`:UNIX_TIME_MILLIS:` - UTC Time in milliseconds
+`/UNIX_TIME_MILLIS/` - UTC Time in milliseconds
 
-`:TIME:` - UTC Time in milliseconds
+`/TIME/` - UTC Time in milliseconds
 
 ##### Example - ping time chain format
-`:GPGR:GPGS:BTC_TIME:`
+`/GPGR/GPGS/BTC_TIME/`
 
 ##### Example - ping UTC time format
-`:GPGR:GPGS:UNIX_TIME_SECONDS:`
+`/GPGR/GPGS/UNIX_TIME_SECONDS/`
 
 ##### Example - ping full format (seconds)
-`:GPGR:GPGS:BTC_TIME:UNIX_TIME_SECONDS:`
+`/GPGR/GPGS/BTC_TIME/UNIX_TIME_SECONDS/`
 
 ##### Example - ping full format (milliseconds)
-`:GPGR:GPGS:BTC_TIME:UNIX_TIME_MILLIS:`
+`/GPGR/GPGS/BTC_TIME/UNIX_TIME_MILLIS/`
 
-##### Example - ping abridged format (milliseconds) - abridged `:TIME:` is in millisoeconds
-`:GPGR:GPGS:BTC:TIME:`
+##### Example - ping abridged format (milliseconds) - abridged `/TIME/` is in millisoeconds
+`/GPGR/GPGS/BTC/TIME/`
 
 ### time functions
 
-`:NETWORK_MODULUS:`
+`/NETWORK_MODULUS/`
 
-##### variables:
-genesis_time = 1231006505 (1/3/2009, 1:15:05 PM)
+##### variables/
+genesis_time = 1231006505 (1/3/2009, 1/15/05 PM)
 
-millis = current UNIX time in milliseconds (example: 1646634471416)
+millis = current UNIX time in milliseconds (example/ 1646634471416)
 
 bitcoin\_network\_age = (millis - genesis\_time)
 
@@ -102,26 +102,26 @@ millis = (genesis_time + nBTC_TIME + NETWORK_MODULUS)
 ##### Examples:
 
 ```shell
-066.2022 01:35:44 AM :NETWORK_MODULUS:516881:
-066.2022 01:36:15 AM :NETWORK_MODULUS:548176:
-066.2022 01:36:36 AM :NETWORK_MODULUS:569069:
+066.2022 01/35/44 AM /NETWORK_MODULUS/516881/
+066.2022 01/36/15 AM /NETWORK_MODULUS/548176/
+066.2022 01/36/36 AM /NETWORK_MODULUS/569069/
 ```
 
 ---
 
-`:NETWORK_WEEBLE:`
+`/NETWORK_WEEBLE/`
 
-`:NETWORK_WOBBLE:`
+`/NETWORK_WOBBLE/`
 
 
 
 ---
 
-TODO: more message structure
+TODO/ more message structure
 
-TODO: file structure
+TODO/ file structure
 
-TODO: LOC - location specifications for offline resources
+TODO/ LOC - location specifications for offline resources
 
 ---
 
