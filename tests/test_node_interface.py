@@ -6,25 +6,18 @@
 # implementation. See the MyOwnPeer2PeerNode.py for all the details. In that class all your own application specific  #
 # details are coded.                                                                                                  #
 #######################################################################################################################
-
-import sys
 import time
+import sys
+sys.path.insert(0, "../x20bf")
+sys.path.insert(1, "../x20bf/depends/p2p")
+sys.path.insert(2, "../x20bf/depends/p2p/p2pnetwork")
 
-sys.path.insert(0, "..")  # Import the files where the modules are located
+# import x20bf.depends.p2p.p2pnetwork.node as node
+from x20bf.depends.p2p.p2pnetwork.node import Node
 
-# from node_interface import NodeInterface
-# import NodeInterface
-import node_interface as node
-
-# node = node_interface
-# node = __import__("0x20bf", globals(), locals(), ['NodeInterface'], 0)
-# node = __import__("0x20bf", globals(), locals(), ['node_interface'], 0)
-# node = __import__("0x20bf", globals(), locals(), ['node_interface'], 0)
-
-# node_1 = node.node_interface.NodeInterface("127.0.0.1", 8001)
-node_1 = node.NodeInterface("127.0.0.1", 8001)
-node_2 = node.NodeInterface("127.0.0.1", 8002)
-node_3 = node.NodeInterface("127.0.0.1", 8003)
+node_1 = Node("127.0.0.1", 8001)
+node_2 = Node("127.0.0.1", 8002)
+node_3 = Node("127.0.0.1", 8003)
 
 time.sleep(1)
 
