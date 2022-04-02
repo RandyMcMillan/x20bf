@@ -159,6 +159,9 @@
   <![endif]-->
 </head>
 <body>
+<H2>
+0x20bf - python implementation
+</H2>
 <a
 href="https://keys.openpgp.org/vks/v1/by-fingerprint/E616FA7221A1613E5B99206297966C06BB06757B">🐝</a>
 <a
@@ -168,108 +171,6 @@ href="https://twitter.com/0x20bf_org">Twitter</a>
 <html>
 <link rel="shortcut icon" href="x20bf/sources/favicon.ico" />
 </html>
-<HR>
-<center>
-<H4>
-x20bf - A general purpose messaging protocol
-</center>
-<h2 id="status-of-this-proposal">Status of this Proposal</h2>
-<p>This document proposes an Internet standards track protocol for
-transporting, broadcasting and syndication of messages over common
-internet communications channels. The distribution of all documents
-related to this proposal are unlimited and unencumbered by any <a
-href="LICENSE">LICENSE</a>, but some are included anyway.</p>
-<h2 id="abstract">Abstract</h2>
-<p>This document describes the ox20bf protocol message structure and
-related operations associated with message field ordering and data
-typing. x20bf is meant to be simple, enabling flexability of
-implementation. Gnupg is used for text message encryption. Git version
-control is used for archiving messages.</p>
-<h2 id="protocol---field-definitions">Protocol - Field definitions</h2>
-<h3 id="message-field-delimiter">message field delimiter</h3>
-<p><code>:</code> - message field delimiter</p>
-<h3 id="gnupg-longshort-key-id-of-the-reciever-of-a-message">gnupg
-(long/short key ID) of the reciever of a message</h3>
-<p><code>GPGR</code> - gnupg (long/short key ID) of the reciever of a
-message</p>
-<h3 id="gnupg-longshort-key-id-of-the-sender-of-a-message">gnupg
-(long/short key ID) of the sender of a message</h3>
-<p><code>GPGS</code> - gnupg (long/short key ID) of the sender of a
-message</p>
-<h5 id="example---ping-short-format">Example - ping short format</h5>
-<p><code>:GPGR:GPGS:</code>
-<code>:&lt;recipient&gt;:&lt;sender&gt;:</code></p>
-<h3 id="algorithm-field">algorithm field</h3>
-<p><code>:ALGO:</code> indicates encryption algorithm used for message
-construction</p>
-<h5 id="example">Example</h5>
-<p><code>:ALGO:ALGO:ALGO:ALGO:</code></p>
-<p><code>:PUBKEY:CIPHER:HASH:COMPRESSION:</code></p>
-<p><code>:RSA:AES256:SHA256:ZIP:</code></p>
-<h5 id="gnupg-supported-algorithms">gnupg supported algorithms:</h5>
-<pre><code>Pubkey: RSA, ELG, DSA, ECDH, ECDSA, EDDSA
-Cipher: IDEA, 3DES, CAST5, BLOWFISH, AES, AES192, AES256, TWOFISH,
-        CAMELLIA128, CAMELLIA192, CAMELLIA256
-Hash: SHA1, RIPEMD160, SHA256, SHA384, SHA512, SHA224
-Compression: Uncompressed, ZIP, ZLIB, BZIP2</code></pre>
-<p>We assume messages are sent in the blind:
-<code>--include-key-block</code> will be the default, to enable offline
-decryption. <a
-href="https://www.gnupg.org/documentation/manuals/gnupg/OpenPGP-Options.html">OpenPGP-Options.html</a></p>
-<h3 id="time-fields">time fields</h3>
-<p><code>:BTC_TIME:</code> - a Bitcoin block height in the “time
-chain”.</p>
-<p><code>:BTC:</code> - a Bitcoin block height in the “time chain”.</p>
-<p><code>:UNIX_TIME_SECONDS:</code> - UTC Time in seconds</p>
-<p><code>:UNIX_TIME_MILLIS:</code> - UTC Time in milliseconds</p>
-<p><code>:TIME:</code> - UTC Time in milliseconds</p>
-<h5 id="example---ping-time-chain-format">Example - ping time chain
-format</h5>
-<p><code>:GPGR:GPGS:BTC_TIME:</code></p>
-<h5 id="example---ping-utc-time-format">Example - ping UTC time
-format</h5>
-<p><code>:GPGR:GPGS:UNIX_TIME_SECONDS:</code></p>
-<h5 id="example---ping-full-format-seconds">Example - ping full format
-(seconds)</h5>
-<p><code>:GPGR:GPGS:BTC_TIME:UNIX_TIME_SECONDS:</code></p>
-<h5 id="example---ping-full-format-milliseconds">Example - ping full
-format (milliseconds)</h5>
-<p><code>:GPGR:GPGS:BTC_TIME:UNIX_TIME_MILLIS:</code></p>
-<h5
-id="example---ping-abridged-format-milliseconds---abridged-time-is-in-millisoeconds">Example
-- ping abridged format (milliseconds) - abridged <code>:TIME:</code> is
-in millisoeconds</h5>
-<p><code>:GPGR:GPGS:BTC:TIME:</code></p>
-<h3 id="time-functions">time functions</h3>
-<p><code>:NETWORK_MODULUS:</code></p>
-<h5 id="variables">variables:</h5>
-<p>genesis_time = 1231006505 (1/3/2009, 1:15:05 PM)</p>
-<p>millis = current UNIX time in milliseconds (example:
-1646634471416)</p>
-<p>bitcoin_network_age = (millis - genesis_time)</p>
-<p>NETWORK_MODULUS = (millis - genesis_time) % BTC_TIME</p>
-<pre><code>NETWORK_MODULUS = bitcoin_network_age % BTC_TIME
-or
-NETWORK_MODULUS = (millis - genesis_time) % BTC_TIME</code></pre>
-<h5 id="helper-functions"><a
-href="./sources/modulus_conversion_formulas.md">Helper
-Functions</a>:</h5>
-<pre><code>n = (millis - genesis_time - NETWORK_MODULUS)/BTC_TIME
-nBTC_TIME = (millis - genesis_time - NETWORK_MODULUS)
-millis = (genesis_time + nBTC_TIME + NETWORK_MODULUS)</code></pre>
-<hr />
-<h5 id="examples">Examples:</h5>
-<pre class="shell"><code>066.2022 01:35:44 AM :NETWORK_MODULUS:516881:
-066.2022 01:36:15 AM :NETWORK_MODULUS:548176:
-066.2022 01:36:36 AM :NETWORK_MODULUS:569069:</code></pre>
-<hr />
-<p><code>:NETWORK_WEEBLE:</code></p>
-<p><code>:NETWORK_WOBBLE:</code></p>
-<hr />
-<p>TODO: more message structure</p>
-<p>TODO: file structure</p>
-<p>TODO: LOC - location specifications for offline resources</p>
-<hr />
 <p><br><a
 href="https://github.com/0x20bf-org/x20bf/actions/workflows/python.yml"><img
 src="https://github.com/0x20bf-org/x20bf/actions/workflows/python.yml/badge.svg"
@@ -287,13 +188,16 @@ source venv/bin/activate
 pip install -r requirements.txt
 pip install -e .</code></pre>
 <h5 id="make"><a href="https://www.gnu.org/software/make/">make</a></h5>
-<pre><code>COMMAND              SUMMARY
+<pre><code>help
 
-help
 report               environment args
+
 init                 initialize requirements
 initialize           run 0x020bf/scripts/initialize
 requirements         pip install --user -r requirements.txt
+
+poetry-build
+poetry-install
 
 venv                 create python3 virtual environment
 test-venv            python3 ./tests/test.py

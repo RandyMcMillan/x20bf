@@ -153,7 +153,6 @@ export USER_FLAG
 export # all env vars
 
 .PHONY: - help
-##:	COMMAND              SUMMARY
 ## :
 ##:	help
 -: help
@@ -438,7 +437,7 @@ docs:
 	@echo "##### [make](https://www.gnu.org/software/make/)" > $(PWD)/$(PROJECT_NAME)/sources/MAKE.md
 	bash -c "make help >> $(PWD)/$(PROJECT_NAME)/sources/MAKE.md"
 	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/HEADER.md                >  $(PWD)/README.md'
-	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/PROTOCOL.md              >> $(PWD)/README.md'
+	# bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/PROTOCOL.md              >> $(PWD)/README.md'
 	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/COMMANDS.md              >> $(PWD)/README.md'
 	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/GETTING_STARTED.md       >> $(PWD)/README.md'
 	bash -c 'cat $(PWD)/$(PROJECT_NAME)/sources/MAKE.md                  >> $(PWD)/README.md'
