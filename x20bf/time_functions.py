@@ -14,6 +14,14 @@ from x20bf.logger import logger
 genesis_time = 1231006505
 
 
+def unsignedToSigned(n, byte_count):
+    return int.from_bytes(n.to_bytes(byte_count, 'little', signed=False), 'little', signed=True)
+
+
+def signedToUnsigned(n, byte_count):
+    return int.from_bytes(n.to_bytes(byte_count, 'little', signed=True), 'little', signed=False)
+
+
 def test_nanos_percision(nanos):
     getcontext().prec = 50
     mpmath.mp.dps = 50
