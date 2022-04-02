@@ -258,7 +258,8 @@ test-p2p:
 	test -d .venv || virtualenv .venv
 	( \
 	   source .venv/bin/activate; pip install -r requirements.txt; \
-	   source .venv/bin/activate; pip install -r requirements.txt; \
+       python3 $(PROJECT_NAME)/depends/p2p/setup.py build; \
+       python3 $(PROJECT_NAME)/depends/p2p/setup.py install; \
        python3 tests/test_node_interface.py; \
 	);
 #test-fastapi: venv
@@ -381,7 +382,8 @@ install-cryptography:
 install-rust: install-rustup
 install-rustup:
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > sh.rustup.rs
-	[ ! hash rustc 2>/dev/null ] && chmod +x sh.rustup.rs && ./sh.rustup.rs || echo "rustc is already installed."
+	# [ ! hash rustc 2>/dev/null ] && chmod +x sh.rustup.rs && ./sh.rustup.rs || echo "rustc is already installed."
+	chmod +x sh.rustup.rs && ./sh.rustup.rs
 .PHONY: depends
 ##
 depends: install-gnupg install-fastapi install-p2p install-git
