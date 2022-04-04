@@ -7,8 +7,14 @@
 # details are coded.                                                                                                  #
 #######################################################################################################################
 import time
+import datetime
 import sys
+import asyncio
 from TimeNode import TimeNode
+from TimeNode import mempool_height
+from TimeNode import ripe_node_id
+from TimeNode import fetch
+
 
 sys.path.insert(0, "../x20bf")
 sys.path.insert(1, "../x20bf/depends/p2p")
@@ -18,12 +24,12 @@ sys.path.insert(2, "../x20bf/depends/p2p/p2pnetwork")
 # from x20bf.depends.p2p.p2pnetwork.node import Node
 
 
-time_node_1 = TimeNode("127.0.0.1", 8383)
-time_node_2 = TimeNode("127.0.0.1", 8384)
+time_node_1 = TimeNode("127.0.0.1", 8383, str(datetime.datetime.now()))
+time_node_2 = TimeNode("127.0.0.1", 8384, str(datetime.datetime.now()))
 
-node_1 = TimeNode("127.0.0.1", 8001)
-node_2 = TimeNode("127.0.0.1", 8002)
-node_3 = TimeNode("127.0.0.1", 8003)
+node_1 = TimeNode("127.0.0.1", 8001, str(datetime.datetime.now()), callback=ripe_node_id)
+node_2 = TimeNode("127.0.0.1", 8002, str(datetime.datetime.now()), callback=ripe_node_id)
+node_3 = TimeNode("127.0.0.1", 8003, str(datetime.datetime.now()), callback=ripe_node_id)
 
 time.sleep(1)
 
@@ -43,7 +49,10 @@ time_node_2.connect_with_node("127.0.0.1", 8383)
 
 time.sleep(2)
 
-node_1.send_to_nodes({"name": "Maurice", "number": 11})
+loop = asyncio.new_event_loop()
+
+
+node_1.send_to_nodes({"mempool_height": loop.run_until_complete(mempool_height()), "number": 11})
 
 time.sleep(5)
 

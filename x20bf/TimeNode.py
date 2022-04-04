@@ -17,6 +17,18 @@ sys.path.insert(2, "../x20bf/depends/p2p/p2pnetwork")
 from x20bf.depends.p2p.p2pnetwork.node import Node
 
 
+async def fetch(session, url):
+    async with session.get(url) as response:
+        return await response.text()
+
+
+async def mempool_height():
+    async with aiohttp.ClientSession() as session:
+        url = "https://mempool.space/api/blocks/tip/height"
+        height = await fetch(session, url)
+        return height
+
+
 def ripe_node_id(id):
     ripe_id = hashlib.new("ripemd160")
     ripe_id.update(bytes(id, "utf-8"))
@@ -28,7 +40,9 @@ class TimeNode(Node):
     # Python class constructor
     def __init__(self, host, port, id=None, callback=None, max_connections=0):
         super(TimeNode, self).__init__(host, port, id, callback, max_connections)
+        self.genesis = 1231006505
         self.ripe_id = ripe_node_id
+        self.loop = asyncio.new_event_loop()
         print("TimeNode:" + str(self.ripe_id(id)) + " Started")
 
     # all the methods below are called when things happen in the network.
