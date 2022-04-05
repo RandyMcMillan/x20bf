@@ -463,6 +463,11 @@ docker-build:
 ##:	docker-test          build an alpine docker container
 docker-test:
 	$(MAKE) -C docker alpine-test user=$(user)
+.PHONY: brew-bundle
+##	:
+##:	brew-bundle          brew bundle --file Brewfile
+brew-bundle:
+	brew bundle --file Brewfile
 
 .PHONY: push-subtrees
 ##	:

@@ -32,4 +32,6 @@ brew "python@3.8"
 brew "python@3.9"
 brew "python@3.10"
 brew "vim", link: false
+brew "docker-compose"
+cask "docker"
 cask "qt-creator"
