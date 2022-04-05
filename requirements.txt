@@ -10,6 +10,7 @@ psutil
 PyYAML<6.0.0
 pre-commit
 black
+click<8.1
 mypy
 gnupg
 configparser
@@ -20,4 +21,3 @@ setuptools_rust
 mpmath
 termcolor
 fire
-click
