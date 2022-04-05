@@ -239,7 +239,7 @@ test-venv-p2ps:
        python3 tests/test_secure_node_cli.py; \
 	);
 
-##:	test-depends         test-gnupg test-p2p test-fastapi
+##:	test-depends         test-gnupg test-p2p
 test-depends: test-gnupg test-p2p
 ##:	test-gnupg           python3 ./tests/depends/gnupg/test_gnupg.py
 ##:	test-p2p             python3 ./tests/depends/p2p/setup.py
@@ -262,9 +262,6 @@ test-p2p:
        python3 $(PROJECT_NAME)/depends/p2p/setup.py install; \
        python3 $(PROJECT_NAME)/$(PROJECT_NAME).py; \
 	);
-#test-fastapi: venv
-#	. .venv/bin/activate;
-#	pushd tests/depends/fastapi/tests && python3 test_application.py
 ##	:
 clean-venv: venv-clean
 
@@ -340,12 +337,6 @@ p2p: install-p2p
 install-p2p:
 	pushd $(DEPENDSPATH)/p2p && $(PYTHON3) -m $(PIP) check . && popd
 	pushd $(DEPENDSPATH)/p2p && $(PYTHON3) $(DEPENDSPATH)/p2p/setup.py install && popd
-.PHONY: install-fastapi fastapi
-##:	install-fastapi      install python fastapi
-fastapi: install-fastapi
-install-fastapi:
-	pushd $(DEPENDSPATH)/fastapi && $(PYTHON3) -m $(PIP) check . && popd
-	pushd $(DEPENDSPATH)/fastapi && $(PYTHON3) -m $(PIP) install . && popd
 .PHONY: install-git
 ##:	install-git          install python GitPython
 install-git:
@@ -356,27 +347,6 @@ install-git:
 install-tor:
 	pushd $(DEPENDSPATH)/tor && $(PYTHON3) -m $(PIP) check . && popd
 	pushd $(DEPENDSPATH)/tor && $(PYTHON3) -m $(PIP) install . && popd
-.PHONY: install-cryptography
-##	:
-##:	install-crypto       install python cryptography
-##	:
-##:	                     The cryptography python lib
-##:	                     requires rust to build.
-##:	                     arch x86_64
-##:	                     TODO arch64
-##	:
-##:	                     Try 'make init' or 'make install-rust'
-##:	                     then retry 'make install-crypto'
-##	:
-##:	                     Try 'make reqs' to install
-##:	                     the cryptography dependency
-##:	                     without building.
-##	:
-install-crypto: install-cryptography
-install-cryptography:
-	pushd $(DEPENDSPATH)/cryptography && $(PYTHON3) -m $(PIP) check . && popd
-	#REF: --global-option=build_ext --global-option="-L/usr/local/opt/openssl/lib" --global-option="-I/usr/local/opt/openssl/include"
-	pushd $(DEPENDSPATH)/cryptography && $(PYTHON3) -m $(PIP) install . --global-option=build_ext --global-option="-L/usr/local/opt/openssl/lib" --global-option="-I/usr/local/opt/openssl/include" && popd
 .PHONY: install-rust install-rustup
 ##:	install-rustup       install rust toolchain
 install-rust: install-rustup
@@ -386,13 +356,9 @@ install-rustup:
 	chmod +x sh.rustup.rs && ./sh.rustup.rs
 .PHONY: depends
 ##
-depends: install-gnupg install-fastapi install-p2p install-git
-	@echo if install-crypto fails
-	@echo try:
-	@echo make install-rustup
+depends: install-gnupg install-p2p install-git
 
 .PHONY: git-add
-
 git-add: remove
 	@echo git-add
 
@@ -505,13 +471,10 @@ docker-test:
 ##:	push-subtrees        push all subtrees to their repos
 push-subtrees: pre-commit
 	# git ls-subtrees
-	git subtree push --prefix=x20bf/depends/cryptography                      git@github.com:0x20bf-org/cryptography $(TIME)-$(shell git rev-parse --short HEAD)
-	git subtree push --prefix=x20bf/depends/tor                               git@github.com:0x20bf-org/tor          $(TIME)-$(shell git rev-parse --short HEAD)
 	git subtree push --prefix=x20bf/depends/git/git/ext/gitdb/gitdb/ext/smmap git@github.com:0x20bf-org/smmap        $(TIME)-$(shell git rev-parse --short HEAD)
 	git subtree push --prefix=x20bf/depends/git/git/ext/gitdb                 git@github.com:0x20bf-org/gitdb        $(TIME)-$(shell git rev-parse --short HEAD)
 	git subtree push --prefix=x20bf/depends/git                               git@github.com:0x20bf-org/git          $(TIME)-$(shell git rev-parse --short HEAD)
 	git subtree push --prefix=x20bf/depends/gnupg                             git@github.com:0x20bf-org/gnupg        $(TIME)-$(shell git rev-parse --short HEAD)
-	git subtree push --prefix=x20bf/depends/fastapi                           git@github.com:0x20bf-org/fastapi      $(TIME)-$(shell git rev-parse --short HEAD)
 	git subtree push --prefix=x20bf/depends/p2p                               git@github.com:0x20bf-org/p2p          $(TIME)-$(shell git rev-parse --short HEAD)
 	git subtree push --prefix=x20bf/depends/git/git/ext/gitdb/gitdb/ext/smmap git@github.com:0x20bf-org/smmap.git    $(TIME)-$(shell git rev-parse --short HEAD)
 	git subtree push --prefix=docker                                          git@github.com:0x20bf-org/docker.git   $(TIME)-$(shell git rev-parse --short HEAD)
