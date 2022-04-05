@@ -167,6 +167,7 @@ init:
 	make initialize
 	rm -rf rokeys/.gitignore || sudo -s rm -rf rokeys/.gitignore
 	cat x20bf/scripts/pre-commit > .git/hooks/pre-commit
+	chmod +x .git/hooks/pre-commit
 .PHONY: initialize
 ##:	initialize           run 0x020bf/scripts/initialize
 initialize:
@@ -246,9 +247,9 @@ test-depends: test-gnupg test-p2p
 ##:	test-p2p             python3 ./tests/depends/p2p/setup.py
 ##:	venv-clean           rm -rf venv rokeys test_gnupg.log
 venv-clean:
-	rm -rf .venv
-	rm -rf rokeys
-	rm -rf test_gnupg.log
+	rm -rf .venv || sudo -s rm -rf .venv
+	rm -rf rokeys || sudo -s rm -rf rokeys
+	rm -rf test_gnupg.log || sudo -s rm -rf test_gnupg.log
 test-gnupg: venv
 	. .venv/bin/activate;
 	python3 ./tests/depends/gnupg/setup.py install;
@@ -274,7 +275,7 @@ build: depends
 	python3 setup.py build
 ##:	install              python3 -m pip install -e .
 install: build
-	rm -rf dist
+	rm -rf dist || sudo -s rm -rf dist
 	$(PYTHON3) -m $(PIP) install -e .
 ##:	dist                 python3 setup.py bdist_egg sdist
 ##  :
