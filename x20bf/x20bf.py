@@ -53,17 +53,19 @@ time.sleep(1)
 
 time_node_1.start()
 time_node_2.start()
+node_0.start()
 node_1.start()
 node_2.start()
 node_3.start()
 
 time.sleep(1)
 
+node_0.connect_with_node("127.0.0.1", 8001)
 node_1.connect_with_node("127.0.0.1", 8002)
 node_2.connect_with_node("127.0.0.1", 8003)
-node_3.connect_with_node("127.0.0.1", 8002)
+node_3.connect_with_node("127.0.0.1", 8383)
 time_node_1.connect_with_node("127.0.0.1", 8384)
-time_node_2.connect_with_node("127.0.0.1", 8383)
+time_node_2.connect_with_node("127.0.0.1", node_0.port)
 
 time.sleep(2)
 
@@ -155,6 +157,7 @@ node_3.send_to_nodes({"/millis/":
 
 time.sleep(5)
 
+node_0.stop()
 node_1.stop()
 node_2.stop()
 node_3.stop()

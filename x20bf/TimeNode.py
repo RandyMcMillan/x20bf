@@ -199,10 +199,11 @@ def find_free_port():
 class TimeNode(Node):
 
     # Python class constructor
-    def __init__(self, host, port=0, id=None, callback=None, max_connections=0):
+    def __init__(self, host, port=None, id=None, callback=None, max_connections=0):
         if port == 0:
             port = find_free_port()
         super(TimeNode, self).__init__(host, port, id, callback, max_connections)
+        self.port = port
         self.genesis = genesis_time()
         self.ripe_id = ripe_node_id
         self.loop = asyncio.new_event_loop()
