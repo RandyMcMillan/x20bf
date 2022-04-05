@@ -60,6 +60,12 @@ def hex_message_digest(recipient, message, sender):
     return n_160.hexdigest()
 
 
+def ripe_node_id(id):
+    ripe_id = hashlib.new("ripemd160")
+    ripe_id.update(bytes(id, "utf-8"))
+    return ripe_id.digest()
+
+
 GPGR = "4DC9817F"  # bitkarrot
 # logger.info(GPGR)
 GPGS = "BB06757B"  # randymcmillan

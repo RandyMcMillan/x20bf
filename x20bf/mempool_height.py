@@ -3,7 +3,6 @@ import configparser
 import os
 
 import aiohttp
-
 from logger import logger
 
 # get the path to config.ini

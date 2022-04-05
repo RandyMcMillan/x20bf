@@ -2,7 +2,6 @@ import asyncio
 import time
 
 import blockcypher
-
 from logger import logger
 from mempool_height import mempool_height
 

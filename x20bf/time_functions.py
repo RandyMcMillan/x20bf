@@ -2,12 +2,12 @@ import asyncio
 import os
 import shutil
 import time
-from math import floor as floor
-import mpmath
 from decimal import getcontext
+from math import floor as floor
 
 import aiohttp
 import blockcypher
+import mpmath
 
 from x20bf.logger import logger
 
@@ -15,11 +15,15 @@ genesis_time = 1231006505
 
 
 def unsignedToSigned(n, byte_count):
-    return int.from_bytes(n.to_bytes(byte_count, 'little', signed=False), 'little', signed=True)
+    return int.from_bytes(
+        n.to_bytes(byte_count, "little", signed=False), "little", signed=True
+    )
 
 
 def signedToUnsigned(n, byte_count):
-    return int.from_bytes(n.to_bytes(byte_count, 'little', signed=True), 'little', signed=False)
+    return int.from_bytes(
+        n.to_bytes(byte_count, "little", signed=True), "little", signed=False
+    )
 
 
 def test_nanos_percision(nanos):
