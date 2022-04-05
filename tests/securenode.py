@@ -1,21 +1,21 @@
+import hashlib
+import json
 import sys
 import time
-import json
-import hashlib
-
-from Crypto.PublicKey import RSA
-from Crypto.Cipher import PKCS1_v1_5 as PKCS1_v1_5_Cipher
-from Crypto.Signature import PKCS1_v1_5 as PKCS1_v1_5_Signature
-from Crypto.Hash import SHA512
-from Crypto.Cipher import AES
-from Crypto.Protocol.KDF import PBKDF2
-from Crypto import Random
 from base64 import b64decode, b64encode
+
+from Crypto import Random
+from Crypto.Cipher import AES
+from Crypto.Cipher import PKCS1_v1_5 as PKCS1_v1_5_Cipher
+from Crypto.Hash import SHA512
+from Crypto.Protocol.KDF import PBKDF2
+from Crypto.PublicKey import RSA
+from Crypto.Signature import PKCS1_v1_5 as PKCS1_v1_5_Signature
 
 sys.path.insert(0, ".")
 
-from p2pnetwork.node import Node
 from blockchain import Blockchain
+from p2pnetwork.node import Node
 
 """
 Author : Maurice Snoeren <macsnoeren(at)gmail.com>

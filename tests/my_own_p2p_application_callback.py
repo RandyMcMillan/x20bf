@@ -6,8 +6,9 @@
 # a new class. However, it is adviced to implement your own class rather than use the callback. Callback will get you #
 # a big and large method implementation.                                                                              #
 #######################################################################################################################
-import time
 import sys
+import time
+
 sys.path.insert(0, "../x20bf")
 sys.path.insert(1, "../x20bf/depends/p2p")
 sys.path.insert(2, "../x20bf/depends/p2p/p2pnetwork")

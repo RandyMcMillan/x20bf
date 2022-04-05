@@ -6,8 +6,9 @@
 # implementation. See the MyOwnPeer2PeerNode.py for all the details. In that class all your own application specific  #
 # details are coded.                                                                                                  #
 #######################################################################################################################
-import time
 import sys
+import time
+
 sys.path.insert(0, "../x20bf")
 sys.path.insert(1, "../x20bf/depends/p2p")
 sys.path.insert(2, "../x20bf/depends/p2p/p2pnetwork")

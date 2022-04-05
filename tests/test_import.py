@@ -1,9 +1,9 @@
 import sys
+
 sys.path.insert(0, "../x20bf")
 sys.path.insert(1, "../x20bf/depends/p2p")
-import x20bf.logging as logging
-
 import x20bf as b3b3
+import x20bf.logging as logging
 
 # from x20bf import logger
 # Setup logging

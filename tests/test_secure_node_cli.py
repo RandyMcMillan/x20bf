@@ -1,6 +1,6 @@
+import getpass
 import sys
 import time
-import getpass
 
 sys.path.append(".")
 

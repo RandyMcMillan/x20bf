@@ -13,10 +13,10 @@ import time
 sys.path.insert(0, "../x20bf")
 sys.path.insert(1, "../x20bf/depends/p2p/p2pnetwork")
 
-from x20bf.depends.p2p.p2pnetwork.node import Node
-
 import ping as p
 from time_functions import btc_time
+
+from x20bf.depends.p2p.p2pnetwork.node import Node
 
 
 # The big callback method that gets all the events that happen inside the p2p network.

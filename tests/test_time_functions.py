@@ -7,14 +7,15 @@ sys.path.insert(1, "../x20bf/depends/p2p")
 
 # from x20bf import time_functions
 # import x20bf.time_functions
-from x20bf.time_functions import blockcypher_height
-from x20bf.time_functions import touch_time
-from x20bf.time_functions import btc_time
-from x20bf.time_functions import move_block_time
-from x20bf.time_functions import get_millis
-from x20bf.time_functions import get_seconds
-from x20bf.time_functions import mempool_height
-
+from x20bf.time_functions import (
+    blockcypher_height,
+    btc_time,
+    get_millis,
+    get_seconds,
+    mempool_height,
+    move_block_time,
+    touch_time,
+)
 
 touch = asyncio.new_event_loop()
 touch.run_until_complete(touch_time(btc_time()))
