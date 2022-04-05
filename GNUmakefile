@@ -390,16 +390,12 @@ git-add: remove
 pre-commit:
 	@echo "If fail use:"
 	@echo "black ."
-	@echo "git commit (--amend) --no-verify"
+	@echo "git commit --no-verify"
 	@echo "NOTE:"
 	@echo "isort . # manually - alot of conflicts with black TODO: fix"
 	@echo "git commit (--amend) --no-verify"
-	@echo "then:"
-	@echo "git commit (--amend) --no-verify"
 	@echo "to manually commit files."
 	@echo "NOTE: make docs products are whitespace dependent for output formatting."
-	# cat x20bf/scripts/pre-commit > .git/hooks/pre-commit
-	# pre-commit run -a
 
 .PHONY: docs
 ##:	docs                 build docs from sources/*.md
