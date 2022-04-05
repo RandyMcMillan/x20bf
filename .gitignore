@@ -83,20 +83,13 @@ Carthage/Build
 # For more information about the recommended setup visit:
 # https://github.com/fastlane/fastlane/blob/master/fastlane/docs/Gitignore.md
 
-fastlane/report.xml
-fastlane/screenshots
-
 #Code Injection
 #
 # After new code Injection tools there's a generated folder /iOSInjectionProject
 # https://github.com/johnno1962/injectionforxcode
 
-iOSInjectionProject/
-
 *.dmg
 1.1.1*
-infinity
-infinity/*
 
 # Compiled Python files
 *.pyc
@@ -142,20 +135,10 @@ DerivedData/
 ## Gcc Patch
 /*.gcno
 
-hosts
-etc-dnsmasq.d
-etc-pihole
 .DS_Store
 .config/QtProject
-1.1.1i
-docker.shell
 
-dotfiles
-legit
 .github/.DS_Store
-dnsseed.dat
-dnsseed.dump
-dnsstats.log
 get-pip.py
 BLOCK_TIME
 OLD_BLOCK_TIME
@@ -163,6 +146,7 @@ OLD_BLOCK_TIME
 # python virtual environments
 env
 venv
+.venv
 venv/*
 x20bf.egg-info/
 x20bf.egg-info/*
@@ -190,3 +174,4 @@ x20bf/depends/gnupg/python_gnupg.egg-info/*
 sh.rustup.rs
 blockchain.db
 secure_node.dat
+Brewfile.lock.json
