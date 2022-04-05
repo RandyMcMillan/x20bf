@@ -10,10 +10,11 @@ import time
 import datetime
 import sys
 import asyncio
-from TimeNode import TimeNode
+from TimeNode import TimeNode, network_weeble, network_wobble
 from TimeNode import mempool_height
 from TimeNode import ripe_node_id
-from TimeNode import fetch
+from TimeNode import node_callback
+from TimeNode import get_nanos, get_millis, get_seconds, genesis_time
 
 
 sys.path.insert(0, "../x20bf")
@@ -24,12 +25,27 @@ sys.path.insert(2, "../x20bf/depends/p2p/p2pnetwork")
 # from x20bf.depends.p2p.p2pnetwork.node import Node
 
 
-time_node_1 = TimeNode("127.0.0.1", 8383, str(datetime.datetime.now()))
-time_node_2 = TimeNode("127.0.0.1", 8384, str(datetime.datetime.now()))
+def test_node_callback(event, main_node, connected_node, data):
+    try:
+        if (
+            event != "node_request_to_stop"
+        ):  # node_request_to_stop does not have any connected_node, while it is the main_node that is stopping!
+            print(
+                "Event/{}/{}/{}/{}".format(
+                    event, main_node.id, connected_node.id, data
+                )
+            )
 
-node_1 = TimeNode("127.0.0.1", 8001, str(datetime.datetime.now()), callback=ripe_node_id)
-node_2 = TimeNode("127.0.0.1", 8002, str(datetime.datetime.now()), callback=ripe_node_id)
-node_3 = TimeNode("127.0.0.1", 8003, str(datetime.datetime.now()), callback=ripe_node_id)
+    except Exception as e:
+        print(e)
+
+
+node_1 = TimeNode("127.0.0.1", 8001, str(datetime.datetime.now()), callback=test_node_callback)
+node_2 = TimeNode("127.0.0.1", 8002, str(datetime.datetime.now()), callback=test_node_callback)
+node_3 = TimeNode("127.0.0.1", 8003, str(datetime.datetime.now()), callback=test_node_callback)
+
+time_node_1 = TimeNode("127.0.0.1", 8383, str(get_millis()), callback=test_node_callback)
+time_node_2 = TimeNode("127.0.0.1", 8384, str(get_millis()), callback=test_node_callback)
 
 time.sleep(1)
 
@@ -52,7 +68,88 @@ time.sleep(2)
 loop = asyncio.new_event_loop()
 
 
-node_1.send_to_nodes({"mempool_height": loop.run_until_complete(mempool_height()), "number": 11})
+time_node_1.send_to_nodes({"/":
+                           loop.run_until_complete(mempool_height()),
+                           "/genesis_time/":
+                           genesis_time(),
+                           "/weeble/":
+                           network_weeble(),
+                           "/wobble/":
+                           network_wobble(),
+                           "/nanos/":
+                           get_nanos()}
+                          )
+time_node_1.send_to_nodes({"/millis/": get_millis(),
+                           "/seconds/": get_seconds()}
+                          )
+
+time_node_2.send_to_nodes({"/":
+                           loop.run_until_complete(mempool_height()),
+                           "/genesis_time/":
+                           genesis_time(),
+                           "/weeble/":
+                           network_weeble(),
+                           "/wobble/":
+                           network_wobble(),
+                           "/nanos/":
+                           get_nanos()}
+                          )
+time_node_2.send_to_nodes({"/millis/":
+                           get_millis(),
+                           "/seconds/":
+                           get_seconds()}
+                          )
+
+node_1.send_to_nodes({"/":
+                      loop.run_until_complete(mempool_height()),
+                      "/genesis_time/":
+                      genesis_time(),
+                      "/nanos/":
+                      get_nanos()}
+                     )
+node_1.send_to_nodes({"/millis/":
+                      get_millis(),
+                      "/seconds/":
+                      get_seconds(),
+                      "/weeble/":
+                      network_weeble(),
+                      "/wobble/":
+                      network_wobble()}
+                     )
+
+node_2.send_to_nodes({"/":
+                      loop.run_until_complete(mempool_height()),
+                      "/genesis_time/":
+                      genesis_time(),
+                      "/nanos/":
+                      get_nanos()}
+                     )
+node_2.send_to_nodes({"/millis/":
+                      get_millis(),
+                      "/seconds/":
+                      get_seconds(),
+                      "/weeble/":
+                      network_weeble(),
+                      "/wobble/":
+                      network_wobble()}
+                     )
+
+node_3.send_to_nodes({"/":
+                      loop.run_until_complete(mempool_height()),
+                      "/genesis_time/":
+                      genesis_time(),
+                      "/nanos/":
+                      get_nanos()}
+                     )
+node_3.send_to_nodes({"/millis/":
+                      get_millis(),
+                      "/seconds/":
+                      get_seconds(),
+                      "/weeble/":
+                      network_weeble(),
+                      "/wobble/":
+                      network_wobble()}
+                     )
 
 time.sleep(5)
 
