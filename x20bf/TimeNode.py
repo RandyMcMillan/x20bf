@@ -3,6 +3,8 @@ import asyncio
 # import shutil
 import sys
 import time
+import socket
+from contextlib import closing
 from decimal import getcontext
 from math import floor as floor
 
@@ -187,10 +189,19 @@ def genesis_time():
     return 1231006505
 
 
+def find_free_port():
+    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+        s.bind(('', 0))
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        return s.getsockname()[1]
+
+
 class TimeNode(Node):
 
     # Python class constructor
-    def __init__(self, host, port, id=None, callback=None, max_connections=0):
+    def __init__(self, host, port=0, id=None, callback=None, max_connections=0):
+        if port == 0:
+            port = find_free_port()
         super(TimeNode, self).__init__(host, port, id, callback, max_connections)
         self.genesis = genesis_time()
         self.ripe_id = ripe_node_id

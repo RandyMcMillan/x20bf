@@ -40,6 +40,8 @@ def test_node_callback(event, main_node, connected_node, data):
         print(e)
 
 
+# test find_free_port in TimeNode.py
+node_0 = TimeNode("127.0.0.1", 0, str(datetime.datetime.now()), callback=test_node_callback)
 node_1 = TimeNode("127.0.0.1", 8001, str(datetime.datetime.now()), callback=test_node_callback)
 node_2 = TimeNode("127.0.0.1", 8002, str(datetime.datetime.now()), callback=test_node_callback)
 node_3 = TimeNode("127.0.0.1", 8003, str(datetime.datetime.now()), callback=test_node_callback)
