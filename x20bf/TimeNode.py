@@ -1,9 +1,13 @@
 import asyncio
+
+# from logger import logger
+import hashlib
+import socket
+
 # import os
 # import shutil
 import sys
 import time
-import socket
 from contextlib import closing
 from decimal import getcontext
 from math import floor as floor
@@ -11,8 +15,7 @@ from math import floor as floor
 import aiohttp
 import blockcypher
 import mpmath
-# from logger import logger
-import hashlib
+
 sys.path.insert(0, "../x20bf")
 sys.path.insert(1, "../x20bf/depends/p2p")
 sys.path.insert(2, "../x20bf/depends/p2p/p2pnetwork")
@@ -191,7 +194,7 @@ def genesis_time():
 
 def find_free_port():
     with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-        s.bind(('', 0))
+        s.bind(("", 0))
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         return s.getsockname()[1]
 
