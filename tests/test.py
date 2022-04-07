@@ -45,7 +45,7 @@ async def makeitem(size: int = 5) -> str:
 
 
 async def get_mempool_height():
-    return mempool_height()
+    return await mempool_height()
 
 
 async def get_genesis_time():
@@ -74,7 +74,11 @@ async def randsleep(caller=None) -> None:
         if len(node_array) >= 10:
             caller.connect_with_node("127.0.0.1", node_port_array.pop())
             mempool_height = await get_mempool_height()
-            genesis_time   = await get_genesis_time(),
+            print(type(mempool_height))
+            print(mempool_height)
+            genesis_time = await get_genesis_time(),
+            print(type(genesis_time))
+            print(genesis_time)
             #  network_weeble = await get_network_weeble(),
             #  network_wobble = await get_network_wobble(),
             caller.send_to_nodes(
