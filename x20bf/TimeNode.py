@@ -75,15 +75,15 @@ async def blockcypher_height():
 
 def btc_time():
     # TODO: ADD AS MANY SOURCES FOR btc_time() AS POSSIBLE!!!
-    mempool_loop = asyncio.new_event_loop()
-    BTC_TIME = mempool_loop.run_until_complete(mempool_height())
+    # mempool_loop = asyncio.new_event_loop()
+    BTC_TIME = mempool_height()  # mempool_loop.run_until_complete(mempool_height())
     # assert int(BTC_TIME) >= int(blockcypher_height())
     return int(BTC_TIME)
 
 
 def btc_unix_time_millis():
     global SESSION_ID
-    SESSION_ID = str(btc_time()) + ":" + str(get_millis())
+    SESSION_ID = str(mempool_height()) + ":" + str(get_millis())
     f = open("SESSION_ID", "w")
     f.write("" + SESSION_ID + "\n")
     f.close()
@@ -94,7 +94,7 @@ def btc_unix_time_millis():
 
 
 def btc_unix_time_seconds():
-    return str(btc_time()) + ":" + str(get_seconds())
+    return str(mempool_height()) + ":" + str(get_seconds())
 
 
 def unix_time_millis():
@@ -109,7 +109,7 @@ def unix_time_seconds():
     return unix_time_seconds
 
 
-def network_modulus():
+async def network_modulus():
     # internal time stamping mechanism
     # rolling deterministic time field:
     # (current_time - genesis time) yields time from bitcoin genesis block
@@ -117,43 +117,46 @@ def network_modulus():
     # source of deterministic entropy
     # get_millis() is known to the GPGS and GPGR
     # GENESIS_TIME is well known
-    # btc_time() block height message was contructed is known to GPGR and GPGS
+    # mempool_height() block height message was contructed is known to GPGR and GPGS
     # TODO: add functions to reconstruct :WEEBLE:WOBBLE: based on these values
-    # NETWORK_MODULUS = (get_millis() - genesis_time()) % btc_time()
-    NETWORK_MODULUS = (get_nanos() - genesis_time()) % btc_time()
+    # NETWORK_MODULUS = (get_millis() - genesis_time()) % mempool_height()
+    NETWORK_MODULUS = (get_nanos() - genesis_time()) % mempool_height()
     f = open("NETWORK_MODULUS", "w")
     f.write("" + str(NETWORK_MODULUS) + "\n")
     f.close()
     return NETWORK_MODULUS
 
 
-def network_weeble_wobble():
+async def network_weeble_wobble():
     # :WEEBLE:WOBBLE: construction
     NETWORK_WEEBLE_WOBBLE = str(
         ":" + str(network_weeble()) + ":" + str(network_wobble()) + ":"
     )
-    f = open("NETWORK_WEEBLE_WOBBLE", "w")
-    f.write("" + str(network_weeble_wobble) + "\n")
-    f.close()
+    # f = open("NETWORK_WEEBLE_WOBBLE", "w")
+    # f.write("" + str(network_weeble_wobble) + "\n")
+    # f.close()
     return NETWORK_WEEBLE_WOBBLE
 
 
-def network_weeble():
+async def network_weeble():
     # (current_time - genesis time) yields time from bitcoin genesis block
     # dividing by number of blocks yields an average time per block
-    # NETWORK_WEEBLE = int((get_millis() - genesis_time()) / btc_time())
-    NETWORK_WEEBLE = int((get_nanos() - genesis_time()) / btc_time())
-    f = open("NETWORK_WEEBLE", "w")
-    f.write("" + str(NETWORK_WEEBLE) + "\n")
-    f.close()
+    # NETWORK_WEEBLE = int((get_millis() - genesis_time()) / mempool_height())
+    # asyncio.create_task(mempool_height())
+    height = await mempool_height()
+    NETWORK_WEEBLE = int((get_nanos() - genesis_time()) / int(height))
+    # f = open("NETWORK_WEEBLE", "w")
+    # f.write("" + str(NETWORK_WEEBLE) + "\n")
+    # f.close()
     return NETWORK_WEEBLE
 
 
-def network_wobble():
+async def network_wobble():
     # wobble is the remainder of the weeble_wobble calculation
     # source of deterministic entropy
-    # NETWORK_WOBBLE = str(float((get_millis() - genesis_time()) / btc_time() % 1)).strip(
-    NETWORK_WOBBLE = str(float((get_nanos() - genesis_time()) / btc_time() % 1)).strip(
+    # NETWORK_WOBBLE = str(float((get_millis() - genesis_time()) / mempool_height() % 1)).strip(
+    height = await mempool_height()
+    NETWORK_WOBBLE = str(float((get_nanos() - genesis_time()) / int(height) % 1)).strip(
         "0."
     )
     f = open("NETWORK_WOBBLE", "w")

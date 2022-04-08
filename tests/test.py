@@ -45,32 +45,36 @@ async def makeitem(size: int = 5) -> str:
 
 
 async def get_mempool_height():
+    # print("get_mempool_height()")
     return await mempool_height()
 
 
 async def get_genesis_time():
-    return genesis_time()
+    # print("get_genesis_time()")
+    return genesis_time
 
 
 async def get_network_weeble():
-    return network_weeble()
+    # print("get_network_weeble()")
+    return await network_weeble()
 
 
 async def get_network_wobble():
-    return network_wobble()
+    # print("get_network_wobble()")
+    return await network_wobble()
 
 
 async def randsleep(mph, n_weeble, n_wobble, caller=None) -> None:
-    i = random.randint(0, 60)
+    i = random.randint(0, 10)
     node_array.append(caller)
-    node_shutdown_array = node_array
+    # node_shutdown_array = node_array
     if caller:
         print(f"{caller} sleeping for {i} seconds.")
         caller = TimeNode("127.0.0.1", 0, str(datetime.datetime.now()), callback=test_node_callback)
         node_port_array.append(caller.port)
         node_port_array.reverse()
         caller.start()
-        await asyncio.sleep(3)
+        await asyncio.sleep(i)
         if len(node_array) >= 10:
             caller.connect_with_node("127.0.0.1", node_port_array.pop())
             # mempool_height = await get_mempool_height()
@@ -84,6 +88,7 @@ async def randsleep(mph, n_weeble, n_wobble, caller=None) -> None:
             caller.send_to_nodes(
                 {
                     "/": mph,
+                    "/caller.port/": caller.port,
                     "/genesis_time/": genesis_time,
                     "/weeble/": n_weeble,
                     "/wobble/": n_wobble,
@@ -91,11 +96,11 @@ async def randsleep(mph, n_weeble, n_wobble, caller=None) -> None:
                 }
 
             )
-            await asyncio.sleep(random.randint(0, 10))
+            await asyncio.sleep(random.randint(0, i))
 
 
 async def sender(name: int, q: asyncio.Queue) -> None:
-    n = random.randint(0, 10)
+    n = random.randint(1, 3)
     for _ in it.repeat(None, n):  # Synchronous loop for each single sender
         mempool_heights = [asyncio.create_task(get_mempool_height())]
         network_weebles = [asyncio.create_task(get_network_weeble())]
@@ -107,16 +112,21 @@ async def sender(name: int, q: asyncio.Queue) -> None:
         for height in mempool_heights:
             for weeble in network_weebles:
                 for wobble in network_wobbles:
+                    print(height)
+                    print(weeble)
+                    print(wobble)
                     await randsleep(height, weeble, wobble, caller=f"Sender {name}")
-                    i = await makeitem()
-                    t = time.perf_counter()
-                    await q.put((i, t))
-                    print(f"Sender {name} added <{i}> to queue.")
+                    # i = await makeitem()
+                    # t = time.perf_counter()
+                    # await q.put((i, t))
+                    # print(f"Sender {name} added <{i}> to queue <{t}>.")
+                    # # wobble.cancel()
+                    # # weeble.cancel()
+                    # # height.cancel()
 
 
 async def receiver(name: int, q: asyncio.Queue) -> None:
     while True:
-
         mempool_heights = [asyncio.create_task(get_mempool_height())]
         network_weebles = [asyncio.create_task(get_network_weeble())]
         network_wobbles = [asyncio.create_task(get_network_wobble())]
@@ -132,9 +142,9 @@ async def receiver(name: int, q: asyncio.Queue) -> None:
                     now = time.perf_counter()
                     print(f"Receiver {name} got element <{i}>" f" in {now-t:0.5f} seconds.")
                     q.task_done()
-                    wobble.cancel()
-                    weeble.cancel()
-                    height.cancel()
+                    # wobble.cancel()
+                    # weeble.cancel()
+                    # height.cancel()
 
 
 async def main(nsend: int, nrecv: int):
@@ -142,7 +152,7 @@ async def main(nsend: int, nrecv: int):
     senders = [asyncio.create_task(sender(n, q)) for n in range(nsend)]
     receivers = [asyncio.create_task(receiver(n, q)) for n in range(nrecv)]
     await asyncio.gather(*senders)
-    await asyncio.gather(*receivers)
+    # await asyncio.gather(*receivers)
     await q.join()  # Implicitly awaits recievers, too
     for c in receivers:
         c.cancel()
