@@ -23,8 +23,11 @@ from x20bf.depends.p2p.p2pnetwork.node import Node
 
 
 async def fetch(session, url):
-    async with session.get(url) as response:
-        return await response.text()
+    try:
+        async with session.get(url) as response:
+            return await response.text()
+    except aiohttp.client_exceptions.ServerDisconnectedError:
+        pass
 
 
 async def mempool_height():
