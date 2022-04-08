@@ -38,12 +38,14 @@ async def mempool_height():
 
 
 def ripe_node_id(id):
+    print(ripe_node_id.__name__)
     ripe_id = hashlib.new("ripemd160")
     ripe_id.update(bytes(id, "utf-8"))
     return ripe_id.hexdigest()
 
 
 def node_callback(event, main_node, connected_node, data):
+    print(node_callback.__name__)
     try:
         if (
             event != "node_request_to_stop"
@@ -77,6 +79,7 @@ async def blockcypher_height():
 
 
 def btc_time():
+    print(btc_time.__name__)
     # TODO: ADD AS MANY SOURCES FOR btc_time() AS POSSIBLE!!!
     # mempool_loop = asyncio.new_event_loop()
     BTC_TIME = mempool_height()  # mempool_loop.run_until_complete(mempool_height())
@@ -85,6 +88,7 @@ def btc_time():
 
 
 def btc_unix_time_millis():
+    print(btc_unix_time_millis.__name__)
     global SESSION_ID
     SESSION_ID = str(mempool_height()) + ":" + str(get_millis())
     f = open("SESSION_ID", "w")
@@ -97,22 +101,26 @@ def btc_unix_time_millis():
 
 
 def btc_unix_time_seconds():
+    print(btc_unix_time_seconds.__name__)
     return str(mempool_height()) + ":" + str(get_seconds())
 
 
 def unix_time_millis():
     global unix_time_millis
+    print(unix_time_millis.__name__)
     unix_time_millis = str(get_millis())
     return unix_time_millis
 
 
 def unix_time_seconds():
     global unix_time_seconds
+    print(unix_time_seconds.__name__)
     unix_time_seconds = str(get_seconds())
     return unix_time_seconds
 
 
 async def network_modulus():
+    print(network_modulus.__name__)
     # internal time stamping mechanism
     # rolling deterministic time field:
     # (current_time - genesis time) yields time from bitcoin genesis block
@@ -131,6 +139,7 @@ async def network_modulus():
 
 
 async def network_weeble_wobble():
+    print(network_weeble_wobble.__name__)
     # :WEEBLE:WOBBLE: construction
     NETWORK_WEEBLE_WOBBLE = str(
         ":" + str(network_weeble()) + ":" + str(network_wobble()) + ":"
@@ -142,11 +151,15 @@ async def network_weeble_wobble():
 
 
 async def network_weeble():
+    print(network_weeble.__name__)
     # (current_time - genesis time) yields time from bitcoin genesis block
     # dividing by number of blocks yields an average time per block
     # NETWORK_WEEBLE = int((get_millis() - genesis_time()) / mempool_height())
     # asyncio.create_task(mempool_height())
     height = await mempool_height()
+    print(type(height))
+    print(type(get_nanos()))
+    print(type(genesis_time()))
     NETWORK_WEEBLE = int((get_nanos() - genesis_time()) / int(height))
     # f = open("NETWORK_WEEBLE", "w")
     # f.write("" + str(NETWORK_WEEBLE) + "\n")
@@ -155,10 +168,14 @@ async def network_weeble():
 
 
 async def network_wobble():
+    print(network_wobble.__name__)
     # wobble is the remainder of the weeble_wobble calculation
     # source of deterministic entropy
     # NETWORK_WOBBLE = str(float((get_millis() - genesis_time()) / mempool_height() % 1)).strip(
     height = await mempool_height()
+    print(type(height))
+    print(type(get_nanos()))
+    print(type(genesis_time()))
     NETWORK_WOBBLE = str(float((get_nanos() - genesis_time()) / int(height) % 1)).strip(
         "0."
     )
@@ -169,6 +186,7 @@ async def network_wobble():
 
 
 def get_nanos():
+    print(get_nanos.__name__)
     getcontext().prec = 50
     mpmath.mp.dps = 50
     global nanos
@@ -177,28 +195,37 @@ def get_nanos():
     nanos = float(time.time_ns())
     # test_nanos_percision(nanos)
     # test_millis_percision(nanos)
+    print(type(nanos))
     return int(mpmath.mpf(nanos))
 
 
 def get_millis():
+    print(get_millis.__name__)
     global millis
     millis = int(floor(get_nanos() / 1000))
     # test_nanos_percision(millis)
     # test_millis_percision(millis)
+    print(get_millis.__name__)
+    print(type(millis))
     return millis
 
 
 def get_seconds():
+    print(get_seconds.__name__)
     global seconds
     seconds = int(round(time.time()))
+    print(get_seconds.__name__)
+    print(type(seconds))
     return seconds
 
 
 def genesis_time():
-    return 1231006505
+    print(genesis_time.__name__)
+    return int(1231006505)
 
 
 def find_free_port():
+    print(find_free_port.__name__)
     with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
         s.bind(("", 0))
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
