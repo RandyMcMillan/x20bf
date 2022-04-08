@@ -263,6 +263,7 @@ test-p2p:
        python3 $(PROJECT_NAME)/depends/p2p/setup.py build; \
        python3 $(PROJECT_NAME)/depends/p2p/setup.py install; \
        python3 $(PROJECT_NAME)/$(PROJECT_NAME).py; \
+       python3 tests/test.py; \
 	);
 ##	:
 clean-venv: venv-clean
