@@ -51,7 +51,8 @@ jobs:
       #- run: make legit
       #- run: make gogs
       #- run: make seeder
+    - run: make depends
     - run: make install-gnupg
     - run: make install-p2p
-    - run: make install-fastapi
+    - run: make build
     - run: make dist
