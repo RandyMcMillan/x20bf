@@ -58,12 +58,10 @@ jobs:
           cd $GITHUB_WORKSPACE
           python3 -c "import sys; print(sys.version)"
           make initialize reqs
-      - name: make depends install-p2p install-gnupg install-fastapi install-git install-rust
+      - name: make depends install-p2p install-gnupg install-git
         if: steps.cache-depends.outputs.cache-hit != 'true'
         run: |
           make depends
           make install-p2p
           make install-gnupg
-          make install-fastapi
           make install-git
-          make install-rust
