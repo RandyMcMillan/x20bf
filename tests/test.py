@@ -67,7 +67,7 @@ async def get_network_wobble():
 async def randsleep(mph, n_weeble, n_wobble, caller=None) -> None:
     i = random.randint(0, 10)
     node_array.append(caller)
-    # node_shutdown_array = node_array
+    node_shutdown_array = node_array
     if caller:
         print(f"{caller} sleeping for {i} seconds.")
         caller = TimeNode("127.0.0.1", 0, str(datetime.datetime.now()), callback=test_node_callback)
@@ -96,7 +96,10 @@ async def randsleep(mph, n_weeble, n_wobble, caller=None) -> None:
                 }
 
             )
-            await asyncio.sleep(random.randint(0, i))
+            caller.stop()
+            # await asyncio.sleep(random.randint(0, i))
+    for node in node_shutdown_array:
+        caller.stop()
 
 
 async def sender(name: int, q: asyncio.Queue) -> None:
@@ -120,9 +123,14 @@ async def sender(name: int, q: asyncio.Queue) -> None:
                     # t = time.perf_counter()
                     # await q.put((i, t))
                     # print(f"Sender {name} added <{i}> to queue <{t}>.")
-                    # # wobble.cancel()
-                    # # weeble.cancel()
-                    # # height.cancel()
+                    wobble.cancel()
+                    weeble.cancel()
+                    height.cancel()
+                    try:
+                        q.get_nowait()
+                    except asyncio.QueueEmpty:
+                        pass
+                        # print(q.qsize())
 
 
 async def receiver(name: int, q: asyncio.Queue) -> None:
@@ -141,10 +149,12 @@ async def receiver(name: int, q: asyncio.Queue) -> None:
                     i, t = await q.get()
                     now = time.perf_counter()
                     print(f"Receiver {name} got element <{i}>" f" in {now-t:0.5f} seconds.")
+                    wobble.cancel()
+                    weeble.cancel()
+                    height.cancel()
                     q.task_done()
-                    # wobble.cancel()
-                    # weeble.cancel()
-                    # height.cancel()
+        for task in q:
+            task.cancel()
 
 
 async def main(nsend: int, nrecv: int):
