@@ -160,7 +160,7 @@ async def network_weeble():
     print(type(height))
     print(type(get_nanos()))
     print(type(genesis_time()))
-    NETWORK_WEEBLE = int((get_nanos() - genesis_time()) / int(height))
+    NETWORK_WEEBLE = int((get_nanos() - genesis_time()) / height)
     # f = open("NETWORK_WEEBLE", "w")
     # f.write("" + str(NETWORK_WEEBLE) + "\n")
     # f.close()
@@ -176,7 +176,7 @@ async def network_wobble():
     print(type(height))
     print(type(get_nanos()))
     print(type(genesis_time()))
-    NETWORK_WOBBLE = str(float((get_nanos() - genesis_time()) / int(height) % 1)).strip(
+    NETWORK_WOBBLE = str(float((get_nanos() - genesis_time()) / height % 1)).strip(
         "0."
     )
     f = open("NETWORK_WOBBLE", "w")
