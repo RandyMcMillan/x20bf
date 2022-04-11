@@ -24,14 +24,22 @@ from x20bf.depends.p2p.p2pnetwork.node import Node
 
 async def fetch(session, url):
     async with session.get(url) as response:
-        return await response.text()
+        try:
+            height = await response.text()
+            print(type(height))
+            return height.strip('\'')
+        except aiohttp.ServerDisconnectedError:
+            try:
+                return await blockcypher_height()
+            except:
+                return 1
 
 
 async def mempool_height():
     async with aiohttp.ClientSession() as session:
         url = "https://mempool.space/api/blocks/tip/height"
         height = await fetch(session, url)
-        return height
+        return int(height.strip('\''))
 
 
 def ripe_node_id(id):
@@ -63,13 +71,13 @@ async def blockcypher_height():
     try:
         # block_cypher = blockcypher.get_latest_blockcypher_height(coin_symbol='btc')
         block_cypher = blockcypher.get_latest_blockcypher_height()
-        blockcypher_height = repr(block_cypher)
-        f = open("BLOCK_TIME", "w")
-        f.write("" + blockcypher_height + "\n")
-        f.close()
+        blockcypher_height = repr(block_cypher.strip('\''))
+        # f = open("BLOCK_TIME", "w")
+        # f.write("" + blockcypher_height + "\n")
+        # f.close()
         return int(blockcypher_height)
     except Exception:
-        return 0
+        return 1
         pass
 
 
@@ -144,7 +152,7 @@ async def network_weeble():
     # NETWORK_WEEBLE = int((get_millis() - genesis_time()) / mempool_height())
     # asyncio.create_task(mempool_height())
     height = await mempool_height()
-    NETWORK_WEEBLE = int((get_nanos() - genesis_time()) / int(height))
+    NETWORK_WEEBLE = int((get_nanos() - genesis_time()) / height)
     # f = open("NETWORK_WEEBLE", "w")
     # f.write("" + str(NETWORK_WEEBLE) + "\n")
     # f.close()
@@ -156,13 +164,13 @@ async def network_wobble():
     # source of deterministic entropy
     # NETWORK_WOBBLE = str(float((get_millis() - genesis_time()) / mempool_height() % 1)).strip(
     height = await mempool_height()
-    NETWORK_WOBBLE = str(float((get_nanos() - genesis_time()) / int(height) % 1)).strip(
+    network_wobble = str(float((get_nanos() - genesis_time()) / height % 1)).strip(
         "0."
     )
     f = open("NETWORK_WOBBLE", "w")
-    f.write("" + str(NETWORK_WOBBLE) + "\n")
+    f.write("" + str(network_wobble) + "\n")
     f.close()
-    return int(NETWORK_WOBBLE)
+    return network_wobble
 
 
 def get_nanos():
@@ -193,6 +201,12 @@ def get_seconds():
 
 def genesis_time():
     return 1231006505
+
+def genesis_time_millis():
+    return 1231006505*1000
+
+def genesis_time_nanos():
+    return 1231006505*1000*1000
 
 
 def find_free_port():

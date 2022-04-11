@@ -91,71 +91,36 @@ loop = asyncio.new_event_loop()
 
 time_node_1.send_to_nodes(
     {
-        "/": loop.run_until_complete(mempool_height()),
         "/genesis_time/": genesis_time(),
-        "/weeble/": network_weeble(),
-        "/wobble/": network_wobble(),
         "/nanos/": get_nanos(),
     }
 )
-time_node_1.send_to_nodes({"/millis/": get_millis(), "/seconds/": get_seconds()})
 
 time_node_2.send_to_nodes(
     {
-        "/": loop.run_until_complete(mempool_height()),
         "/genesis_time/": genesis_time(),
-        "/weeble/": network_weeble(),
-        "/wobble/": network_wobble(),
         "/nanos/": get_nanos(),
     }
 )
-time_node_2.send_to_nodes({"/millis/": get_millis(), "/seconds/": get_seconds()})
 
 node_1.send_to_nodes(
     {
-        "/": loop.run_until_complete(mempool_height()),
         "/genesis_time/": genesis_time(),
         "/nanos/": get_nanos(),
-    }
-)
-node_1.send_to_nodes(
-    {
-        "/millis/": get_millis(),
-        "/seconds/": get_seconds(),
-        "/weeble/": network_weeble(),
-        "/wobble/": network_wobble(),
     }
 )
 
 node_2.send_to_nodes(
     {
-        "/": loop.run_until_complete(mempool_height()),
         "/genesis_time/": genesis_time(),
         "/nanos/": get_nanos(),
-    }
-)
-node_2.send_to_nodes(
-    {
-        "/millis/": get_millis(),
-        "/seconds/": get_seconds(),
-        "/weeble/": network_weeble(),
-        "/wobble/": network_wobble(),
     }
 )
 
 node_3.send_to_nodes(
     {
-        "/": loop.run_until_complete(mempool_height()),
         "/genesis_time/": genesis_time(),
         "/nanos/": get_nanos(),
-    }
-)
-node_3.send_to_nodes(
-    {
-        "/millis/": get_millis(),
-        "/seconds/": get_seconds(),
-        "/weeble/": network_weeble(),
-        "/wobble/": network_wobble(),
     }
 )
 
