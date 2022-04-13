@@ -28,10 +28,13 @@ async def fetch(session, url):
             height = await response.text()
             print(type(height))
             return height.strip('\'')
-        except aiohttp.ServerDisconnectedError:
+        # except aiohttp.ServerDisconnectedError:
+        except:
             try:
-                return await blockcypher_height()
+                height = await blockcypher_height()
+                return height
             except:
+                pass
                 return 1
 
 
