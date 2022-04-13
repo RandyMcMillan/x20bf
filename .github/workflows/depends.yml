@@ -61,6 +61,7 @@ jobs:
       - name: make depends install-p2p install-gnupg install-git
         if: steps.cache-depends.outputs.cache-hit != 'true'
         run: |
+          make init
           make depends
           make install-p2p
           make install-gnupg

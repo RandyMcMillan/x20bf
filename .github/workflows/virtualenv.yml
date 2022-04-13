@@ -52,7 +52,7 @@ jobs:
     - uses: actions/setup-python@v2
     - uses: syphar/restore-virtualenv@v1
       id: cache-virtualenv
-    - run: make initialize
+    - run: make init
     - run: make depends
     - run: make install-gnupg
     - run: make install-p2p
