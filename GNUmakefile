@@ -206,12 +206,20 @@ venv:
 	@echo ". .venv/bin/activate"
 	@echo "or:"
 	@echo "make test-venv"
-##:	test-venv            python3 ./tests/test.py
+##:	test-venv            source .venv/bin/activate; pip install -r requirements.txt;
 test-venv:
 	# insert test commands here
 	test -d .venv || virtualenv .venv
 	( \
 	   source .venv/bin/activate; pip install -r requirements.txt; \
+	);
+##:	test-test            python3 ./tests/test.py
+test-test:
+	# insert test commands here
+	test -d .venv || virtualenv .venv
+	( \
+	   source .venv/bin/activate; pip install -r requirements.txt; \
+       python3 ./tests/test.py; \
 	);
 ##:	test-venv-p2p        p2p  test battery
 test-venv-p2p:

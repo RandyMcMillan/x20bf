@@ -41,7 +41,8 @@ pip install -e .
  	poetry-install
  	
  	venv                 create python3 virtual environment
- 	test-venv            python3 ./tests/test.py
+ 	test-venv            source .venv/bin/activate; pip install -r requirements.txt;
+ 	test-test            python3 ./tests/test.py
  	test-venv-p2p        p2p  test battery
  	test-venv-p2ps       p2ps test battery
  	test-depends         test-gnupg test-p2p
