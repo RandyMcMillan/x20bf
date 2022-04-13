@@ -1,6 +1,4 @@
-fastapi
-gnupg
-gogs
-legit
-p2p
-seeder
+**
+!gnupg
+!p2p
+!git
