@@ -85,6 +85,9 @@ jobs:
       - name: make test-p2p
         run: |
           make test-p2p
+      - name: make test-test
+        run: |
+          make test-test
       - name: make poetry-build
         run: |
           source $HOME/.poetry/env
