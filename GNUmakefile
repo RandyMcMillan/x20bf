@@ -212,8 +212,7 @@ test-venv:
 	test -d .venv || virtualenv .venv
 	( \
 	   source .venv/bin/activate; pip install -r requirements.txt; \
-       python3 tests/test.py; \
-    );
+	);
 ##:	test-venv-p2p        p2p  test battery
 test-venv-p2p:
 	# insert test commands here
@@ -263,7 +262,6 @@ test-p2p:
        python3 $(PROJECT_NAME)/depends/p2p/setup.py build; \
        python3 $(PROJECT_NAME)/depends/p2p/setup.py install; \
        python3 $(PROJECT_NAME)/$(PROJECT_NAME).py; \
-       python3 tests/test.py; \
 	);
 ##	:
 clean-venv: venv-clean
