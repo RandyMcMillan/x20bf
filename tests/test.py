@@ -67,16 +67,17 @@ async def get_network_wobble():
 async def randsleep(mph, n_weeble, n_wobble, caller=None) -> None:
     i = random.randint(0, 10)
     node_array.append(caller)
-    node_shutdown_array = node_array
+    node_shutdown_array.append(caller)
     if caller:
         print(f"{caller} sleeping for {i} seconds.")
-        caller = TimeNode("127.0.0.1", 0, str(datetime.datetime.now()), callback=test_node_callback)
-        node_port_array.append(caller.port)
+        node = TimeNode("127.0.0.1", 0, str(datetime.datetime.now()), callback=test_node_callback)
+        node_shutdown_array.append(node)
+        node_port_array.append(node.port)
         node_port_array.reverse()
-        caller.start()
+        node.start()
         await asyncio.sleep(i)
         if len(node_array) >= 10:
-            caller.connect_with_node("127.0.0.1", node_port_array.pop())
+            node.connect_with_node("127.0.0.1", node_port_array.pop())
             # mempool_height = await get_mempool_height()
             print(type(mph))
             print(mph)
@@ -85,10 +86,10 @@ async def randsleep(mph, n_weeble, n_wobble, caller=None) -> None:
             genesis_time = await get_genesis_time(),
             print(type(genesis_time))
             print(genesis_time)
-            caller.send_to_nodes(
+            node.send_to_nodes(
                 {
                     "/": mph,
-                    "/caller.port/": caller.port,
+                    "/node.port/": node.port,
                     "/genesis_time/": genesis_time,
                     "/weeble/": n_weeble,
                     "/wobble/": n_wobble,
@@ -96,10 +97,16 @@ async def randsleep(mph, n_weeble, n_wobble, caller=None) -> None:
                 }
 
             )
-            caller.stop()
+            # caller.stop()
             # await asyncio.sleep(random.randint(0, i))
-    for node in node_shutdown_array:
-        caller.stop()
+    for caller in node_shutdown_array:
+        try:
+            # caller.stop()
+            # print("caller.stop()")
+            print(caller)
+            print(len(node_shutdown_array))
+        except Exception as er:
+            print(er)
 
 
 async def sender(name: int, q: asyncio.Queue) -> None:
@@ -171,6 +178,7 @@ if __name__ == "__main__":
     import argparse
     global node_array
     global node_port_array
+    global node_shutdown_array
     node_array = []
     node_shutdown_array = []
     node_port_array = []
@@ -182,6 +190,14 @@ if __name__ == "__main__":
     start = time.perf_counter()
 
     asyncio.run(main(**ns.__dict__))
+
+    for node in node_shutdown_array:
+        try:
+            print("node.stop()")
+            print(len(node_shutdown_array))
+            node.stop()
+        except Exception as er:
+            print(er)
 
     elapsed = time.perf_counter() - start
     print(f"Program completed in {elapsed:0.5f} seconds.")
