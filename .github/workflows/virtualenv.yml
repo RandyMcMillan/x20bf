@@ -37,7 +37,12 @@ jobs:
     - uses: actions/setup-python@v2
     - uses: syphar/restore-virtualenv@v1
       id: cache-virtualenv
-    - run: make init build install venv test-venv test-venv-p2p
+    - run: make init
+    - run: make build
+    - run: make install
+    - run: make venv && . .venv/bin/activate
+      # - run: make test-venv
+      # - run: make test-venv-p2p
 
   make-initialize-depends:
     needs: create-virtualenv
@@ -48,9 +53,6 @@ jobs:
     - uses: syphar/restore-virtualenv@v1
       id: cache-virtualenv
     - run: make initialize
-      #- run: make legit
-      #- run: make gogs
-      #- run: make seeder
     - run: make depends
     - run: make install-gnupg
     - run: make install-p2p
