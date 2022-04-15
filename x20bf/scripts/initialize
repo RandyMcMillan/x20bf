@@ -6,10 +6,16 @@ OS=$(uname)
 OS_VERSION=$(uname -r)
 UNAME_M=$(uname -m)
 ARCH=$(uname -m)
+PYTHON3=$(which python3)
+PIP=$(which pip)
+DASH_U="-U"
 export OS
 export OS_VERSION
 export UNAME_M
 export ARCH
+export PYTHON3
+export PIP
+export DASH_U
 
 function initialize-report(){
 echo OS:
@@ -53,7 +59,7 @@ if hash apt-get 2>/dev/null; then
     if ! hash pip3 2>/dev/null; then
         sudo apt-get install python3-pip
     else
-        "$(PYTHON3)" -m "$(PIP)" install "$(DASH_U)" omegaconf glom
+        "$PYTHON3" -m "$PIP" install "$DASH_U" omegaconf glom
     fi
     if ! hash flake8 2>/dev/null; then
         sudo apt-get install flake8
