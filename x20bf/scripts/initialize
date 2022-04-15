@@ -189,6 +189,8 @@ if [[ "$OSTYPE" == "linux"* ]]; then
             initialize-use-apt
             echo 'Using apt...'
         fi
+        source $HOME/.cargo/env
+
     fi
     if [[ "$OSTYPE" == "linux-musl" ]]; then
         if hash apk 2>/dev/null; then
