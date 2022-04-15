@@ -192,6 +192,11 @@ if [[ "$OSTYPE" == "linux"* ]]; then
             sudo apt pycairo testresources
             sudo apt install $(apt-cache pkgnames python3-pyside2.) pyside2-tools python-pyside2-doc
 
+            sudo apt-get install build-essential python3-dev
+            pip install pycryptodomex
+            pip install pycryptodome-test-vectors
+            python3 -m Cryptodome.SelfTest
+
 
             initialize-report
             initialize-use-apt
