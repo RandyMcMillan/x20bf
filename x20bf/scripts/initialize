@@ -178,12 +178,14 @@ if [[ "$OSTYPE" == "linux"* ]]; then
             sudo apt install software-properties-common
             sudo apt-get -y gnupg # build-essential libboost-all-dev libssl-dev
             sudo apt install python3
-            sudo apt-get install python3-pip python3-pyside2
+            sudo apt-get install python3-pip
             sudo apt install containerd docker.io docker-compose
             sudo apt python3.8-venv
             sudo apt python3.9-venv
             # sudo apt install libssl-dev libffi7 glibc
             sudo apt pycairo testresources
+            sudo apt install $(apt-cache pkgnames python3-pyside2.) pyside2-tools python-pyside2-doc
+
 
             initialize-report
             initialize-use-apt
