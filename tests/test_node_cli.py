@@ -9,17 +9,8 @@ sys.path.insert(2, "../x20bf/depends/p2p/p2pnetwork")
 sys.path.append(".")
 
 
-from x20bf.TimeNode import (
-    TimeNode,
-    genesis_time,
-    get_millis,
-    get_nanos,
-    get_seconds,
-    mempool_height,
-    network_weeble,
-    network_wobble,
-    node_callback,
-    ripe_node_id
+from x20bf.MessageNode import (
+    MessageNode
 )
 
 
@@ -44,7 +35,7 @@ if len(sys.argv) > 2:
     port = int(sys.argv[2])
 
 # Start the Node
-node = TimeNode("127.0.0.1", 0, str(datetime.datetime.now()), callback=test_node_callback)
+node = MessageNode("127.0.0.1", 0, str(datetime.datetime.now()), callback=test_node_callback)
 node.start()
 node.debug = False
 time.sleep(1)

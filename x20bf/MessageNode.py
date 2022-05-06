@@ -16,11 +16,8 @@ import aiohttp
 import blockcypher
 import mpmath
 
-import hashlib
 import json
-import sys
-import time
-from base64 import b64decode, b64encode
+# from base64 import b64decode, b64encode
 
 sys.path.insert(0, "../x20bf")
 sys.path.insert(1, "../x20bf/depends/p2p")
@@ -35,11 +32,13 @@ async def fetch(session, url):
             print(type(height))
             return height.strip('\'')
         # except aiohttp.ServerDisconnectedError:
-        except:
+        except Exception as e:
             try:
                 height = await blockcypher_height()
+                print(e)
                 return height
-            except:
+            except Exception as e:
+                print(e)
                 pass
                 return 1
 
@@ -53,7 +52,9 @@ async def mempool_height():
 
 def ripe_node_id(id):
     ripe_id = hashlib.new("ripemd160")
+    print(ripe_id.hexdigest())
     ripe_id.update(bytes(id, "utf-8"))
+    print(ripe_id.hexdigest())
     return ripe_id.hexdigest()
 
 
@@ -211,11 +212,13 @@ def get_seconds():
 def genesis_time():
     return 1231006505
 
+
 def genesis_time_millis():
-    return 1231006505*1000
+    return 1231006505 * 1000
+
 
 def genesis_time_nanos():
-    return 1231006505*1000*1000
+    return 1231006505 * 1000 * 1000
 
 
 def find_free_port():
@@ -225,62 +228,50 @@ def find_free_port():
         return s.getsockname()[1]
 
 
-class TimeNode(Node):
+def get_hostname():
+    host_name = socket.gethostname()
+    return host_name
+
+
+def get_host():
+    h_name = socket.getfqdn()
+    # h_name = socket.gethostname()
+    IP_addres = socket.gethostbyname(h_name)
+    print("Host Name is:" + h_name)
+    print("Computer IP Address is:" + IP_addres)
+    return 'B'
+
+
+class MessageNode(Node):
 
     # Python class constructor
     def __init__(self, host, port=None, id=None, callback=None, max_connections=0):
         if port == 0:
             port = find_free_port()
-        super(TimeNode, self).__init__(host, port, id, callback, max_connections)
+        super(MessageNode, self).__init__(host, port, id, callback, max_connections)
+        # self.host_name = "TODO: add gnupg public key"  # socket.gethostname()
+        # self.host_name = get_hostname()
+        # self.host = get_host()
+        # self.ip = socket.gethostbyname(self.host)
         self.port = port
         self.genesis = genesis_time()
         self.ripe_id = ripe_node_id
         self.loop = asyncio.new_event_loop()
-        print("TimeNode:" + str(self.ripe_id(id)) + " Started")
+        print("MessageNode:" + str(self.ripe_id(id)) + " Started")
         self.discovery_messages = {}
         self.rsa_key = None
 
-    def node_message(self, connected_node, message):
-        """node_message is overridden to provide open text communication with
-        hashing for message integrity. The message is sent by using a dict data structure.
-        The NodeConnection class already converts this back to a dict structure in this method.
-        The check is performed by check_message, see the documentation there. When the message is valid, it will be
-        processed. The field '_type' determines the packet type. Currently the following packets are implemented:
-          ping: The ping packet is send by a node to check the connection and latency.
-          pong: The pong packet is the reply that is send based an a ping packet.
-          discovery: The discovery packet is send to discover the connection list of a connecting node.
-          discovery_answer: The answer of a node to a discovery packet that holds its list of connecting nodes."""
-        # try:
-        print("node_message from " + connected_node.id + ": " + str(message))
+    def get_hostname():
+        host_name = socket.gethostname()
+        return host_name
 
-        if self.check_message(message):
-            if "_type" in message:
-                if message["_type"] == "ping":
-                    self.received_ping(connected_node, message)
-
-                elif message["_type"] == "pong":
-                    self.received_pong(connected_node, message)
-
-                elif message["_type"] == "discovery":
-                    self.received_discovery(connected_node, message)
-
-                elif message["_type"] == "discovery_answer":
-                    self.received_discovery_answer(connected_node, message)
-
-                else:
-                    self.debug_print(
-                        "node_message: message type unknown: "
-                        + connected_node.id
-                        + ": "
-                        + str(message)
-                    )
-
-        else:
-            print("Received message is corrupted and cannot be processed!")
-
-
-
-
+    def get_host():
+        h_name = socket.getfqdn()
+        # h_name = socket.gethostname()
+        IP_addres = socket.gethostbyname(h_name)
+        print("Host Name is:" + h_name)
+        print("Computer IP Address is:" + IP_addres)
+        return 'B'
 
     # all the methods below are called when things happen in the network.
     # implement your network node behavior to create the required functionality.
@@ -315,16 +306,6 @@ class TimeNode(Node):
             + self.ripe_id(self.id)
             + "): "
             + self.ripe_id(node.id)
-        )
-
-    def node_message(self, node, data):
-        print(
-            "node_message ("
-            + self.ripe_id(self.id)
-            + ") from "
-            + self.ripe_id(node.id)
-            + ": "
-            + str(data)
         )
 
     def node_message(self, connected_node, message):
@@ -410,7 +391,7 @@ class TimeNode(Node):
             return data
 
         except Exception as e:
-            self.debug_print("SecureNode: Failed to create message " + str(e))
+            self.debug_print("MessageNode: Failed to create message " + str(e))
 
     def check_message(self, data):
         """When a message is received it is hashed and signed by the sending node. This method checks the hash
@@ -418,9 +399,12 @@ class TimeNode(Node):
         returns True otherwise False.
         TODO: if a node is known, the public key should be stored, so this could not be changed by the
         node in the future. That is more safe. Maybe the public key should be exchanged prior."""
-        self.debug_print("Incoming message information:")
-        self.debug_print("_hash: " + data["_hash"])
-        self.debug_print("_signature: " + data["_signature"])
+        try:
+            self.debug_print("Incoming message information:")
+            self.debug_print("_hash: " + data["_hash"])
+            self.debug_print("_signature: " + data["_signature"])
+        except Exception as e:
+            self.debug_print("MessageNode: Failed to create message " + str(e))
 
         signature = data["_signature"]
         public_key = data["_public_key"]
@@ -490,6 +474,37 @@ class TimeNode(Node):
 
         except Exception as e:
             print("Failed to hash the message: " + str(e))
+
+    def send_ping(self):
+        """A ping request is send to all the nodes that are connected."""
+        self.send_to_nodes(
+            self.create_message(
+                {"_type": "ping", "timestamp": time.time(), "id": self.id}
+            )
+        )
+
+    def send_pong(self, node, timestamp):
+        """A pong request is only send to the node that has send the ping request."""
+        node.send(
+            self.create_message(
+                {
+                    "_type": "pong",
+                    "timestamp": timestamp,
+                    "timestamp_node": time.time(),
+                    "id": self.id,
+                }
+            )
+        )
+
+    def received_ping(self, node, data):
+        """With a ping message, return a pong message to the node."""
+        self.send_pong(node, data["timestamp"])
+
+    def received_pong(self, node, data):
+        """Got message back based on our ping message, check the latency of the node!"""
+        latency = time.time() - data["timestamp"]
+        node.set_info("ping", latency)
+        self.debug_print("Received pong message with latency " + str(latency))
 
     def send_discovery(self):
         """Send the discovery packet to all the connected nodes.
