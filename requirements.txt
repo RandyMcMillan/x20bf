@@ -1,5 +1,5 @@
 GitPython
-PySide2
+# PySide2
 PyYAML<6.0.0
 aiohttp
 aiohttp[speedups]
