@@ -1,5 +1,5 @@
 ARG ALPINE_VERSION=${ALPINE_VERSION}
-FROM pandoc/alpine:${ALPINE_VERSION} as base
+FROM pandoc/core:${ALPINE_VERSION} as base
 ARG NO_CACHE=${NO_CACHE}
 ARG VERBOSE=${VERBOSE}
 RUN apk update \
@@ -86,6 +86,10 @@ RUN apk update \
 RUN apk update \
     && apk add ${VERBOSE} ${NO_CACHE} \
         texinfo
+
+RUN apk update \
+    && apk add ${VERBOSE} ${NO_CACHE} \
+        py3-platformdirs --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
 # WORKDIR /tmp
 # RUN git clone https://github.com/0x20bf-org/libffi.git && \
 # cd libffi && git checkout f9ea41683444ebe11cfa45b05223899764df28fb && ./autogen.sh && \
@@ -93,7 +97,9 @@ RUN apk update \
 
 # if fail try mirror: http://uk.alpinelinux.org/alpine/
 # https://mirrors.alpinelinux.org
-RUN apk add pre-commit   --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing
+# RUN sed -i '/edge/s/^#//' /etc/apk/repositories
+# RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+RUN apk add pre-commit --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing
 # RUN apk add py3-pypandoc --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing
 # RUN apk add pandoc       --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing
 
